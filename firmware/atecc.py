@@ -45,6 +45,12 @@ CONFIG = bytes([
 assert len(CONFIG) == 128
 assert CONFIG[96:98] == b"\x33\x00", "slot 0 KeyConfig must be 0x0033 at byte 96"
 assert CONFIG[20:22] == b"\xAF\x2F", "slot 0 SlotConfig must be 0x2FAF at byte 20 (GenKey allowed, secret)"
+# The table's fingerprint. A hand edit changes it and the module refuses to import, so nothing can
+# lock a chip with an unreviewed table. To change the table on purpose: run tools/check_config,
+# read the diff it prints, then update this hash and the reference in the same commit.
+import hashlib as _hl
+CONFIG_SHA256 = "c759db6c849668ed53957ded37264023479dfca9b719af4e22d087a1d8a7eacf"
+assert _hl.sha256(CONFIG).digest().hex() == CONFIG_SHA256, "CONFIG table changed: see tools/check_config"
 
 
 def crc16(data):

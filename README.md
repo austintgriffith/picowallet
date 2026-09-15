@@ -116,7 +116,10 @@ The screen comes up, finds the chip on the bus, and shows "no key" until step 5.
 
 ## 5. Set up the chip (once)
 
-A fresh ATECC608 refuses to make a key until its config zone is locked, once, permanently. This
+A fresh ATECC608 refuses to make a key until its config zone is locked, once, permanently. **Before
+locking any chip run `python3 tools/check_config`** (proves the firmware's config table is the one on
+the working chip) and know that the firmware reads the chip back and refuses to lock on any
+mismatch; a chip was lost on 2026-09-15 before those checks existed (`buildlog/2026-09-15-config-table-bug.md`). This
 is normal; every chip in use is locked. Generate the final key before deploying the contract:
 
 1. In `firmware/secrets.py` temporarily set `ALLOW_LOCK = True` and `ALLOW_GENKEY = True`.

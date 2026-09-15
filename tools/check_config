@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+"""Prove firmware/atecc.py's ATECC608 config table is the proven one before anyone locks a chip.
+
+Compares it byte for byte to the table reference/pi/provision.py wrote into the wallet's working
+chip (chip #1, serial 01235e6763cc8d97ee) and checks the fingerprint the firmware asserts at
+import. Exit 0 = safe. Anything else: do not provision a chip until it is 0.
+    python3 tools/check_config
+"""
+import hashlib, importlib.util, os, re, sys, types
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.modules["machine"] = types.SimpleNamespace(I2C=object, SoftI2C=object, Pin=object)
+spec = importlib.util.spec_from_file_location("atecc", os.path.join(ROOT, "firmware/atecc.py"))
+atecc = importlib.util.module_from_spec(spec)
+try:
+    spec.loader.exec_module(atecc)
+except AssertionError as e:
+    print("FAIL: firmware/atecc.py refuses to import:", e); sys.exit(2)
+t = open(os.path.join(ROOT, "reference/pi/provision.py")).read()
+m = re.search(r"ATECC608_CONFIG\s*=\s*bytes\(\[(.*?)\]\)", t, re.S)
+pi = bytes(int(x, 16) for x in re.findall(r"0x([0-9A-Fa-f]{2})", re.sub(r"#.*", "", m.group(1))))
+bad = [i for i in range(128) if not (i < 16 or 84 <= i < 88) and pi[i] != atecc.CONFIG[i]]
+if bad:
+    print("FAIL: firmware table differs from the Pi's proven table at bytes", bad)
+    for i in bad: print("  byte %3d: pi 0x%02x firmware 0x%02x" % (i, pi[i], atecc.CONFIG[i]))
+    sys.exit(1)
+print("ok: firmware CONFIG == reference/pi/provision.py on every writable byte")
+print("ok: slot 0 SlotConfig %s KeyConfig %s (P-256 private key, GenKey allowed)" % (atecc.CONFIG[20:22].hex(), atecc.CONFIG[96:98].hex()))
+print("ok: fingerprint", hashlib.sha256(atecc.CONFIG).hexdigest()[:16], "matches CONFIG_SHA256")
