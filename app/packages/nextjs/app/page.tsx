@@ -9,6 +9,7 @@ import { useAccount, usePublicClient, useWriteContract } from "wagmi";
 import { CpuChipIcon, PaperAirplaneIcon } from "@heroicons/react/24/outline";
 import { RequestCard } from "~~/components/chip/RequestCard";
 import { type AppState, ago, short, usd } from "~~/components/chip/types";
+import { useUsbWallet } from "~~/components/usb/UsbWalletProvider";
 import { useScaffoldEventHistory, useTargetNetwork } from "~~/hooks/scaffold-eth";
 import { recoveryAbi } from "~~/services/chip/recoveryAbi";
 import type { TransferRequest, WalletRequest } from "~~/services/chip/types";
@@ -20,6 +21,7 @@ const DEFAULT_AMOUNT = "5";
 
 const Home: NextPage = () => {
   const { targetNetwork } = useTargetNetwork();
+  const usb = useUsbWallet();
   const [state, setState] = useState<AppState>();
   const [stateError, setStateError] = useState<string>();
   const [to, setTo] = useState<string>(DEFAULT_TO);
@@ -77,6 +79,41 @@ const Home: NextPage = () => {
   const overBalance = amountOk && Number(amount) > vaultBalance;
   const canSend = isAddress && amountOk && !overBalance && !sending && !!state;
 
+  /** With a USB wallet plugged in, the browser is the courier: hand the request to the wallet, wait
+   *  for A or Y, then post the answer to the app. Returns false when no wallet is connected. */
+  const signOnWallet = async (request: WalletRequest): Promise<boolean> => {
+    if (!usb.connected) return false;
+    let out;
+    try {
+      out = await usb.sign(request);
+    } catch (e: any) {
+      await fetch(`/api/requests/${request.id}/reject`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ by: "website (" + String(e?.message || e).slice(0, 40) + ")" }),
+      }).catch(() => {});
+      throw e;
+    }
+    if (out.type === "signature") {
+      const res = await fetch(`/api/requests/${request.id}/signature`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ r: out.r, s: out.s }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || res.statusText);
+      notification.success(json.txHash ? "Signed on the wallet and relayed" : "Signed on the wallet: " + json.status);
+      return true;
+    }
+    const why = out.type === "rejected" ? "rejected on the wallet" : out.type === "busy" ? "wallet busy" : out.error;
+    await fetch(`/api/requests/${request.id}/reject`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ by: (usb.hello?.name || "wallet") + ": " + why }),
+    }).catch(() => {});
+    throw new Error(why);
+  };
+
   const submit = async () => {
     if (!canSend) return;
     setSending(true);
@@ -89,9 +126,10 @@ const Home: NextPage = () => {
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || res.statusText);
-      notification.success(
-        state?.device?.paired ? "Sent to the chip for signing" : "Queued — waiting for a paired device",
-      );
+      if (!(await signOnWallet(json.request)))
+        notification.success(
+          state?.device?.paired ? "Sent to the chip for signing" : "Queued — waiting for a paired device",
+        );
       await refresh();
     } catch (e: any) {
       notification.error(e.message);
@@ -110,7 +148,7 @@ const Home: NextPage = () => {
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || res.statusText);
-      notification.success("Sent ENS name to the chip for signing");
+      if (!(await signOnWallet(json.request))) notification.success("Sent ENS name to the chip for signing");
       await refresh();
     } catch (e: any) {
       notification.error(e.message);
@@ -129,7 +167,7 @@ const Home: NextPage = () => {
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || res.statusText);
-      notification.success("Sent contract call to the chip for signing");
+      if (!(await signOnWallet(json.request))) notification.success("Sent contract call to the chip for signing");
       await refresh();
     } catch (e: any) {
       notification.error(e.message);
@@ -186,7 +224,7 @@ const Home: NextPage = () => {
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || res.statusText);
-      notification.success("Cancellation sent to the Pico.");
+      if (!(await signOnWallet(json.request))) notification.success("Cancellation sent to the Pico.");
       await refresh();
     } catch (e: any) {
       notification.error(e.message);

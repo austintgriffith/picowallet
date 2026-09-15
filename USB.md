@@ -65,15 +65,22 @@ Wallet answers, one of:
 
 The host then posts `r` and `s` to `POST /api/requests/:id/signature`, or `/reject`.
 
+### cancel
+
+Host: `{"id": 5, "type": "cancel"}`. Takes a pending `sign` off the wallet's screen (the person
+changed their mind on the website). Wallet: `{"id": 5, "type": "cancelled"}`. The original
+`sign` never gets an answer; the host drops it.
+
 ### provision
 
-Host: `{"id": 3, "type": "provision", "op": "lock-config"}` or `"op": "genkey"`.
+Host: `{"id": 3, "type": "provision", "op": "lock-config"}`, `"op": "genkey"` or `"op": "status"`.
 
-Permanent operations. Allowed only when `secrets.py` sets `ALLOW_LOCK` / `ALLOW_GENKEY`, and
-only after the wallet shows a red warning and the person presses A. Y cancels.
+`status` answers at once with the chip's status. The other two are permanent: allowed only when
+`secrets.py` sets `ALLOW_LOCK` / `ALLOW_GENKEY`, and only after the wallet shows a red warning
+and the person presses A. Y cancels.
 
-Wallet: `{"id": 3, "type": "result", "ok": true, "result": {…chip status…}}` or
-`{"id": 3, "type": "result", "ok": false, "error": "…"}`.
+Wallet: `{"id": 3, "type": "result", "ok": true, "result": {"op", "note", "status", "hasKey", "qx", "qy", "address"}}`
+or `{"id": 3, "type": "result", "ok": false, "error": "…"}`.
 
 ### ping
 
@@ -104,11 +111,31 @@ Nothing from the host. The chain id and vault address are pinned in `secrets.py`
 (`EXPECTED_CHAIN_ID`, `EXPECTED_VAULT`, `EXPECTED_TOKEN`) when set. The digest is recomputed.
 The key never leaves the chip. The host can only ask; the person decides.
 
+## The website
+
+`app/packages/nextjs`: a bar under the header with **connect** (WebSerial, Chrome or Edge) and
+**connect emulator** (the virtual wallet on `localhost:4242`). Once connected the browser is the
+courier: every request the site creates goes to the wallet, and the answer goes to the app. The
+"Compare with the wallet" panel shows the wallet's own summary screen, the blockie and the 8 hex
+while the wallet waits for A. The Setup page's lock and key buttons go over USB too.
+
+- `services/usb/link.ts`: the two transports and the messages.
+- `services/usb/blockies.ts`, `components/usb/Blockie.tsx`: the reference blockies algorithm.
+- `components/usb/UsbWalletProvider.tsx`: connection state, `sign`, `cancel`, `provision`; it
+  posts the wallet's key to `/api/device` so pairing works as before.
+- `components/usb/ComparePanel.tsx`, `components/usb/UsbBar.tsx`: the UI.
+
 ## Development
 
-- Emulator: `tools/emu send '{"id":1,"type":"hello"}'` writes a line to the virtual device's
-  stdin; replies show in the console and `tools/emu log`.
-- Real board: `mpremote` still works. Ctrl-C drops the wallet loop to the REPL; `tools/emu ship`
-  soft-resets first, so it keeps working.
+- Emulator: `tools/emu run usbwallet`, then `tools/emu send '{"id":1,"type":"hello"}'` writes a
+  line to the virtual device's stdin and prints what came back. `tools/emu headless usbwallet
+  --send '…' --key A --shot x.png` scripts a whole session. The virtual wallet has a fixed
+  throwaway software key, so a vault deployed on anvil against it keeps working across reboots
+  (`CHIP_PUBKEY_X/Y` from its `hello`, `yarn deploy`).
+- The website's **connect emulator** talks to the same virtual wallet through the emulator
+  server (`POST /ctl/cmd {cmd: "send", waitId}`; the server allows cross-origin calls to `/ctl/`).
+- Real board: `firmware/main_usb.py` goes on the board as `main.py`. `mpremote` still works:
+  Ctrl-C drops the wallet loop to the REPL, and `tools/emu ship usbwallet` soft-resets first.
+  Close the browser's connection before using `mpremote`; one process owns the port.
 - The WiFi wallet (`wallet.py`) is unchanged. The USB wallet is `usbwallet.py`, sharing the
-  screens, signer and EIP-712 code.
+  signer, screen and EIP-712 code.

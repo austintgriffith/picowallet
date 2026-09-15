@@ -45,7 +45,14 @@ const server = http.createServer(async (req, res) => {
     if (url.pathname === "/") return sendFile(res, join(EMU, "web/index.html"));
     if (url.pathname === "/skill") { res.writeHead(200, { "content-type": "text/plain; charset=utf-8" }); return res.end(readFileSync(join(EMU, "SKILL.md"))); }
     if (url.pathname.startsWith("/app/")) return proxy(req, res, url.pathname.slice(4) + url.search);
-    if (url.pathname.startsWith("/ctl/")) return control(req, res, url);
+    if (url.pathname.startsWith("/ctl/")) {
+      // The wallet app (another origin) may drive the virtual device's serial port for testing.
+      res.setHeader("Access-Control-Allow-Origin", "*");
+      res.setHeader("Access-Control-Allow-Headers", "content-type");
+      res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+      if (req.method === "OPTIONS") { res.writeHead(204); return res.end(); }
+      return control(req, res, url);
+    }
     for (const [prefix, dir] of STATIC) {
       if (url.pathname.startsWith(prefix)) {
         const rel = normalize(decodeURIComponent(url.pathname.slice(prefix.length)));

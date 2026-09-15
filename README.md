@@ -204,14 +204,14 @@ digest the device computed.
 
 | path | what |
 |---|---|
-| `firmware/` | MicroPython for the Pico: `wallet.py` loop and screens, `atecc.py` chip driver, `signer.py`, `eip712.py` + `keccak.py` + `p256.py` pure-Python crypto, `lcd.py`, `net.py` |
+| `firmware/` | MicroPython for the Pico: `wallet.py` loop and screens (WiFi), `usbwallet.py` (USB, no radio, see `USB.md`), `atecc.py` chip driver, `signer.py`, `eip712.py` + `keccak.py` + `p256.py` pure-Python crypto, `blockies.py`, `lcd.py`, `net.py` |
 | `app/` | contracts, tests, site, relay |
 | `case/` | STLs, the generator, the measurements |
 | `emu/` | the virtual wallet: MicroPython in WebAssembly, `machine` shims, the case STLs in 3D, a CLI for bots |
 | `tools/` | `pico` console, `push` firmware, `qr` (QR of the vault for the screen), `emu` (the virtual wallet) |
 | `buildlog/` | dated notes and photos of what actually happened, including the mistakes |
 | `reference/` | the Pi signer this grew out of, with the fresh-chip guide; SeedSigner cap parts (MIT) |
-| `PLAN.md`, `SOLDERING.md` | the plan, and the wiring guide |
+| `PLAN.md`, `SOLDERING.md`, `USB.md` | the plan, the wiring guide, and the wallet over USB (air-gapped, no radio) |
 
 ## Trust model, short
 

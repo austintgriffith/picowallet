@@ -68,6 +68,23 @@ hints. `EXPECTED_CHAIN_ID`, `EXPECTED_VAULT`, and `EXPECTED_TOKEN` provide optio
 production deployments must populate them. Verify response schemas and reject oversized, stale,
 or unexpected messages.
 
+### USB transport
+
+`usbwallet.py` (see `USB.md`) removes the radio: the wallet is a passive device on a USB serial
+port and the browser is the courier between the app and the wallet. The same rules apply as over
+WiFi. The host is untrusted: the wallet rebuilds every digest from the raw fields, refuses a
+mismatch, honours `EXPECTED_CHAIN_ID` / `EXPECTED_VAULT` / `EXPECTED_TOKEN`, and treats names and
+formatted amounts as hints. What USB adds is a second, independent rendering of the digest: the
+wallet draws a blockie of the digest it computed, the website draws a blockie of the digest it
+got from the app, and the person compares them before pressing A. A tampered request therefore
+fails twice, once in the wallet's digest check and once at the person's eyes.
+
+What USB does not fix: the browser and the app server still see the request in plain text, the
+serial port is available to any process on the host while the browser is not holding it, and the
+wallet trusts nothing about time (the deadline is displayed, not checked). Permanent chip
+operations over USB (lock, new key) still need `ALLOW_LOCK` / `ALLOW_GENKEY` on the device and a
+physical A press after a red warning screen.
+
 ### Passwordless development console
 
 The optional TCP/2323 MicroPython REPL grants arbitrary code execution. An attacker can ask the

@@ -194,6 +194,9 @@ export async function createDevice(opts) {
   FS.writeFile("/lib/_bootstrap.py", opts.shims._bootstrap);
   for (const [name, data] of Object.entries(opts.files || {})) writeFile(name, data);
   writeFile("secrets.py", secretsPy(opts.appUrl || "http://localhost:3001"));
+  // A fixed throwaway software key, so the virtual wallet's address survives reboots and a vault
+  // deployed against it on anvil keeps working across runs. Never a real key.
+  writeFile("key.bin", Uint8Array.from({ length: 32 }, (_, i) => i + 1));
   mark("flash written");
   mp.runPython("import _bootstrap");
   mark("bootstrapped");

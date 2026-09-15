@@ -377,7 +377,19 @@ const handlers = {
   async state() { return { ok: true, main, running, frames, fps, sharedKeys: !!sab, view: localStorage.getItem("emu.view") || "3d", files: [...files.keys()] }; },
   async reset() { return reboot(main); },
   async main({ name }) { setMain(name); return { ok: true }; },
-  async send({ line, ms }) { const at = log.length; sendLine(line); await sleep(ms || 600); return { ok: true, lines: log.slice(at + 1) }; },
+  // waitId: return as soon as the device answers a JSON line with that id (a sign waits for a person)
+  async send({ line, ms, waitId }) {
+    const at = log.length; sendLine(line);
+    const t0 = Date.now(); let reply = null;
+    while (Date.now() - t0 < (ms || 600)) {
+      if (waitId !== undefined) {
+        for (const l of log.slice(at + 1)) { if (l.startsWith("{")) { try { const o = JSON.parse(l); if (o.id === waitId) { reply = o; break; } } catch {} } }
+        if (reply) break;
+      }
+      await sleep(50);
+    }
+    return { ok: true, lines: log.slice(at + 1), reply };
+  },
 };
 const es = new EventSource("/ctl/events");
 es.onmessage = async (e) => {

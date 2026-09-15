@@ -10,18 +10,23 @@ import { WagmiProvider } from "wagmi";
 import { Footer } from "~~/components/Footer";
 import { Header } from "~~/components/Header";
 import { BlockieAvatar } from "~~/components/scaffold-eth";
+import { ComparePanel } from "~~/components/usb/ComparePanel";
+import { UsbBar } from "~~/components/usb/UsbBar";
+import { UsbWalletProvider } from "~~/components/usb/UsbWalletProvider";
 import { wagmiConfig } from "~~/services/web3/wagmiConfig";
 
 const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
   return (
-    <>
+    <UsbWalletProvider>
       <div className={`flex flex-col min-h-screen `}>
         <Header />
+        <UsbBar />
         <main className="relative flex flex-col flex-1">{children}</main>
         <Footer />
       </div>
+      <ComparePanel />
       <Toaster />
-    </>
+    </UsbWalletProvider>
   );
 };
 
