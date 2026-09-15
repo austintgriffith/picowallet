@@ -234,10 +234,12 @@ export async function createDevice(opts) {
 }
 
 // Python for "import NAME fresh, then ENTRY", with the traceback printed instead of raised.
-export function runCode(name, entry) {
+// `first` lists modules to import before the target: ship passes ["lcd"] when the module draws,
+// so the 115 KB framebuffer is allocated before the big module is compiled (RP2040 heap, see lcd.py).
+export function runCode(name, entry, first = []) {
   name = name.replace(/\.py$/, "").replace(/^.*\//, "");
   if (!/^[A-Za-z_]\w*$/.test(name)) throw new Error("not a module name: " + name);
-  const body = `    import ${name}\n` + (entry ? `    ${entry}\n` : "");
+  const body = first.map((m) => `    import ${m}\n`).join("") + `    import ${name}\n` + (entry ? `    ${entry}\n` : "");
   const n = JSON.stringify(name);
   // On a board that was not reset, stop the old copy (sketches offer stop()) so its timer does not
   // keep drawing. `import name` at module level, so the name is bound in __main__ for REPL lines.

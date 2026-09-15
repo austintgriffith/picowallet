@@ -65,7 +65,8 @@ async function doShip(name, file, src, port, target, boot) {
   if (boot) {
     if (target === "wifi" || /wallet/.test(mainNow)) bootNote = "main.py left alone: this looks like the wallet Pico";
     else {
-      writeFileSync(join(SKETCHES, ".main.py"), `# written by the emulator's send: run ${name} at power-up\nimport sys\ntry:\n    import ${name}\n${entryFor(name) ? "    " + entryFor(name) + "\n" : ""}except Exception as e:\n    sys.print_exception(e)\n`);
+      const lcdFirst = dependencies(name).includes("lcd.py") && name !== "lcd" ? "    import lcd     # first: framebuffer on a fresh heap (RP2040)\n" : "";
+      writeFileSync(join(SKETCHES, ".main.py"), `# written by the emulator's send: run ${name} at power-up\nimport sys\ntry:\n${lcdFirst}    import ${name}\n${entryFor(name) ? "    " + entryFor(name) + "\n" : ""}except Exception as e:\n    sys.print_exception(e)\n`);
       bootNote = `main.py now runs ${name} at power-up`;
     }
   }
@@ -82,7 +83,10 @@ async function doShip(name, file, src, port, target, boot) {
   args.push("exec", "import os\nif hasattr(os, 'sync'): os.sync()");
   const c = await mp(port, args, 120000);
   if (c.code !== 0) return { ok: false, port, error: "copy failed", lines: lines(c.out) };
-  const r = await mp(port, ["exec", runCode(name, entryFor(name))], FOLLOW_MS);
+  const first = dependencies(name).includes("lcd.py") && name !== "lcd" ? ["lcd"] : [];
+  // USB: soft-reset before the run (resume=false) so the heap is fresh. mpremote's copy helpers
+  // stay resident under resume and fragment it; on an RP2040 the framebuffer then fails to fit.
+  const r = await mp(port, ["exec", runCode(name, entryFor(name), first)], FOLLOW_MS, target === "wifi");
   const out = lines(c.out).concat(lines(r.out));
   const failed = out.some((l) => /^Traceback/.test(l));
   if (bootNote) out.push(bootNote);

@@ -18,6 +18,13 @@ RED, GREEN, BLUE = color(255, 0, 0), color(0, 255, 0), color(0, 0, 255)
 YELLOW, GREY, DARK = color(255, 220, 0), color(120, 120, 120), color(30, 30, 30)
 
 
+# The one 115 KB framebuffer, allocated the moment lcd is imported. On an RP2040 board (264 KB
+# RAM) a block that big is only available on a fresh heap: after a 20 KB module like wallet.py
+# has been compiled the heap is too fragmented and LCD() dies with MemoryError. So anything that
+# runs a big module (main.py, the emulator's send) imports lcd first, and LCD() reuses this.
+_BUF = bytearray(240 * 240 * 2)
+
+
 class LCD(framebuf.FrameBuffer):
     def __init__(self):
         self.width = self.height = 240
@@ -28,7 +35,7 @@ class LCD(framebuf.FrameBuffer):
         self.bl = PWM(Pin(BL))
         self.bl.freq(1000)
         self.backlight(100)
-        self.buffer = bytearray(self.width * self.height * 2)
+        self.buffer = _BUF
         super().__init__(self.buffer, self.width, self.height, framebuf.RGB565)
         self._init_panel()
 
