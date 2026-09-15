@@ -1,8 +1,23 @@
 # Minimal ATECC608 driver over I2C for MicroPython. Just what a wallet needs:
 # wake, serial, lock state, public key of slot 0, sign a 32-byte digest.
 # Packet format and CRC follow Microchip's cryptoauthlib.
-from machine import I2C, Pin
+from machine import I2C, SoftI2C, Pin
 import time
+
+# Bus pins. secrets.py may set ATECC_SDA / ATECC_SCL; the default is the wallet's GP4/GP5. A pair
+# that is a hardware I2C0/I2C1 pair (SDA on 0,4,8,.. / 2,6,10,..; SCL the next pin up) uses the
+# peripheral, anything else is bit-banged at 100 kHz, which this chip does not mind.
+try:
+    import secrets as _s
+    SDA, SCL = int(getattr(_s, "ATECC_SDA", 4)), int(getattr(_s, "ATECC_SCL", 5))
+except ImportError:
+    SDA, SCL = 4, 5
+
+
+def make_i2c(sda, scl, freq):
+    if scl == sda + 1 and sda % 4 in (0, 2):
+        return I2C(0 if sda % 4 == 0 else 1, sda=Pin(sda), scl=Pin(scl), freq=freq)
+    return SoftI2C(sda=Pin(sda), scl=Pin(scl), freq=freq)
 
 ADDR = 0x60
 WAKE_OK = b"\x04\x11\x33\x43"
@@ -40,8 +55,8 @@ class AteccError(Exception):
 
 
 class ATECC608:
-    def __init__(self, sda=4, scl=5, addr=ADDR, freq=100_000):
-        self.i2c = I2C(0, sda=Pin(sda), scl=Pin(scl), freq=freq)
+    def __init__(self, sda=None, scl=None, addr=ADDR, freq=100_000):
+        self.i2c = make_i2c(SDA if sda is None else sda, SCL if scl is None else scl, freq)
         self.addr = addr
 
     # --- transport ---------------------------------------------------------

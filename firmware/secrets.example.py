@@ -18,3 +18,7 @@ ALLOW_SOFT_KEY = False
 # Provisioning a FRESH chip from the app's Setup page. Both are permanent; leave False otherwise.
 ALLOW_LOCK = False     # lock the config zone once (required before the chip will make a key)
 ALLOW_GENKEY = False   # make a new key in slot 0, replacing the old one
+# ATECC608 bus pins. GP4/GP5 is the wallet wiring; set these only for a board where those pins
+# are taken (a clone with something on GP5, say). Any two free GPIOs work.
+# ATECC_SDA = 4
+# ATECC_SCL = 5

@@ -287,7 +287,8 @@ def draw_nochip():
     d.fill_rect(0, 0, 240, 26, L.RED)
     d.center_text("NO CHIP", 5, L.WHITE, 2)
     y = 50
-    for line in ("no ATECC608 answered", "on I2C (GP4 SDA, GP5 SCL)", "", "the account is the",
+    import atecc
+    for line in ("no ATECC608 answered", "on I2C (GP%d SDA, GP%d SCL)" % (atecc.SDA, atecc.SCL), "", "the account is the",
                  "chip's key, so there", "is no account here", "", "wire the chip, then", "press A to look again"):
         d.center_text(line, y, L.WHITE if line else L.BLACK)
         y += 16
