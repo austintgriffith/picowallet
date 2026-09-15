@@ -33,9 +33,16 @@ CONFIG = bytes([
     0x0F, 0x0F, 0x0F, 0x0F, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0xFF,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-    0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
     0x33, 0x00, 0x1C, 0x00, 0x13, 0x00, 0x1C, 0x00, 0x3C, 0x00, 0x1A, 0x00, 0x3C, 0x00, 0x30, 0x00,
+    0x3C, 0x00, 0x3C, 0x00, 0x32, 0x00, 0x30, 0x00, 0x30, 0x00, 0x30, 0x00, 0x30, 0x00, 0x30, 0x00,
 ])
+# Bytes 96-127 are KeyConfig for slots 0-15, two bytes each: slot 0 must be 0x0033 (P-256 private
+# key, GenKey allowed). An earlier copy of this table had a spare row of 0xFF at byte 96, which
+# pushed every KeyConfig one slot block down; a chip locked with that can never make a P-256 key
+# (2026-09-15, serial 0123597b4f22a25eee). These checks stop that class of mistake.
+assert len(CONFIG) == 128
+assert CONFIG[96:98] == b"\x33\x00", "slot 0 KeyConfig must be 0x0033 at byte 96"
+assert CONFIG[20:22] == b"\x8F\x20", "slot 0 SlotConfig must be 0x208F at byte 20"
 
 
 def crc16(data):
@@ -172,11 +179,23 @@ class ATECC608:
             finally:
                 self.sleep()
                 time.sleep_ms(5)
+        self.verify_config(cfg)
+
+    def verify_config(self, cfg=CONFIG):
+        """Read the config zone back and compare every writable byte. Raises with the first bad
+        offset. Run this before lock_config, always: a lock over a wrong table is forever."""
+        got = b"".join(self.read_config(b) for b in range(4))
+        for i in range(128):
+            if i < 16 or 84 <= i < 88:
+                continue
+            if got[i] != cfg[i]:
+                raise AteccError("config byte %d is 0x%02x, wanted 0x%02x: not locking" % (i, got[i], cfg[i]))
 
     def lock_config(self):
         """PERMANENT. Lock the config zone (no CRC check, mode 0x80). Refuses if already locked."""
         if self.lock_state()["configLocked"]:
             raise AteccError("config zone is already locked")
+        self.verify_config()
         self.run(OP_LOCK, 0x80, 0x0000, resp_len=1, wait_ms=35)
         if not self.lock_state()["configLocked"]:
             raise AteccError("lock command returned but the zone is still unlocked")
