@@ -176,6 +176,37 @@ const Setup: NextPage = () => {
         </div>
       </div>
 
+      {usb.connected && usb.hello && !usb.hello.hasKey && (
+        <div className="card bg-base-100 border border-primary">
+          <div className="card-body p-5 gap-3">
+            <h2 className="card-title text-base m-0">Make the key on the wallet</h2>
+            <p className="text-sm opacity-70 m-0">
+              One press. The chip locks its settings and makes a key inside itself. Nobody else ever sees that key. The
+              wallet shows its new address when it&apos;s done.
+            </p>
+            <button
+              className="btn btn-primary btn-sm w-fit"
+              disabled={!!busy}
+              onClick={() =>
+                act("setup", async () => {
+                  const out = await usb.provision("setup");
+                  if (!out.ok) throw new Error(out.error || "failed");
+                  return "new wallet " + (out.result?.address ?? "");
+                })
+              }
+            >
+              {busy === "setup" ? (
+                <>
+                  <span className="loading loading-spinner loading-xs" /> Waiting for A on the wallet…
+                </>
+              ) : (
+                "Make the key"
+              )}
+            </button>
+          </div>
+        </div>
+      )}
+
       <Step n={1} title="Lock the chip's config zone" done={configLocked}>
         <p className="text-sm opacity-70 m-0">
           The ATECC608 refuses to make or use keys until its config zone is locked. One time, permanent, and normal:

@@ -25,7 +25,7 @@ MAX_LINE = 16384
 d = None
 keys = None
 sig = None
-state = "boot"      # boot | home | confirm | working | provision | nochip
+state = "boot"      # boot | home | confirm | working | provision | newkey | nochip
 page = 0            # confirm: 0 summary, 1 recipient, 2 raw fields
 req = None          # {"id": host message id, "r": the request dict}
 prov = None         # {"id": host message id, "op": "lock-config" | "genkey"}
@@ -226,7 +226,7 @@ def on_provision(mid, op):
     global prov, state, dirty
     if op == "status":
         send({"id": mid, "type": "result", "ok": True, "result": chip_status()}); return
-    if op not in ("lock-config", "genkey"):
+    if op not in ("setup", "lock-config", "genkey"):
         send({"id": mid, "type": "error", "error": "unknown op"}); return
     if state in ("confirm", "working", "provision"):
         send({"id": mid, "type": "busy"}); return
@@ -271,12 +271,18 @@ def do_provision(yes):
         return
     state, dirty = "working", True
     draw()
+    made_key = False
     try:
         if op == "lock-config":
             note = sig.lock_config()
-        else:
+        elif op == "genkey":
             sig.genkey()
-            note = "key generated"
+            note, made_key = "key generated", True
+        else:   # setup: lock if needed, then make the key. One press, one new wallet.
+            if not chip_status().get("configLocked"):
+                sig.lock_config()
+            sig.genkey()
+            note, made_key = "new wallet", True
         load_key()
         out = {"op": op, "note": note, "status": chip_status(), "hasKey": bool(address)}
         if address:
@@ -287,7 +293,7 @@ def do_provision(yes):
         _log("%s failed: %r" % (op, e))
         send({"id": mid, "type": "result", "ok": False, "error": str(e)})
         say("failed: " + str(e)[:20], 8)
-    state, prov, dirty = "home", None, True
+    state, prov, dirty = ("newkey" if made_key and address else "home"), None, True
 
 
 def handle_key(k):
@@ -309,6 +315,9 @@ def handle_key(k):
             do_provision(True)
         elif k == "Y":
             do_provision(False)
+    elif state == "newkey":
+        if k == "A":
+            state, dirty = "home", True
 
 
 # --- screens ---------------------------------------------------------------------------------------
@@ -427,19 +436,62 @@ def draw_confirm():
     d.show()
 
 
+PROVISION_TEXT = {
+    # 30 characters a line, 8 lines. What the person reads before pressing A.
+    "setup": ("NEW KEY", L.BLUE, (
+        "This wallet has no key yet.",
+        "",
+        "Press A: the chip makes one",
+        "right now, in front of you.",
+        "Nobody else ever sees it.",
+        "Not the factory, not the",
+        "website, not this screen.",
+        "",
+        "The chip locks to this key",
+        "for good.",
+    )),
+    "lock-config": ("LOCK CHIP", L.RED, (
+        "Locks the chip's settings",
+        "so it can hold a key.",
+        "",
+        "Cannot be undone.",
+    )),
+    "genkey": ("REPLACE KEY", L.RED, (
+        "Makes a NEW key in the chip.",
+        "",
+        "The old key and its wallet",
+        "are gone for good.",
+    )),
+}
+
+
 def draw_provision():
-    op = prov["op"]
+    title, color, lines = PROVISION_TEXT[prov["op"]]
     d.fill(L.BLACK)
-    d.fill_rect(0, 0, 240, 26, L.RED)
-    d.center_text("PERMANENT", 5, L.WHITE, 2)
-    y = 50
-    text = ("lock the chip's", "config zone", "", "cannot be undone", "the chip cannot", "make a key before") if op == "lock-config" \
-        else ("make a NEW key", "in slot 0", "", "the old key and", "its account are", "gone for good")
-    for line in text:
-        d.center_text(line, y, L.WHITE if line else L.BLACK)
-        y += 16
-    bar(170, 30, "A = do it", L.GREEN, 1)
-    bar(206, 30, "Y = cancel", L.RED, 1)
+    d.fill_rect(0, 0, 240, 26, color)
+    d.center_text(title, 5, L.WHITE, 2)
+    y = 34
+    for line in lines:
+        d.text(line[:30], 4, y, L.WHITE)
+        y += 14
+    bar(196, 20, "A = make my key" if prov["op"] == "setup" else "A = do it", L.GREEN, 1)
+    bar(220, 20, "Y = not now", L.RED, 1)
+    d.show()
+
+
+def draw_newkey():
+    """The wallet just came into being: its blockie and address, once, big."""
+    d.fill(L.BLACK)
+    d.fill_rect(0, 0, 240, 26, L.GREEN)
+    d.center_text("YOUR NEW WALLET", 5, L.WHITE, 2)
+    blockies.draw(d, address, 88, 34, 8)
+    y = 106
+    for line in addr_lines(address):
+        d.center_text(line, y, L.WHITE, 2)
+        y += 18
+    d.center_text("made in this chip just now", 182, L.GREY)
+    d.center_text("the website shows the same", 196, L.GREY)
+    d.center_text("A = ok", 220, L.GREY)
     d.show()
 
 
@@ -472,8 +524,10 @@ def draw():
         draw_confirm()
     elif state == "provision":
         draw_provision()
+    elif state == "newkey":
+        draw_newkey()
     elif state == "working":
-        draw_msg("WORKING", L.BLUE, "signing on " + str(sig.name) if req else "talking to the chip")
+        draw_msg("WORKING", L.BLUE, "signing on " + str(sig.name) if req else "the chip is making your key")
     else:
         draw_home()
 

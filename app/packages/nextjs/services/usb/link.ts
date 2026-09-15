@@ -24,7 +24,8 @@ export type SignReply =
   | { type: "busy" }
   | { type: "error"; error: string };
 
-export type ProvisionOp = "status" | "lock-config" | "genkey";
+/** `setup` locks the config zone if needed and makes the key: one A press, one new wallet. */
+export type ProvisionOp = "status" | "lock-config" | "genkey" | "setup";
 export type ProvisionReply = { type: "result"; ok: boolean; result?: any; error?: string };
 
 export interface UsbLink {

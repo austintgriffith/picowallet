@@ -60,10 +60,16 @@ export const ComparePanel = () => {
           <div className="card-body items-center text-center gap-3">
             <div className="badge badge-error badge-lg">PERMANENT</div>
             <h2 className="card-title">
-              {usb.pending.op === "lock-config" ? "Lock the config zone" : "Generate a new key"}
+              {usb.pending.op === "setup"
+                ? "Make the key"
+                : usb.pending.op === "lock-config"
+                  ? "Lock the config zone"
+                  : "Generate a new key"}
             </h2>
             <p className="text-sm opacity-70 m-0">
-              The wallet is showing a red warning. Press A on it to do this, Y to cancel.
+              {usb.pending.op === "setup"
+                ? "Read the wallet's screen. Press A on it to make the key in the chip, Y to stop."
+                : "The wallet is showing a red warning. Press A on it to do this, Y to cancel."}
             </p>
             <button className="btn btn-sm btn-ghost" onClick={usb.cancel}>
               Cancel
@@ -87,8 +93,8 @@ export const ComparePanel = () => {
             <span className="badge badge-warning">waiting for A</span>
           </div>
           <p className="text-sm opacity-70 m-0">
-            The wallet rebuilt this from the raw fields. It drew its own picture. Same picture, same 8 characters:
-            press A on the wallet. Different: press Y.
+            The wallet rebuilt this from the raw fields. It drew its own picture. Same picture, same 8 characters: press
+            A on the wallet. Different: press Y.
           </p>
 
           {/* the wallet's summary screen, 240 px wide like the real one */}

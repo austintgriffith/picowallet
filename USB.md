@@ -73,11 +73,15 @@ changed their mind on the website). Wallet: `{"id": 5, "type": "cancelled"}`. Th
 
 ### provision
 
-Host: `{"id": 3, "type": "provision", "op": "lock-config"}`, `"op": "genkey"` or `"op": "status"`.
+Host: `{"id": 3, "type": "provision", "op": "setup"}`, `"op": "lock-config"`, `"op": "genkey"`
+or `"op": "status"`.
 
-`status` answers at once with the chip's status. The other two are permanent: allowed only when
-`secrets.py` sets `ALLOW_LOCK` / `ALLOW_GENKEY`, and only after the wallet shows a red warning
-and the person presses A. Y cancels.
+`status` answers at once with the chip's status. `setup` is the one people use: the wallet shows
+a short explanation ("the chip makes the key right now, in front of you, nobody else ever sees
+it, the chip locks to it for good"), A locks the config zone if needed and makes the key, and the
+wallet then shows its new blockie and address. `lock-config` and `genkey` are the two halves on
+their own. All three are permanent: allowed only when `secrets.py` sets `ALLOW_LOCK` /
+`ALLOW_GENKEY`, and only after a physical A. Y cancels.
 
 Wallet: `{"id": 3, "type": "result", "ok": true, "result": {"op", "note", "status", "hasKey", "qx", "qy", "address"}}`
 or `{"id": 3, "type": "result", "ok": false, "error": "…"}`.
