@@ -68,6 +68,15 @@ hints. `EXPECTED_CHAIN_ID`, `EXPECTED_VAULT`, and `EXPECTED_TOKEN` provide optio
 production deployments must populate them. Verify response schemas and reject oversized, stale,
 or unexpected messages.
 
+### Permanent chip operations
+
+Config lock, data lock and key generation on the ATECC608 cannot be undone. On 2026-09-15 a
+chip was locked with a wrong config table that had never been run on real silicon, and nothing
+read the chip back first; that chip can never hold a P-256 key
+(`buildlog/2026-09-15-config-table-bug.md`). `atecc.py` now refuses to lock unless the config
+zone reads back byte for byte, and asserts slot 0's settings at import. The rule for people and
+bots alike: read the chip back before any permanent step, and ask before running one.
+
 ### USB transport
 
 `usbwallet.py` (see `USB.md`) removes the radio: the wallet is a passive device on a USB serial
