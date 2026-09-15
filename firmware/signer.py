@@ -71,8 +71,14 @@ class ChipSigner:
         import secrets
         if not getattr(secrets, "ALLOW_LOCK", False):
             raise Exception("lock refused: set ALLOW_LOCK = True in secrets.py on the Pico first")
-        self.chip.write_config()
-        self.chip.lock_config()
+        try:
+            self.chip.write_config()
+        except Exception as e:
+            raise Exception("write config: %s" % e)
+        try:
+            self.chip.lock_config()
+        except Exception as e:
+            raise Exception("lock: %s" % e)
         return "config zone locked"
 
     def status(self):

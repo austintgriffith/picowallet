@@ -61,9 +61,12 @@ export class WebSerialLink implements UsbLink {
     if (!nav.serial) throw new Error("this browser has no WebSerial (use Chrome or Edge)");
     // The Pico's USB serial: Raspberry Pi vendor id 0x2e8a, MicroPython's product id 0x0005. Clones
     // running MicroPython present the same ids; the filter only trims the picker list.
-    const port = await nav.serial
-      .requestPort({ filters: [{ usbVendorId: 0x2e8a }] })
-      .catch(() => nav.serial.requestPort());
+    // A port the person already granted needs no picker (Chrome remembers it for this origin).
+    const granted: any[] = await nav.serial.getPorts().catch(() => []);
+    const remembered = granted.find((p: any) => p.getInfo?.().usbVendorId === 0x2e8a) ?? granted[0];
+    const port =
+      remembered ??
+      (await nav.serial.requestPort({ filters: [{ usbVendorId: 0x2e8a }] }).catch(() => nav.serial.requestPort()));
     await port.open({ baudRate: 115200 });
     const link = new WebSerialLink();
     link.port = port;

@@ -61,17 +61,23 @@ class ATECC608:
 
     # --- transport ---------------------------------------------------------
     def wake(self):
-        try:
-            self.i2c.writeto(0, b"\x00")  # SDA held low long enough to count as the wake token
-        except OSError:
-            pass
-        time.sleep_ms(2)
-        for _ in range(3):
+        # Three rounds: the chip may still be finishing a sleep or idle command when the first wake
+        # token lands, and a chip that was already awake answers nothing. Put it to sleep and try
+        # again rather than fail on the first miss.
+        for attempt in range(3):
             try:
-                if self.i2c.readfrom(self.addr, 4) == WAKE_OK:
-                    return
+                self.i2c.writeto(0, b"\x00")  # SDA held low long enough to count as the wake token
             except OSError:
-                time.sleep_ms(2)
+                pass
+            time.sleep_ms(3)
+            for _ in range(3):
+                try:
+                    if self.i2c.readfrom(self.addr, 4) == WAKE_OK:
+                        return
+                except OSError:
+                    time.sleep_ms(2)
+            self.sleep()
+            time.sleep_ms(10)
         raise AteccError("no wake response")
 
     def sleep(self):
@@ -155,14 +161,17 @@ class ATECC608:
     def write_config(self, cfg=CONFIG):
         """Write the config zone in 4-byte words, skipping the read-only words (0-3 and 21)."""
         assert len(cfg) == 128
-        self.wake()
-        try:
-            for word in range(32):
-                if word < 4 or word == 21:
-                    continue
-                self.command(OP_WRITE, 0x00, word, cfg[word * 4:word * 4 + 4], resp_len=1, wait_ms=30)
-        finally:
-            self.sleep()
+        # In batches of 8 words with a fresh wake each: the chip's watchdog puts it to sleep 1.3 s
+        # after a wake, and 27 writes at ~35 ms each run right up to that.
+        words = [w for w in range(32) if w >= 4 and w != 21]
+        for i in range(0, len(words), 8):
+            self.wake()
+            try:
+                for word in words[i:i + 8]:
+                    self.command(OP_WRITE, 0x00, word, cfg[word * 4:word * 4 + 4], resp_len=1, wait_ms=30)
+            finally:
+                self.sleep()
+                time.sleep_ms(5)
 
     def lock_config(self):
         """PERMANENT. Lock the config zone (no CRC check, mode 0x80). Refuses if already locked."""
