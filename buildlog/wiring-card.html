@@ -1,0 +1,78 @@
+<!doctype html><html><head><meta charset="utf-8"><title>ATECC608 wiring</title>
+<style>
+@page { size: letter; margin: 0.6in; }
+body { font-family: Helvetica, Arial, sans-serif; color:#111; margin:0; }
+h1 { font-size: 26px; margin: 0 0 4px; }
+.sub { font-size: 15px; color:#444; margin-bottom: 18px; }
+.wrap { display:flex; gap:40px; align-items:flex-start; }
+table { border-collapse: collapse; font-size: 17px; }
+td, th { padding: 7px 12px; border-bottom: 1px solid #ccc; text-align:left; }
+th { background:#eee; font-size:14px; }
+.sw { display:inline-block; width:22px; height:22px; border-radius:4px; vertical-align:middle; margin-right:8px; border:1px solid #333; }
+.note { font-size: 14px; color:#333; margin-top:16px; line-height:1.45; max-width: 330px; }
+</style></head><body>
+<h1>Pico wallet: ATECC608 wires (the white/yellow/black/red bag)</h1>
+<div class="sub">The bag of white / yellow / black / red JST cables into the LCD board header, beside the Pico pins. USB at the top. Count down from the USB end.</div>
+<div class="wrap">
+<svg width="400" height="470" viewBox="0 0 400 470" font-family="Helvetica, Arial" font-size="13">
+  <!-- board -->
+  <rect x="95" y="20" width="140" height="440" rx="6" fill="#2e7d4f" stroke="#1b4d30" stroke-width="2"/>
+  <rect x="140" y="8" width="50" height="30" rx="3" fill="#bbb" stroke="#777"/>
+  <text x="165" y="28" text-anchor="middle" font-size="12" font-weight="bold">USB</text>
+  <text x="165" y="250" text-anchor="middle" fill="#fff" font-size="15" font-weight="bold">Pico 2 W</text>
+  <!-- left pins 1-7 -->
+  <g id="L">
+    <g transform="translate(0,0)"><circle cx="108" cy="58" r="6" fill="#ddd" stroke="#333"/><text x="84" y="62" text-anchor="end">1</text></g>
+    <g><circle cx="108" cy="82" r="6" fill="#ddd" stroke="#333"/><text x="84" y="86" text-anchor="end">2</text></g>
+    <g><circle cx="108" cy="106" r="6" fill="#ddd" stroke="#333"/><text x="84" y="110" text-anchor="end">3</text></g>
+    <g><circle cx="108" cy="130" r="6" fill="#ddd" stroke="#333"/><text x="84" y="134" text-anchor="end">4</text></g>
+    <g><circle cx="108" cy="154" r="6" fill="#ddd" stroke="#333"/><text x="84" y="158" text-anchor="end">5</text></g>
+    <g><circle cx="108" cy="178" r="8" fill="#111" stroke="#000" stroke-width="2"/><text x="84" y="182" text-anchor="end" font-weight="bold">6</text></g>
+    <g><circle cx="108" cy="202" r="8" fill="#d62828" stroke="#000" stroke-width="2"/><text x="84" y="206" text-anchor="end" font-weight="bold">7</text></g>
+    <g><circle cx="108" cy="226" r="6" fill="#ddd" stroke="#333"/><text x="84" y="230" text-anchor="end">8</text></g>
+  </g>
+  <!-- left labels -->
+  <line x1="100" y1="178" x2="18" y2="178" stroke="#111" stroke-width="5"/>
+  <text x="18" y="172" font-weight="bold" fill="#111">BLACK</text>
+  <line x1="100" y1="202" x2="18" y2="202" stroke="#d62828" stroke-width="5"/>
+  <text x="18" y="216" font-weight="bold" fill="#d62828">RED</text>
+  <!-- right pins 40..33 -->
+  <g>
+    <g><circle cx="222" cy="58" r="6" fill="#ddd" stroke="#333"/><text x="246" y="62">1st (40)</text></g>
+    <g><circle cx="222" cy="82" r="6" fill="#ddd" stroke="#333"/><text x="246" y="86">2nd (39)</text></g>
+    <g><circle cx="222" cy="106" r="8" fill="#fff" stroke="#000" stroke-width="2"/><text x="246" y="98" font-weight="bold">3rd (38)</text></g>
+    <g><circle cx="222" cy="130" r="6" fill="#ddd" stroke="#333"/><text x="246" y="134">4th (37)</text></g>
+    <g><circle cx="222" cy="154" r="8" fill="#f2d21b" stroke="#000" stroke-width="2"/><text x="246" y="146" font-weight="bold">5th (36)</text></g>
+    <g><circle cx="222" cy="178" r="6" fill="#ddd" stroke="#333"/><text x="246" y="182">6th (35)</text></g>
+    <g><circle cx="222" cy="202" r="6" fill="#ddd" stroke="#333"/><text x="246" y="206">7th (34)</text></g>
+    <g><circle cx="222" cy="226" r="6" fill="#ddd" stroke="#333"/><text x="246" y="230">8th (33)</text></g>
+  </g>
+  <text x="246" y="94" font-size="11" fill="#333"></text>
+  <line x1="230" y1="106" x2="316" y2="106" stroke="#999" stroke-width="5"/><text x="322" y="110" font-weight="bold" fill="#555">WHITE</text>
+  <line x1="230" y1="154" x2="316" y2="154" stroke="#e0c000" stroke-width="5"/><text x="322" y="158" font-weight="bold" fill="#8a7400">YELLOW</text>
+  <!-- left ordinal labels -->
+  <text x="84" y="62" text-anchor="end"></text>
+  <text x="60" y="178" text-anchor="end" font-size="11" fill="#333"></text>
+  <!-- more pins, greyed -->
+  <g fill="#ccc" stroke="#555">
+    <circle cx="108" cy="250" r="5"/><circle cx="108" cy="274" r="5"/><circle cx="108" cy="298" r="5"/><circle cx="108" cy="322" r="5"/><circle cx="108" cy="346" r="5"/><circle cx="108" cy="370" r="5"/><circle cx="108" cy="394" r="5"/><circle cx="108" cy="418" r="5"/><circle cx="108" cy="442" r="5"/>
+    <circle cx="222" cy="250" r="5"/><circle cx="222" cy="274" r="5"/><circle cx="222" cy="298" r="5"/><circle cx="222" cy="322" r="5"/><circle cx="222" cy="346" r="5"/><circle cx="222" cy="370" r="5"/><circle cx="222" cy="394" r="5"/><circle cx="222" cy="418" r="5"/><circle cx="222" cy="442" r="5"/>
+  </g>
+</svg>
+<div>
+<table>
+<tr><th>Wire</th><th>Goes to</th><th>Side</th><th>From USB end</th><th>Pin #</th></tr>
+<tr><td><span class="sw" style="background:#fff"></span>White</td><td>GND</td><td>Right</td><td><b>3rd</b></td><td>38</td></tr>
+<tr><td><span class="sw" style="background:#f2d21b"></span>Yellow</td><td>3V3 OUT</td><td>Right</td><td><b>5th</b></td><td>36</td></tr>
+<tr><td><span class="sw" style="background:#111"></span>Black</td><td>SDA (GP4)</td><td>Left</td><td><b>6th</b></td><td>6</td></tr>
+<tr><td><span class="sw" style="background:#d62828"></span>Red</td><td>SCL (GP5)</td><td>Left</td><td><b>7th</b></td><td>7</td></tr>
+</table>
+<div class="note">
+<b>Right side, top down:</b> VBUS, VSYS, <b>GND (white)</b>, 3V3_EN, <b>3V3 (yellow)</b>. Skip 1st, 2nd and 4th.<br><br>
+<b>Left side, top down:</b> GP0, GP1, GND, GP2, GP3, <b>GP4 (black)</b>, <b>GP5 (red)</b>.<br><br>
+Push the bare ends into the LCD board's socket beside the Pico pins. Tug lightly. Jam the breakout flat in the gap.<br><br>
+Bare pins on the Pico itself are in the same order, board face up, USB at top.<br><br><b>Rule:</b> the plug is GND, V+, SDA, SCL from the GND end. This bag colors that white, yellow, black, red. Trust the order, not the colors.
+</div>
+</div>
+</div>
+</body></html>
