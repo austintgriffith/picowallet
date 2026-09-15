@@ -90,6 +90,12 @@ or `{"id": 3, "type": "result", "ok": false, "error": "…"}`.
 
 Host: `{"id": 4, "type": "ping"}` → Wallet: `{"id": 4, "type": "pong"}`.
 
+### reboot
+
+Host: `{"id": 6, "type": "reboot"}` → Wallet: `{"id": 6, "type": "rebooting"}`, then it resets and
+comes back with `ready`. Use this instead of `mpremote ... machine.reset()`: killing mpremote
+mid-reset has wedged the Mac's serial port twice, and only a replug clears that.
+
 ### Unsolicited
 
 On boot the wallet prints `{"type": "ready", "name": "…"}` once.

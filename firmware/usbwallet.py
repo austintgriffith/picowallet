@@ -182,6 +182,11 @@ def handle_line(line):
         on_cancel(mid)
     elif t == "provision":
         on_provision(mid, m.get("op"))
+    elif t == "reboot":     # a clean restart from the host; mpremote's reset can wedge the Mac's port
+        send({"id": mid, "type": "rebooting"})
+        time.sleep_ms(100)
+        import machine
+        machine.reset()
     else:
         send({"id": mid, "type": "error", "error": "unknown type"})
 
