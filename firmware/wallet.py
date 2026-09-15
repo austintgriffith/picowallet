@@ -570,7 +570,10 @@ def start():
     dirty = True
     draw()
     if secrets and not network.WLAN(network.STA_IF).isconnected():
-        net.connect()   # boot.py did this on the wallet Pico; a board that got wallet.py by hand did not
+        try:
+            net.connect()   # boot.py did this on the wallet Pico; a board that got wallet.py by hand did not
+        except Exception as e:
+            print("wifi:", e)   # a board without a WiFi chip still runs the wallet; home screen says "no wifi"
     start_timer()
 
 
