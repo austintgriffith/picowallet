@@ -3,6 +3,7 @@
 //   tools/emu                    start the server (if needed) and open the page
 //   tools/emu run MODULE         fresh boot, then `import MODULE` (files re-read from disk)
 //   tools/emu exec 'CODE'        one REPL line on the running device; prints its output
+//   tools/emu send 'LINE'        one line into the device's USB stdin (the wallet's serial protocol); prints its reply
 //   tools/emu key K[:MS]         press a key: A B X Y up down left right press (MS held, default 80)
 //   tools/emu keys 'K,K,K'       several presses in a row
 //   tools/emu shot [out.png]     screenshot (480x480) -> emu/shots/latest.png by default
@@ -80,6 +81,11 @@ try {
     }
     case "exec": {
       const r = await send({ cmd: "exec", code: rest.join(" ") });
+      for (const l of r.lines || []) console.log(l);
+      break;
+    }
+    case "send": {   // one line into the device's USB stdin; prints what it said back within ~0.8 s
+      const r = await send({ cmd: "send", line: rest.join(" "), ms: 800 });
       for (const l of r.lines || []) console.log(l);
       break;
     }

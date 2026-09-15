@@ -52,6 +52,7 @@ for (const [k, v] of steps) {
   else if (k === "hold") keys[idx(v)] = 1;
   else if (k === "release") keys[idx(v)] = 0;
   else if (k === "exec") dev.exec(v);
+  else if (k === "send") dev.writeStdin(v + "\n");
   else if (k === "shot") {
     const rgba = scaleRGBA(frameToRGBA(dev.frame), W, H, 2);
     mkdirSync(dirname(v), { recursive: true });

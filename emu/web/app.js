@@ -12,6 +12,19 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const sab = typeof SharedArrayBuffer !== "undefined" && self.crossOriginIsolated ? new SharedArrayBuffer(16 * 4) : null;
 const keys = new Int32Array(sab || new ArrayBuffer(16 * 4));
+// Serial input to the device (its USB stdin): Int32 [head, tail] + a 64 KB byte ring.
+const serialSab = sab ? new SharedArrayBuffer(8 + 65536) : null;
+const serialCtl = serialSab ? new Int32Array(serialSab, 0, 2) : null;
+const serialBuf = serialSab ? new Uint8Array(serialSab, 8) : null;
+function sendLine(text) {
+  if (!text.endsWith("\n")) text += "\n";
+  appendLog("<< " + text.trimEnd(), "in");
+  if (!serialSab) { if (worker) worker.postMessage({ type: "send", line: text }); return; }
+  const bytes = new TextEncoder().encode(text);
+  let h = Atomics.load(serialCtl, 0);
+  for (const b of bytes) serialBuf[h++ % serialBuf.length] = b;
+  Atomics.store(serialCtl, 0, h);
+}
 const screen = $("#screen"), sctx = screen.getContext("2d");
 const flatscreen = $("#flatscreen"), fctx = flatscreen.getContext("2d");
 const img = sctx.createImageData(240, 240);
@@ -182,6 +195,7 @@ async function exec(code) {
 async function reboot(runName) {
   if (worker) { worker.terminate(); worker = null; for (const w of waiting.values()) w.reject(new Error("rebooted")); waiting.clear(); }
   for (const i of KEY_ORDER.keys()) keys[i] = 0;
+  if (serialCtl) { Atomics.store(serialCtl, 0, 0); Atomics.store(serialCtl, 1, 0); }
   setConn("booting", "");
   const b = await (await fetch("/ctl/boot")).json();
   mark("boot payload");
@@ -205,7 +219,7 @@ async function reboot(runName) {
   execCapture = [];
   // A module with a `while True` (demo) never returns from import. The worker says "started"
   // when it enters run(); if "done" has not come 2.5 s after that, call it running and move on.
-  const { id, promise } = askWith({ type: "boot", keys: sab || keys.buffer, files: payload, shims: b.shims, appUrl: b.appUrl, run: runName, entry });
+  const { id, promise } = askWith({ type: "boot", keys: sab || keys.buffer, serial: serialSab, files: payload, shims: b.shims, appUrl: b.appUrl, run: runName, entry });
   const startedP = new Promise((r) => started.set(id, r));
   let how = null;
   const done = promise.then(() => (how = "done"), (e) => { appendLog(String(e), "err"); how = "error"; });
@@ -363,6 +377,7 @@ const handlers = {
   async state() { return { ok: true, main, running, frames, fps, sharedKeys: !!sab, view: localStorage.getItem("emu.view") || "3d", files: [...files.keys()] }; },
   async reset() { return reboot(main); },
   async main({ name }) { setMain(name); return { ok: true }; },
+  async send({ line, ms }) { const at = log.length; sendLine(line); await sleep(ms || 600); return { ok: true, lines: log.slice(at + 1) }; },
 };
 const es = new EventSource("/ctl/events");
 es.onmessage = async (e) => {

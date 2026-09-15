@@ -26,6 +26,11 @@ const SHIMS = ["machine", "network", "requests", "socket", "rp2"];
 export async function createDevice(opts) {
   const keys = opts.keys;
   const stdout = opts.onStdout || (() => {});
+  // Serial input, the Pico's USB stdin. opts.stdin (a byte getter, null when empty) lets a host
+  // feed bytes from another thread; without it writeStdin() queues bytes here.
+  const inq = [];
+  const stdin = opts.stdin || (() => (inq.length ? inq.shift() : null));
+  function writeStdin(text) { for (const b of new TextEncoder().encode(text)) inq.push(b); }
   const frame = new Uint8Array(FRAME_BYTES);
   const pinOut = new Map();
   const timers = new Map();
@@ -177,6 +182,7 @@ export async function createDevice(opts) {
     url: opts.url,
     heapsize: opts.heapsize || DEFAULT_HEAP,
     stdout: (line) => stdout(line),
+    stdin,
     linebuffer: true,
   });
   M = mp._module;
@@ -230,7 +236,7 @@ export async function createDevice(opts) {
     if (irqPoll) clearInterval(irqPoll);
   }
 
-  return { mp, run, exec, writeFile, listFiles, dispose, frame, get frames() { return frames; } };
+  return { mp, run, exec, writeFile, writeStdin, listFiles, dispose, frame, get frames() { return frames; } };
 }
 
 // Python for "import NAME fresh, then ENTRY", with the traceback printed instead of raised.

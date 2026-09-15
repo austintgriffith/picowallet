@@ -52,7 +52,7 @@ export function readWorkspace() {
 // (a `start()` call at the bottom); a few firmware modules only define functions, so the emulator
 // calls their entry point. Library modules (lcd, keccak, ...) have nothing to show and are not
 // offered in the run menu.
-export const ENTRY = { demo: "demo.run()", wallet: "wallet.start()" };
+export const ENTRY = { demo: "demo.run()", wallet: "wallet.start()", usbwallet: "usbwallet.start()" };
 export function entryFor(name) { return ENTRY[name] || ""; }
 export function isRunnable(name, text) {
   if (name === "main" || ENTRY[name]) return true;
