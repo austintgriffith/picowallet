@@ -86,6 +86,17 @@ their own. All three are permanent: allowed only when `secrets.py` sets `ALLOW_L
 Wallet: `{"id": 3, "type": "result", "ok": true, "result": {"op", "note", "status", "hasKey", "qx", "qy", "address"}}`
 or `{"id": 3, "type": "result", "ok": false, "error": "…"}`.
 
+### state
+
+Host: `{"id": 7, "type": "state", "vault": "0x…", "balance": "4", "symbol": "USDS"}` → Wallet:
+`{"id": 7, "type": "ok"}`. A display hint, sent by the website whenever the balance changes.
+The wallet shows it on its home screen labelled "per the website", and only when `vault` equals
+its own pinned `EXPECTED_VAULT`. Nothing in it is trusted or signed.
+
+The home screen shows the **vault** (the account that holds the money, from `EXPECTED_VAULT`)
+as the big blockie and address, the balance hint under it, and the chip's own address small.
+Without a pinned vault it shows the chip address and says so.
+
 ### ping
 
 Host: `{"id": 4, "type": "ping"}` → Wallet: `{"id": 4, "type": "pong"}`.

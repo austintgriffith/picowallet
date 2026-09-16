@@ -68,6 +68,19 @@ const Home: NextPage = () => {
     return () => clearInterval(t);
   }, [refresh]);
 
+  useEffect(() => {
+    if (usb.connected && state)
+      usb.pushState({
+        vault: state.account.address,
+        balance: state.account.balanceFormatted,
+        symbol: state.token.symbol,
+      });
+  }, [usb, state]);
+
+  // With a wallet on USB, that wallet is the device; the server's record may be another (WiFi) wallet.
+  const usbControlsVault =
+    !!usb.hello?.qx && !!state && usb.hello.qx.toLowerCase() === state.account.signer.qx.toLowerCase();
+
   const onToChange = (v: string) => {
     if (!/^0x[0-9a-fA-F]{40}$/.test(v)) typedName.current = v; // keep "atg.eth", drop once it resolves
     setTo(v);
@@ -321,7 +334,11 @@ const Home: NextPage = () => {
           <div className="card-body p-5 gap-2">
             <div className="flex items-center justify-between">
               <h2 className="card-title text-base">Device</h2>
-              {device ? (
+              {usb.connected ? (
+                <span className={`badge ${usbControlsVault ? "badge-success" : "badge-error"}`}>
+                  {usbControlsVault ? "paired over USB" : "wrong wallet"}
+                </span>
+              ) : device ? (
                 <Link href="/setup" className={`badge ${device.paired ? "badge-success" : "badge-warning"}`}>
                   {device.paired ? "paired" : "not paired"}
                 </Link>
@@ -332,7 +349,20 @@ const Home: NextPage = () => {
                 </span>
               )}
             </div>
-            {device ? (
+            {usb.connected && usb.hello ? (
+              <div className="text-sm space-y-1">
+                <div className="font-semibold">
+                  {usb.hello.name} <span className="badge badge-ghost badge-sm">USB · {usb.hello.backend}</span>
+                </div>
+                <div className="font-mono text-xs opacity-70" title={usb.hello.address}>
+                  chip{" "}
+                  {usb.hello.address ? usb.hello.address.slice(0, 6) + "..." + usb.hello.address.slice(-4) : "no key"}
+                </div>
+                <div className={`text-xs font-semibold ${usbControlsVault ? "text-success" : "text-error"}`}>
+                  {usbControlsVault ? "this wallet controls this vault" : "NOT this vault's signer"}
+                </div>
+              </div>
+            ) : device ? (
               <div className="text-sm space-y-1">
                 <div className="font-semibold">
                   {device.name} <span className="badge badge-ghost badge-sm">{device.backend}</span>

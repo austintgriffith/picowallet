@@ -34,6 +34,8 @@ type UsbWallet = {
   sign: (request: WalletRequest) => Promise<SignReply>;
   cancel: () => Promise<void>;
   provision: (op: ProvisionOp) => Promise<ProvisionReply>;
+  /** Tell the wallet the vault's balance (a display hint; it shows it labelled "per the website"). */
+  pushState: (s: { vault: string; balance: string; symbol: string }) => void;
 };
 
 const Ctx = createContext<UsbWallet | null>(null);
@@ -129,6 +131,18 @@ export const UsbWalletProvider = ({ children }: { children: React.ReactNode }) =
     await cancelMsg(l).catch(() => {});
   }, []);
 
+  const lastPushed = useRef("");
+  const pushState = useCallback((s: { vault: string; balance: string; symbol: string }) => {
+    const l = link.current;
+    if (!l) return;
+    const key = JSON.stringify(s);
+    if (key === lastPushed.current) return;
+    lastPushed.current = key;
+    l.request({ type: "state", ...s }, 5_000).catch(() => {
+      lastPushed.current = "";
+    });
+  }, []);
+
   const provision = useCallback(
     async (op: ProvisionOp) => {
       if (!link.current) throw new Error("no wallet connected");
@@ -167,6 +181,7 @@ export const UsbWalletProvider = ({ children }: { children: React.ReactNode }) =
     sign,
     cancel,
     provision,
+    pushState,
   };
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 };

@@ -21,6 +21,7 @@ FW = "usb-1"
 NAME = getattr(secrets, "DEVICE_NAME", "picowallet") if secrets else "picowallet"
 SOFT_OK = bool(getattr(secrets, "ALLOW_SOFT_KEY", False)) if secrets else False
 MAX_LINE = 16384
+VAULT = (getattr(secrets, "EXPECTED_VAULT", "") or "") if secrets else ""   # the account this chip controls
 
 d = None
 keys = None
@@ -34,6 +35,7 @@ msg_until = 0
 dirty = True
 qx = qy = ""
 address = ""
+host = {}           # last `state` line from the website: balance and vault, display hints only
 _buf = ""
 _poll = None
 _timer = None
@@ -181,6 +183,8 @@ def handle_line(line):
         on_sign(mid, m.get("request"))
     elif t == "cancel":
         on_cancel(mid)
+    elif t == "state":
+        on_state(mid, m)
     elif t == "provision":
         on_provision(mid, m.get("op"))
     elif t == "reboot":     # a clean restart from the host; mpremote's reset can wedge the Mac's port
@@ -218,6 +222,15 @@ def on_sign(mid, r):
         say("refused: " + why, 8)
         send({"id": mid, "type": "error", "error": why}); return
     req, page, state, dirty = {"id": mid, "r": r}, 0, "confirm", True
+
+
+def on_state(mid, m):
+    """Balance and vault from the website. Untrusted: shown small, labelled, never signed."""
+    global host, dirty
+    host = {"balance": str(m.get("balance", ""))[:16], "symbol": str(m.get("symbol", ""))[:8],
+            "vault": str(m.get("vault", ""))[:42], "at": time.ticks_ms()}
+    dirty = True
+    send({"id": mid, "type": "ok"})
 
 
 def on_cancel(mid):
@@ -358,11 +371,26 @@ def draw_home():
             d.center_text(line, y, L.WHITE if line else L.BLACK)
             y += 16
     else:
-        blockies.draw(d, address, 72, 16, 12)
-        d.center_text(short(address), 122, L.WHITE, 2)
-        d.center_text(NAME[:30], 160, L.GREY)
         st = chip_status()
-        d.center_text("%s %s" % (sig.name, "locked" if st.get("configLocked") else "UNLOCKED"), 174, L.GREY)
+        if VAULT:
+            # the vault holds the money; this chip is its only signer
+            blockies.draw(d, VAULT.lower(), 80, 6, 10)
+            d.center_text(short(VAULT), 90, L.WHITE, 2)
+            fresh = host and host.get("vault", "").lower() == VAULT.lower()
+            if fresh:
+                bal = host["balance"]
+                whole, _, frac = bal.partition(".")
+                d.center_text("$" + whole + "." + (frac + "00")[:2], 114, L.WHITE, 3)
+                d.center_text((host["symbol"] + ", per the website")[:30], 142, L.GREY)
+            else:
+                d.center_text("balance: plug into the website", 122, L.GREY)
+            d.center_text("chip " + short(address), 160, L.GREY)
+        else:
+            blockies.draw(d, address, 72, 16, 12)
+            d.center_text(short(address), 122, L.WHITE, 2)
+            d.center_text("no vault pinned in secrets.py", 146, L.GREY)
+        d.center_text(NAME[:30], 176, L.GREY)
+        d.center_text("%s %s" % (sig.name, "locked" if st.get("configLocked") else "UNLOCKED"), 190, L.GREY)
     if msg and time.ticks_diff(msg_until, time.ticks_ms()) > 0:
         d.fill_rect(0, 224, 240, 16, L.DARK)
         d.center_text(msg[:30], 228, L.YELLOW)
