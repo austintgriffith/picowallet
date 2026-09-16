@@ -62,7 +62,8 @@ def hex32(n):
 
 
 def short(a):
-    return a[:6] + ".." + a[-4:] if len(a) > 14 else a
+    """0x1234...5678, the way scaffold-eth shows an address."""
+    return a[:6] + "..." + a[-4:] if len(a) > 14 else a
 
 
 def eth_amount(wei):
@@ -357,14 +358,11 @@ def draw_home():
             d.center_text(line, y, L.WHITE if line else L.BLACK)
             y += 16
     else:
-        blockies.draw(d, address, 80, 6, 10)
-        y = 96
-        for line in addr_lines(address):
-            d.center_text(line, y, L.WHITE, 2)
-            y += 18
-        d.center_text(NAME[:30], 176, L.GREY)
+        blockies.draw(d, address, 72, 16, 12)
+        d.center_text(short(address), 122, L.WHITE, 2)
+        d.center_text(NAME[:30], 160, L.GREY)
         st = chip_status()
-        d.center_text("%s %s" % (sig.name, "locked" if st.get("configLocked") else "UNLOCKED"), 190, L.GREY)
+        d.center_text("%s %s" % (sig.name, "locked" if st.get("configLocked") else "UNLOCKED"), 174, L.GREY)
     if msg and time.ticks_diff(msg_until, time.ticks_ms()) > 0:
         d.fill_rect(0, 224, 240, 16, L.DARK)
         d.center_text(msg[:30], 228, L.YELLOW)
@@ -489,11 +487,8 @@ def draw_newkey():
     d.fill(L.BLACK)
     d.fill_rect(0, 0, 240, 26, L.GREEN)
     d.center_text("YOUR NEW WALLET", 5, L.WHITE, 2)
-    blockies.draw(d, address, 88, 34, 8)
-    y = 106
-    for line in addr_lines(address):
-        d.center_text(line, y, L.WHITE, 2)
-        y += 18
+    blockies.draw(d, address, 72, 36, 12)
+    d.center_text(short(address), 142, L.WHITE, 2)
     d.center_text("made in this chip just now", 182, L.GREY)
     d.center_text("the website shows the same", 196, L.GREY)
     d.center_text("A = ok", 220, L.GREY)

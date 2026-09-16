@@ -15,7 +15,8 @@ export const UsbBar = () => {
     try {
       await fn();
     } catch (e: any) {
-      if (!/cancel|No port selected/i.test(String(e?.message))) notification.error(e?.message || String(e));
+      console.error("usb wallet:", e);
+      if (!/No port selected/i.test(String(e?.message))) notification.error(e?.message || String(e));
     } finally {
       setBusy(false);
     }
@@ -29,7 +30,9 @@ export const UsbBar = () => {
         {usb.connected && h ? (
           <>
             {h.address && <Blockie seed={h.address} scale={3} />}
-            <span className="font-mono text-xs">{h.address ?? "no key yet"}</span>
+            <span className="font-mono text-xs" title={h.address}>
+              {h.address ? h.address.slice(0, 6) + "..." + h.address.slice(-4) : "no key yet"}
+            </span>
             <span className="badge badge-ghost badge-sm">
               {h.name} · {h.backend}
               {usb.kind === "emu" && " · emulator"}
