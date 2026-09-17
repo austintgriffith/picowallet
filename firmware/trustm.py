@@ -159,6 +159,22 @@ class Session:
     def metadata(self, oid):
         return self.command(0x01, 0x01, oid.to_bytes(2, "big"))
 
+    def sign(self, oid, digest):
+        """CalcSign 0x31, ECDSA over a 32-byte digest with the key at oid. Returns (r, s)."""
+        d = b"\x01" + len(digest).to_bytes(2, "big") + digest + b"\x03\x00\x02" + oid.to_bytes(2, "big")
+        r = self.command(0x31, 0x11, d)
+        if r[0] == 0x30:                    # some builds wrap r,s in a SEQUENCE
+            r = r[2:]
+        out = []
+        while r:
+            n = r[1]
+            out.append(int.from_bytes(r[2:2 + n], "big"))
+            r = r[2 + n:]
+        return out[0], out[1]
+
+    def random(self, n):
+        return self.command(0x0C, 0x00, n.to_bytes(2, "big"))
+
     def get_all(self, oid, step=200):
         out = b""
         while True:
