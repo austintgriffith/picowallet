@@ -110,6 +110,64 @@ def coprocessor_uid():
     return resp[8:35]
 
 
+# --- IFX I2C data-link + APDU layer (datasheet frames decoded; FCS is CRC-16 poly 0x8408, init 0, big-endian)
+def _crc(data):
+    c = 0
+    for b in data:
+        c ^= b
+        for _ in range(8):
+            c = (c >> 1) ^ 0x8408 if c & 1 else c >> 1
+    return c
+
+
+class Session:
+    """One OpenApplication session after a soft reset. Frame numbers run 0..3."""
+
+    def __init__(self):
+        soft_reset()
+        self.frnr = 0
+        self.acknr = 3
+        r = self.command(0x70, 0x00, bytes.fromhex("D2760000044765" "6E41757468417070" "6C"))
+
+    def _send(self, apdu):
+        body = bytes([(self.frnr << 2) | self.acknr]) + len(apdu + b"\x00").to_bytes(2, "big") + b"\x00" + apdu
+        _write(b"\x80" + body + _crc(body).to_bytes(2, "big"))
+        self.frnr = (self.frnr + 1) & 3
+
+    def _recv(self):
+        f = read_frame()
+        if _crc(f[:-2]) != int.from_bytes(f[-2:], "big"):
+            raise OSError("trustm: bad fcs %s" % f.hex())
+        self.acknr = (f[0] >> 2) & 3
+        ack = bytes([0x80 | self.acknr, 0, 0])
+        _write(b"\x80" + ack + _crc(ack).to_bytes(2, "big"))
+        return f[4:-2]                      # drop FCTR, LEN, PCTR and FCS
+
+    def command(self, cmd, param, data):
+        self._send(bytes([cmd, param]) + len(data).to_bytes(2, "big") + data)
+        r = self._recv()
+        if r[0] != 0:
+            raise OSError("trustm: cmd %02x failed, status %02x, %s" % (cmd, r[0], r[4:].hex()))
+        return r[4:4 + int.from_bytes(r[2:4], "big")]
+
+    def get(self, oid, offset=None, length=None):
+        d = oid.to_bytes(2, "big")
+        if length is not None:
+            d += offset.to_bytes(2, "big") + length.to_bytes(2, "big")
+        return self.command(0x01, 0x00, d)
+
+    def metadata(self, oid):
+        return self.command(0x01, 0x01, oid.to_bytes(2, "big"))
+
+    def get_all(self, oid, step=200):
+        out = b""
+        while True:
+            part = self.get(oid, len(out), step)
+            out += part
+            if len(part) < step:
+                return out
+
+
 if __name__ == "__main__":
     bus()
     print("state", state().hex())
