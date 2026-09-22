@@ -6,7 +6,7 @@
 cd "$(dirname "$0")/.." || exit 1
 exec "$HOME/.local/bin/uv" run --python 3.11 --with trimesh --with manifold3d --with numpy --with scipy --with shapely --with networkx --with rtree python - <<'PY'
 import trimesh, numpy as np
-m = trimesh.load("case/waveshare-13-pico-lcd-case-tomas-plass.stl")
+m = trimesh.load("reference/plass/waveshare-13-pico-lcd-case-tomas-plass.stl")
 parts = m.split(only_watertight=False)
 lid = [p for p in parts if p.bounds[1][0] < 0][0]
 base = [p for p in parts if p.bounds[0][0] > 0][0]

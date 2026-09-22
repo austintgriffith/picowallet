@@ -1,0 +1,203 @@
+#!/bin/sh
+# Split a case STEP assembly into one STEP + STL per part, one print plate STL with every part on
+# it, and parts.md.
+# Usage: tools/step [DIR/NAME.step]        default case/waveshare-raspberry-pi-pico/waveshare-raspberry-pi-pico.step
+#        tools/step check [DIR/NAME.step] [REF.stl]   compare each part with the matching half of a
+#                                          reference STL (default reference/plass/…-tomas-plass.stl)
+# The STEP is the source (Onshape export, AP242, parts named in Onshape) and lives in its own folder,
+# case/<variant>/<variant>.step. Next to it: PART.step (the part alone, in its own frame, so a part
+# moved in the assembly does not change its file), PART.stl (binary, z = 0 on the bed, x/y centred),
+# parts.md (bbox, volume, face count: the diff you read). One level up, case/<variant>.stl is the
+# print plate: every part flat on the bed side by side, the file people print.
+# Outputs are deterministic: run it twice on the same STEP and git stays quiet.
+cd "$(dirname "$0")/.." || exit 1
+exec "$HOME/.local/bin/uv" run --python 3.11 --with cadquery --with trimesh --with numpy --with scipy --with rtree python - "$@" <<'PY'
+import os, re, sys
+import cadquery as cq
+from OCP.STEPCAFControl import STEPCAFControl_Reader
+from OCP.TDocStd import TDocStd_Document
+from OCP.TCollection import TCollection_ExtendedString
+from OCP.XCAFDoc import XCAFDoc_DocumentTool
+from OCP.TDF import TDF_LabelSequence, TDF_Label
+from OCP.TDataStd import TDataStd_Name
+from OCP.IFSelect import IFSelect_RetDone
+
+DEFAULT_STEP = "case/waveshare-raspberry-pi-pico/waveshare-raspberry-pi-pico.step"
+DEFAULT_REF = "reference/plass/waveshare-13-pico-lcd-case-tomas-plass.stl"
+TOL, ANG = 0.01, 0.1          # STL tessellation: chord 0.01 mm, 0.1 rad
+GAP = 10.0                    # between parts on the print plate
+
+
+def label_name(lbl):
+    n = TDataStd_Name()
+    return n.Get().ToExtString() if lbl.FindAttribute(TDataStd_Name.GetID_s(), n) else ""
+
+
+def read_parts(path):
+    """[(name, cq.Shape)] for every leaf part in the STEP, in the part's own frame. A plain
+    (non-assembly) STEP gives its free shapes. Units come out in mm."""
+    doc = TDocStd_Document(TCollection_ExtendedString("doc"))
+    r = STEPCAFControl_Reader()
+    r.SetNameMode(True)
+    if r.ReadFile(path) != IFSelect_RetDone:
+        sys.exit(f"cannot read {path}")
+    r.Transfer(doc)
+    st = XCAFDoc_DocumentTool.ShapeTool_s(doc.Main())
+    parts = []
+
+    def walk(lbl):
+        if st.IsAssembly_s(lbl):
+            comps = TDF_LabelSequence()
+            st.GetComponents_s(lbl, comps)
+            for i in range(1, comps.Length() + 1):
+                ref = TDF_Label()
+                st.GetReferredShape_s(comps.Value(i), ref)
+                walk(ref)
+        else:
+            parts.append((label_name(lbl), cq.Shape.cast(st.GetShape_s(lbl))))
+
+    free = TDF_LabelSequence()
+    st.GetFreeShapes(free)
+    for i in range(1, free.Length() + 1):
+        walk(free.Value(i))
+    return parts
+
+
+def slug(name):
+    return re.sub(r"[^a-z0-9._-]+", "-", name.strip().lower()).strip("-")
+
+
+def named(parts):
+    """File names from the STEP part names; numbered with a warning when they collide or are blank."""
+    out, seen = [], {}
+    for i, (name, shape) in enumerate(parts, 1):
+        s = slug(name) or f"part{i}"
+        if s in seen or not slug(name):
+            print(f"warning: part {i} has name {name!r}; using 'part{i}'. Name the parts in Onshape.", file=sys.stderr)
+            s = f"part{i}"
+        seen[s] = True
+        out.append((s, shape))
+    return out
+
+
+def on_bed(shape):
+    """x/y centred, lowest point at z = 0. The frame from Onshape is otherwise kept."""
+    bb = shape.BoundingBox()
+    return shape.translate(cq.Vector(-(bb.xmin + bb.xmax) / 2, -(bb.ymin + bb.ymax) / 2, -bb.zmin))
+
+
+def header_stamp(path):
+    m = re.search(r"time_stamp \*/ '([^']*)'", open(path, errors="replace").read(4000))
+    return m.group(1) if m else "?"
+
+
+def write_step(shape, path, name, stamp):
+    """OCCT stamps the write time and a generic product name into the header; put the source
+    export's time and the part's name there instead so an unchanged part is an unchanged file."""
+    cq.exporters.export(cq.Workplane().add(shape), path)
+    s = open(path).read()
+    s = re.sub(r"FILE_NAME\('Open CASCADE Shape Model','[^']*'", f"FILE_NAME('{name}','{stamp}'", s, count=1)
+    s = s.replace("PRODUCT('Open CASCADE STEP translator 7.9 1',\n  'Open CASCADE STEP translator 7.9 1'", f"PRODUCT('{name}',\n  '{name}'", 1)
+    open(path, "w").write(s)
+
+
+def plate(parts):
+    """Every part on the bed, side by side along x with GAP between, the row centred on x = 0."""
+    widths = [p.BoundingBox().xlen for p in parts]
+    total = sum(widths) + GAP * (len(parts) - 1)
+    x, placed = -total / 2, []
+    for p, w in zip(parts, widths):
+        placed.append(p.translate(cq.Vector(x + w / 2, 0, 0)))
+        x += w + GAP
+    return cq.Compound.makeCompound(placed)
+
+
+def split(step):
+    outdir = os.path.dirname(step)
+    variant = os.path.basename(outdir)
+    rows, stamp, beds = [], header_stamp(step), []
+    for name, shape in named(read_parts(step)):
+        write_step(shape, f"{outdir}/{name}.step", name, stamp)
+        stl = on_bed(shape)
+        beds.append(stl)
+        cq.exporters.export(cq.Workplane().add(stl), f"{outdir}/{name}.stl", tolerance=TOL, angularTolerance=ANG)
+        bb = stl.BoundingBox()
+        rows.append((name, bb.xlen, bb.ylen, bb.zlen, stl.Volume(), len(shape.Faces()), len(shape.Solids())))
+        print(f"{name}: {bb.xlen:.2f} x {bb.ylen:.2f} x {bb.zlen:.2f} mm, {stl.Volume():.0f} mm3, {len(shape.Faces())} faces")
+    plate_path = os.path.join(os.path.dirname(outdir), f"{variant}.stl")
+    pl = plate(beds)
+    cq.exporters.export(cq.Workplane().add(pl), plate_path, tolerance=TOL, angularTolerance=ANG)
+    bb = pl.BoundingBox()
+    print(f"plate {plate_path}: {bb.xlen:.2f} x {bb.ylen:.2f} x {bb.zlen:.2f} mm")
+    with open(f"{outdir}/parts.md", "w") as f:
+        f.write(f"# {variant}\n\nGenerated by `tools/step` from `{os.path.basename(step)}` (exported {stamp}). Do not edit; re-export the STEP and rerun. Print plate: `case/{variant}.stl`.\n\n")
+        f.write("| part | x mm | y mm | z mm | volume mm³ | faces | solids |\n|---|---|---|---|---|---|---|\n")
+        for name, x, y, z, v, nf, ns in rows:
+            f.write(f"| {name} | {x:.2f} | {y:.2f} | {z:.2f} | {v:.0f} | {nf} | {ns} |\n")
+    print(f"wrote {outdir}/parts.md")
+
+
+def check(step, ref):
+    """Pair each generated part STL with a half of the reference STL (best surface-distance match
+    over the 4 z rotations and a face-down/up flip, each half used once) and report bbox, volume
+    and surface distance, plus where the far points are."""
+    import numpy as np, trimesh
+    outdir = os.path.dirname(step)
+    R = trimesh.transformations.rotation_matrix
+
+    def bed(m):
+        m = m.copy()
+        lo, hi = m.bounds
+        m.apply_translation((-(lo[0] + hi[0]) / 2, -(lo[1] + hi[1]) / 2, -lo[2]))
+        return m
+
+    def samples(m, n=20000):
+        return trimesh.sample.sample_surface(m, n, seed=0)[0]
+
+    halves = [bed(h) for h in trimesh.load(ref).split(only_watertight=False)]
+    print(f"{ref}: {len(halves)} bodies, volumes {[round(h.volume) for h in halves]} mm3")
+    parts = {fn[:-4]: bed(trimesh.load(f"{outdir}/{fn}")) for fn in sorted(os.listdir(outdir)) if fn.endswith(".stl")}
+    cands = []   # (mean, max, part name, half index, orientation, oriented mesh, d_part, d_ref)
+    for name, part in parts.items():
+        for hi, h in enumerate(halves):
+            if np.abs(np.sort(part.extents) - np.sort(h.extents)).sum() > 1.0:
+                continue
+            ph = samples(h)
+            for flip in (0, 1):
+                for k in range(4):
+                    cand = part.copy()
+                    if flip:
+                        cand.apply_transform(R(np.pi, (1, 0, 0)))
+                    cand.apply_transform(R(k * np.pi / 2, (0, 0, 1)))
+                    cand = bed(cand)
+                    if np.abs(cand.extents - h.extents).sum() > 1.0:
+                        continue
+                    pc = samples(cand)
+                    dc = trimesh.proximity.closest_point(h, pc)[1]      # our surface -> theirs
+                    dr = trimesh.proximity.closest_point(cand, ph)[1]   # their surface -> ours
+                    cands.append(((dc.mean() + dr.mean()) / 2, max(dc.max(), dr.max()), name, hi, f"{'flipped, ' if flip else ''}{k * 90} deg", cand, (pc, dc), (ph, dr)))
+    used_p, used_h = set(), set()
+    for mean, mx, name, hi, orient, cand, (pc, dc), (ph, dr) in sorted(cands, key=lambda c: c[0]):
+        if name in used_p or hi in used_h:
+            continue
+        used_p.add(name); used_h.add(hi)
+        h = halves[hi]
+        dv = (cand.volume - h.volume) / h.volume * 100
+        print(f"{name}: matches reference body {hi} ({orient}): bbox delta {(cand.extents - h.extents).round(2)} mm, "
+              f"volume {cand.volume:.0f} vs {h.volume:.0f} mm3 ({dv:+.1f}%), surface distance max {mx:.2f} mean {mean:.3f} mm")
+        for label, pts, d in (("ours, not in theirs", pc, dc), ("theirs, not in ours", ph, dr)):
+            far = pts[d > 0.3]
+            if len(far):
+                lo, hi_ = far.min(axis=0).round(1), far.max(axis=0).round(1)
+                print(f"  {label}: {len(far)} of {len(pts)} samples > 0.3 mm, within x {lo[0]}..{hi_[0]} y {lo[1]}..{hi_[1]} z {lo[2]}..{hi_[2]}")
+    for name in parts:
+        if name not in used_p:
+            print(f"{name}: no reference body with a matching footprint")
+
+
+args = sys.argv[1:]
+if args and args[0] == "check":
+    check(args[1] if len(args) > 1 else DEFAULT_STEP, args[2] if len(args) > 2 else DEFAULT_REF)
+else:
+    split(args[0] if args else DEFAULT_STEP)
+PY
