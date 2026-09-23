@@ -105,8 +105,8 @@ export default () => (
     <trace from="SW6.pin3" to="D1.anode" />
     <trace from="D1.cathode" to="net.VSYS" />
 
-    {/* LiPo 502030 (30x20x5 mm, ~250 mAh) stuck on the back of the Pico. Drawn only, not a JLCPCB part. */}
-    <chip name="BT1" doNotPlace layer="bottom" pcbX={-6} pcbY={3} footprint={<footprint><smtpad shape="rect" width="0.6mm" height="0.6mm" portHints={["pin1"]} /></footprint>}
+    {/* LiPo 502030 (30x20x5 mm, ~250 mAh) stuck on the back of the Pico. Drawn only, no part number: JLCPCB skips it. */}
+    <chip name="BT1" layer="bottom" pcbX={-6} pcbY={3} footprint={<footprint><smtpad shape="rect" width="0.6mm" height="0.6mm" portHints={["pin1"]} /></footprint>}
       cadModel={{ jscad: { type: "cuboid", size: [30, 20, 5] }, positionOffset: { x: 0, y: 0, z: 7.5 } }} />
 
     <hole pcbX={-29} pcbY={20.5} diameter="2.7mm" />
