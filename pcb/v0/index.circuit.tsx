@@ -3,26 +3,31 @@ import { Raspberry_Pi_Pico_2W } from "./imports/Raspberry_Pi_Pico_2W"
 import { ATECC608B_SSHDA_T } from "./imports/ATECC608B_SSHDA_T"
 import { KH_6X6X5H_STM } from "./imports/KH_6X6X5H_STM"
 import { SKRHABE010 } from "./imports/SKRHABE010"
+import { TP4056 } from "./imports/TP4056"
+import { B2B_PH_K_S_LF__SN_ } from "./imports/B2B_PH_K_S_LF__SN_"
+import { MSK12C02 } from "./imports/MSK12C02"
+import { SS14 } from "./imports/SS14"
 
-// picowallet one-board v0. Front: screen, joystick, A/B/X/Y. Back: Pico 2 W (USB at the
-// left edge), ATECC608B. Pins match firmware/lcd.py + firmware/atecc.py.
+// picowallet one-board v0.2. Front: screen, joystick, A/B. Back: Pico 2 W (USB out the
+// left edge), ATECC608B, LiPo charger strip along the bottom. Pins match firmware/.
 const GP: Record<number, string> = {
   2: "pin4", 3: "pin5", 4: "pin6", 5: "pin7", 8: "pin11", 9: "pin12", 10: "pin14", 11: "pin15",
-  12: "pin16", 13: "pin17", 15: "pin20", 16: "pin21", 17: "pin22", 18: "pin24", 19: "pin25",
-  20: "pin26", 21: "pin27",
+  12: "pin16", 13: "pin17", 15: "pin20", 16: "pin21", 17: "pin22", 18: "pin24", 20: "pin26",
 }
 const pico = (gp: number) => `U1.${GP[gp]}`
 
 export default () => (
-  <board width="70mm" height="40mm">
-    {/* BACK: Pico 2 W module, castellated pads, USB pokes out the left edge */}
-    <Raspberry_Pi_Pico_2W name="U1" layer="bottom" pcbX={-9} pcbY={0} pcbRotation={180} />
+  <board width="64mm" height="46mm">
+    {/* BACK: Pico 2 W, castellated, USB pokes out the left edge */}
+    <Raspberry_Pi_Pico_2W name="U1" layer="bottom" pcbX={-6} pcbY={3} pcbRotation={180} />
     <trace from="U1.pin38" to="net.GND" />
     <trace from="U1.pin3" to="net.GND" />
     <trace from="U1.pin36" to="net.V3_3" />
+    <trace from="U1.pin39" to="net.VSYS" />
+    <trace from="U1.pin40" to="net.VBUS" />
 
-    {/* FRONT: 1.3" ST7789 240x240 module on an 8-pin header, glass drawn as a box */}
-    <chip name="DISP1" footprint="pinrow8_p2.54mm" pcbX={-2} pcbY={-16}
+    {/* FRONT: 1.3" ST7789 240x240 module on an 8-pin header (box = the module) */}
+    <chip name="DISP1" footprint="pinrow8_p2.54mm" pcbX={-3} pcbY={-14}
       pinLabels={{ pin1: "GND", pin2: "VCC", pin3: "SCL", pin4: "SDA", pin5: "RES", pin6: "DC", pin7: "CS", pin8: "BLK" }}
       cadModel={{ jscad: { type: "cuboid", size: [36, 36, 3.5] }, positionOffset: { x: 0, y: 16, z: 8 } }} />
     <trace from="DISP1.GND" to="net.GND" />
@@ -34,11 +39,31 @@ export default () => (
     <trace from="DISP1.CS" to={pico(9)} />
     <trace from="DISP1.BLK" to={pico(13)} />
 
-    {/* BACK: secure element, right end, clear of the Pico */}
-    <ATECC608B_SSHDA_T name="U2" layer="bottom" pcbX={26} pcbY={4} />
-    <resistor name="R1" resistance="4.7k" footprint="0603" layer="bottom" pcbX={22} pcbY={-6} />
-    <resistor name="R2" resistance="4.7k" footprint="0603" layer="bottom" pcbX={28} pcbY={-6} />
-    <capacitor name="C1" capacitance="100nF" footprint="0603" layer="bottom" pcbX={26} pcbY={11} />
+    {/* FRONT: joystick left, A over B right */}
+    <SKRHABE010 name="SW5" pcbX={-26} pcbY={2} />
+    <trace from="SW5.COM" to="net.GND" />
+    <trace from="SW5.A" to={pico(2)} />
+    <trace from="SW5.B" to={pico(18)} />
+    <trace from="SW5.C" to={pico(16)} />
+    <trace from="SW5.D" to={pico(20)} />
+    <trace from="SW5.CEN" to={pico(3)} />
+    {[
+      { ref: "SW1", lbl: "A", gp: 15, y: 9 },
+      { ref: "SW2", lbl: "B", gp: 17, y: -5 },
+    ].map(({ ref, lbl, gp, y }) => (
+      <Fragment key={ref}>
+        <KH_6X6X5H_STM name={ref} pcbX={25} pcbY={y} pcbRotation={90} />
+        <silkscreentext text={lbl} pcbX={25} pcbY={y + 7} fontSize={1} />
+        <trace from={`${ref}.pin1`} to={pico(gp)} />
+        <trace from={`${ref}.pin2`} to="net.GND" />
+      </Fragment>
+    ))}
+
+    {/* BACK, bottom strip, left: secure element on I2C0 */}
+    <ATECC608B_SSHDA_T name="U2" layer="bottom" pcbX={-24} pcbY={-18.5} />
+    <resistor name="R1" resistance="4.7k" footprint="0603" layer="bottom" pcbX={-17} pcbY={-16.5} />
+    <resistor name="R2" resistance="4.7k" footprint="0603" layer="bottom" pcbX={-17} pcbY={-20.5} />
+    <capacitor name="C1" capacitance="100nF" footprint="0603" layer="bottom" pcbX={-12.5} pcbY={-18.5} pcbRotation={90} />
     <trace from="U2.VCC" to="net.V3_3" />
     <trace from="U2.GND" to="net.GND" />
     <trace from="U2.SDA" to="net.SDA" />
@@ -52,34 +77,35 @@ export default () => (
     <trace from={pico(4)} to="net.SDA" />
     <trace from={pico(5)} to="net.SCL" />
 
-    {/* FRONT: joystick left of the screen */}
-    <SKRHABE010 name="SW5" pcbX={-27} pcbY={4} />
-    <trace from="SW5.COM" to="net.GND" />
-    <trace from="SW5.A" to={pico(2)} />
-    <trace from="SW5.B" to={pico(18)} />
-    <trace from="SW5.C" to={pico(16)} />
-    <trace from="SW5.D" to={pico(20)} />
-    <trace from="SW5.CEN" to={pico(3)} />
+    {/* BACK, bottom strip, right: LiPo charger (from Pico USB) -> battery -> switch -> diode -> VSYS */}
+    <capacitor name="C2" capacitance="10uF" footprint="0603" layer="bottom" pcbX={-7} pcbY={-18.5} pcbRotation={90} />
+    <TP4056 name="U3" layer="bottom" pcbX={-1} pcbY={-19} />
+    <resistor name="R3" resistance="2k" footprint="0603" layer="bottom" pcbX={5} pcbY={-18.5} pcbRotation={90} />
+    <capacitor name="C3" capacitance="10uF" footprint="0603" layer="bottom" pcbX={9} pcbY={-18.5} pcbRotation={90} />
+    <SS14 name="D1" layer="bottom" pcbX={15} pcbY={-18.5} />
+    <MSK12C02 name="SW6" layer="bottom" pcbX={25} pcbY={-14} />
+    <B2B_PH_K_S_LF__SN_ name="J2" layer="bottom" pcbX={25} pcbY={-20} />
+    <trace from="U3.VCC" to="net.VBUS" />
+    <trace from="U3.CE" to="net.VBUS" />
+    <trace from="U3.GND" to="net.GND" />
+    <trace from="U3.EP" to="net.GND" />
+    <trace from="U3.TEMP" to="net.GND" />
+    <trace from="U3.PROG" to="R3.pin1" />
+    <trace from="R3.pin2" to="net.GND" />
+    <trace from="U3.BAT" to="net.BAT" />
+    <trace from="C2.pin1" to="net.VBUS" />
+    <trace from="C2.pin2" to="net.GND" />
+    <trace from="C3.pin1" to="net.BAT" />
+    <trace from="C3.pin2" to="net.GND" />
+    <trace from="J2.pin1" to="net.BAT" />
+    <trace from="J2.pin2" to="net.GND" />
+    <trace from="SW6.pin2" to="net.BAT" />
+    <trace from="SW6.pin3" to="D1.anode" />
+    <trace from="D1.cathode" to="net.VSYS" />
 
-    {/* FRONT: A/B/X/Y diamond right of the screen */}
-    {[
-      { ref: "SW1", lbl: "A", gp: 15, x: 22, y: 8 },
-      { ref: "SW2", lbl: "B", gp: 17, x: 30, y: 8 },
-      { ref: "SW3", lbl: "X", gp: 19, x: 22, y: -7 },
-      { ref: "SW4", lbl: "Y", gp: 21, x: 30, y: -7 },
-    ].map(({ ref, lbl, gp, x, y }) => (
-      <Fragment key={ref}>
-        <KH_6X6X5H_STM name={ref} pcbX={x} pcbY={y} pcbRotation={90} />
-        <silkscreentext text={lbl} pcbX={x} pcbY={y + 7} fontSize={1} />
-        <trace from={`${ref}.pin1`} to={pico(gp)} />
-        <trace from={`${ref}.pin2`} to="net.GND" />
-      </Fragment>
-    ))}
-
-    <hole pcbX={-33} pcbY={17.5} diameter="2.7mm" />
-    <hole pcbX={33} pcbY={17.5} diameter="2.7mm" />
-    <hole pcbX={33} pcbY={-17.5} diameter="2.7mm" />
-    <hole pcbX={-33} pcbY={-17.5} diameter="2.7mm" />
-    <silkscreentext text="picowallet v0" pcbX={0} pcbY={-18.5} fontSize={1.3} />
+    <hole pcbX={-29} pcbY={20.5} diameter="2.7mm" />
+    <hole pcbX={29} pcbY={20.5} diameter="2.7mm" />
+    <hole pcbX={-29} pcbY={-13} diameter="2.7mm" />
+    <silkscreentext text="picowallet v0.2" pcbX={12} pcbY={-20} fontSize={1.2} />
   </board>
 )
