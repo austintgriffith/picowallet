@@ -96,7 +96,7 @@ export default () => (
     {/* FRONT, bottom-right: LiPo charger off the Pico's USB -> BAT; BAT -> switch -> diode -> VSYS */}
     <capacitor name="C2" capacitance="10uF" footprint="0603" pcbX={19.5} pcbY={-16.5} pcbRotation={90} />
     <TP4056 name="U3" pcbX={25} pcbY={-16.5} />
-    <resistor name="R3" resistance="5.1k" footprint="0603" pcbX={30.5} pcbY={-16.5} pcbRotation={90} />
+    <resistor name="R3" resistance="5.1k" supplierPartNumbers={{ jlcpcb: ["C23186"] }} footprint="0603" pcbX={30.5} pcbY={-16.5} pcbRotation={90} />
     <capacitor name="C3" capacitance="10uF" footprint="0603" pcbX={19} pcbY={-20.5} pcbRotation={90} />
     <SS14 name="D1" pcbX={13.5} pcbY={-20.5} />
     <MSK12C02 name="SW6" pcbX={-18} pcbY={-19} pcbRotation={180} />  {/* knob faces the bottom edge */}
