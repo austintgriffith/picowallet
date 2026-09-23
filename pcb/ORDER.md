@@ -23,7 +23,7 @@ Goal: learn the process and the real clock. 5 boards, JLCPCB assembled, zero sol
 
 | Date | Step | Note |
 |---|---|---|
-| | quote | $ , build days , ship days |
+| 2026-09-23 | quote | $190.83 for 5 assembled (PCB $4 + PCBA $186.83). PCB 24 h, assembly 4–5 days. Shipping + US tariff show after the address step. Cart saved on the JLCPCB account (Google sign-in, ethereum.org). Project "fab_Y2", PCBA SMT026092364372 |
 | | paid | |
 | | in production | |
 | | shipped | tracking |
@@ -35,3 +35,18 @@ Goal: learn the process and the real clock. 5 boards, JLCPCB assembled, zero sol
 1. Plug the screen into J1: pin 1 (GND) at the end marked on the silkscreen.
 2. Power over USB with the switch OFF. Check 3V3 on the ATECC VCC pin. Flash firmware, run `keytest.py`, map joystick directions.
 3. Click the LiPo into J2 (red to BAT+), switch ON, unplug USB. Does it stay up. Plug USB back in, does the TP4056 get warm (charging).
+
+## What happened 2026-09-23 (driven by Claude in a cloned Chrome, stopped at the address form)
+
+- JLCPCB account created via "Sign in with Google" (austin.griffith@ethereum.org). Nothing paid.
+- Gerbers accepted: 2 layer, 44×68 mm, 5 pcs, $4. Standard PCBA, both sides, qty 5, parts placement confirmation on. JLCPCB adds edge rails (board becomes 78×70 panel for their line).
+- BOM: 16/17 matched automatically. BT1 (drawn battery) marked "do not place". Caught one bug on their table: R3 said 5.1k but carried the 2k part number; fixed to C23186 on the site and in the design.
+- Quote breakdown: setup $51.50, stencil $16.54, fixture $16.54, X-ray $8.25, feeders $17.05, components $70.51 (Pico 2 W = $58.21 of that, $11.64 each), hand-solder $3.61, SMT $1.10, misc $2. Total $190.83.
+- Placement preview (top) looked right. The Bottom tab would not open in the headless browser, so the Pico-on-bottom preview is NOT visually confirmed. The Pico is in the priced parts and the assembly is "Both Sides", so it is in the job. Check the Bottom tab yourself before paying.
+- Screenshots: `v0/render/jlcpcb-quote.png`, `v0/render/jlcpcb-checkout.png`.
+
+## To finish (you, ~5 min)
+1. jlcpcb.com → cart → Secure Checkout. Enter shipping address (Individual Customer).
+2. Pick shipping. Read the tariff line (DDP prepaid). Expect ~$30–45 shipping + ~$50–90 tariff on top of $190.83.
+3. Open the PCBA item → Component Placements → Bottom. Confirm U1 (Pico) sits USB-left.
+4. Pay. Write the number and dates in the log above.
