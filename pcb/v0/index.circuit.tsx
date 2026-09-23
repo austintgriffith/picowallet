@@ -29,7 +29,9 @@ export default () => (
     {/* FRONT: 1.3" ST7789 240x240 module on an 8-pin header (box = the module) */}
     <chip name="DISP1" footprint="pinrow8_p2.54mm" pcbX={-3} pcbY={-14}
       pinLabels={{ pin1: "GND", pin2: "VCC", pin3: "SCL", pin4: "SDA", pin5: "RES", pin6: "DC", pin7: "CS", pin8: "BLK" }}
-      cadModel={{ jscad: { type: "cuboid", size: [36, 36, 3.5] }, positionOffset: { x: 0, y: 16, z: 8 } }} />
+      cadModel={{ jscad: { type: "union", shapes: [
+        { type: "cuboid", size: [20.3, 2.5, 8.5], center: [0, 0, 4.25] },
+        { type: "cuboid", size: [36, 36, 3.5], center: [0, 16, 10] } ] } }} />
     <trace from="DISP1.GND" to="net.GND" />
     <trace from="DISP1.VCC" to="net.V3_3" />
     <trace from="DISP1.SCL" to={pico(10)} />
@@ -40,7 +42,7 @@ export default () => (
     <trace from="DISP1.BLK" to={pico(13)} />
 
     {/* FRONT: joystick left, A over B right */}
-    <SKRHABE010 name="SW5" pcbX={-26} pcbY={2} />
+    <SKRHABE010 name="SW5" pcbX={-26} pcbY={2} pcbRotation={45} />  {/* ALPS SKRH: directions are on the diagonals, 45° makes them straight */}
     <trace from="SW5.COM" to="net.GND" />
     <trace from="SW5.A" to={pico(2)} />
     <trace from="SW5.B" to={pico(18)} />
@@ -102,6 +104,10 @@ export default () => (
     <trace from="SW6.pin2" to="net.BAT" />
     <trace from="SW6.pin3" to="D1.anode" />
     <trace from="D1.cathode" to="net.VSYS" />
+
+    {/* LiPo 502030 (30x20x5 mm, ~250 mAh) stuck on the back of the Pico. Drawn only, not a JLCPCB part. */}
+    <chip name="BT1" doNotPlace layer="bottom" pcbX={-6} pcbY={3} footprint={<footprint></footprint>}
+      cadModel={{ jscad: { type: "cuboid", size: [30, 20, 5] }, positionOffset: { x: 0, y: 0, z: 7.5 } }} />
 
     <hole pcbX={-29} pcbY={20.5} diameter="2.7mm" />
     <hole pcbX={29} pcbY={20.5} diameter="2.7mm" />

@@ -19,13 +19,13 @@ Design: `pcb/v0/index.circuit.tsx`. Fab files: `pcb/v0/fab.zip`. Live 3D: see th
 
 Cuts: buy Picos at $7 retail and solder them ourselves (−$36). Put only joystick + 2 buttons on the front and hand-solder those (one-sided assembly, −$50). Both → order ≈ $100.
 
-## Confidence: ~65% the first batch runs the firmware with no board fix
+## Confidence: ~75% the first batch runs the firmware with no board fix (checks done 2026-09-23)
 
 Ordered by how much it worries me:
-1. **Pico footprint mirrored on the back.** Pin 1 mapped by hand. Wrong = every GPIO wrong. Check against the Pico 2 W drawing before ordering.
-2. **Joystick A/B/C/D → up/down/left/right** is a guess. Firmware fix if wrong.
+1. ~~Pico footprint mirrored on the back~~ **Checked.** From the back, pin 1 is top-right with USB on the right, same as a real Pico. All 40 labels match the official pinout.
+2. ~~Joystick~~ **Checked** (ALPS SKRH datasheet): pin 2 = center, pin 5 = common, both wired right. Directions are diagonal on the body, so SW5 is now at 45°. Up/down/left/right → A/B/C/D is a firmware table; `firmware/keytest.py` finds it.
 3. **Screen header order** GND VCC SCL SDA RES DC CS BLK. Clones vary. Check the module you buy.
-4. **Slide switch common pin** assumed middle. Verify.
+4. **Slide switch common pin** assumed middle, the standard for 3-pin SPDT. No drawing found. Wrong = a wire fix.
 5. **WiFi**: switch + battery plug sit near the Pico antenna end. Expect range loss, not a dead radio.
 6. **No battery protection on board.** Buy protected LiPos. Charge current ~580 mA (R3 = 2k).
 7. **Thickness** ~17 mm with screen on the front and Pico on the back.
