@@ -1,13 +1,13 @@
-# Test order — go through the motions (v0.3, 2026-09-23)
+# Test order — go through the motions (v0.4, 2026-09-23)
 
-Goal: learn the process and the real clock. 5 boards, JLCPCB assembled. Human does every click.
+Goal: learn the process and the real clock. 5 boards, JLCPCB assembled, zero soldering: the board arrives with every part on it, you plug in the screen and the battery. Human does every click.
 
 ## Before you upload (10 min)
 
 1. Open the 3D page and the copper image (`v0/render/pcb.png`). Look for anything dumb.
-2. `v0/bom.csv`: two rows have no part number on purpose: DISP1 (screen header, you solder it), BT1 (the battery, drawn only) and BP1 (two bare solder pads). JLCPCB will flag them; skip both.
-3. `v0/pick_and_place.csv`: same three designators. Delete them if the uploader complains.
-4. Buy separately: 5× 1.3" ST7789 240×240 module with 8-pin header (Amazon), 5× 8-pin female header 2.54 mm, 5× LiPo 502030 or 503035 with protection board (5 mm thick max, it lies under the screen).
+2. `v0/bom.csv`: one row has no part number on purpose: BT1 (the battery, drawn only). JLCPCB will flag it; skip it.
+3. `v0/pick_and_place.csv`: same designator. Delete it if the uploader complains.
+4. Buy separately: 5× 1.3" ST7789 240×240 **7-pin** module with pin header (Amazon B09QS544FX or MakerFocus B07P9X3L7M), 5× 402030 LiPo (20×30×4 mm, ~200 mAh) with protection board and JST-PH 2.0 plug.
 
 ## Upload
 
@@ -32,6 +32,6 @@ Goal: learn the process and the real clock. 5 boards, JLCPCB assembled. Human do
 
 ## When it arrives
 
-1. Solder the 8-pin female header, plug the screen in.
+1. Plug the screen into J1: pin 1 (GND) at the end marked on the silkscreen.
 2. Power over USB with the switch OFF. Check 3V3 on the ATECC VCC pin. Flash firmware, run `keytest.py`, map joystick directions.
-3. Solder the LiPo to the pads, switch ON, unplug USB. Does it stay up. Plug USB back in, does the TP4056 get warm (charging).
+3. Click the LiPo into J2 (red to BAT+), switch ON, unplug USB. Does it stay up. Plug USB back in, does the TP4056 get warm (charging).
