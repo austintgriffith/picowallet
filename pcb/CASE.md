@@ -19,7 +19,7 @@ Board: 82 × 44 × 1.6 mm, square corners. 3D model of the whole thing: `v0/boar
 ## Heights below the back face
 | Part | Height |
 |---|---|
-| Pico 2 W module | 4 mm (1 mm board + 3 mm micro-USB and parts). 51 × 21, centered (-8, 0), USB connector pokes ~1.3 mm past the LEFT edge |
+| Pico 2 W module | 4 mm (1 mm board + 3 mm micro-USB and parts). 51 × 21, centered (-13, 0). USB connector face sits ~1.2 mm INSIDE the left board edge: the case needs a notch that reaches it |
 | LiPo 402030 | 4 mm | 20 × 30 standing tall, centered (28, 2), on the BACK |
 | Battery plug J2 | 6 mm on the BACK | JST-PH at (28, 20), opening toward the top edge |
 

@@ -24,7 +24,7 @@ const pico = (gp: number) => `U1.${GP[gp]}`
 export default () => (
   <board width="82mm" height="44mm">
     {/* BACK: Pico 2 W */}
-    <Raspberry_Pi_Pico_2W name="U1" layer="bottom" pcbX={-8} pcbY={0} pcbRotation={180} />
+    <Raspberry_Pi_Pico_2W name="U1" layer="bottom" pcbX={-13} pcbY={0} pcbRotation={180} />
     <trace from="U1.pin38" to="net.GND" />
     <trace from="U1.pin3" to="net.GND" />
     <trace from="U1.pin36" to="net.V3_3" />
