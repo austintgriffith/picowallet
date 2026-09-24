@@ -1,4 +1,4 @@
-# Test order — go through the motions (v0.5, 2026-09-23)
+# Test order — go through the motions (v0.6, 2026-09-23)
 
 Goal: learn the process and the real clock. 5 boards, JLCPCB assembled, zero soldering: the board arrives with every part on it, you plug in the screen and the battery. Human does every click.
 
@@ -32,7 +32,7 @@ Goal: learn the process and the real clock. 5 boards, JLCPCB assembled, zero sol
 
 ## When it arrives
 
-1. Plug the screen into J1: pin 1 (GND) at the end marked on the silkscreen.
+1. Screw the Waveshare screen onto the 4 standoffs, plug its cable into J1.
 2. Power over USB with the switch OFF. Check 3V3 on the ATECC VCC pin. Flash firmware, run `keytest.py`, map joystick directions.
 3. Click the LiPo into J2 (red to BAT+), switch ON, unplug USB. Does it stay up. Plug USB back in, does the TP4056 get warm (charging).
 
@@ -51,14 +51,15 @@ Goal: learn the process and the real clock. 5 boards, JLCPCB assembled, zero sol
 3. Open the PCBA item → Component Placements → Bottom. Confirm U1 (Pico) sits USB-left.
 4. Pay. Write the number and dates in the log above.
 
-## v0.5 (after the quote): NOT yet re-uploaded
-Switch overhangs the edge, PWR + CHG LEDs added (2 basic parts + 2 resistors, ~$0.50 on the order, no feeder fee). The cart still holds v0.4. Re-upload `v0/fab.zip` + BOM + CPL before paying, or the boards come without the lights and with the switch inboard.
+## v0.6 (after the quote): NOT yet re-uploaded
+Switch overhangs the edge, PWR + CHG LEDs, and the screen header is now a JST-PH 8-pin socket for the Waveshare module (no loose-header module to solder). Board 72×44. The cart still holds v0.4. Re-upload `v0/fab.zip` + BOM + CPL before paying, or the boards come without the lights and with the switch inboard.
 
 ## Shopping list — everything the board does NOT come with
 | Item | Qty | Where | ~USD |
 |---|---|---|---|
-| 1.3" ST7789 240×240 IPS module, 7-pin header (GND VCC SCL SDA RES DC BLK) | 5 | Amazon B09QS544FX or MakerFocus B07P9X3L7M | 20 |
+| **Waveshare 1.3inch LCD Module** (45×31, ST7789, ships with its PH2.0 8-pin cable, plug already on it) | 5 | waveshare.com $9.49 or Amazon "Waveshare 1.3inch LCD Module" | 50 |
+| M2 × 6 mm standoffs + M2 screws (screen mounts on 4) | 20 | Amazon | 8 |
 | LiPo 402030, 200 mAh, 4 mm thick, protection board, JST-PH 2.0 plug | 5 | Amazon | 25 |
 | Micro-USB cable, data not charge-only | 1 | you have these | 0 |
-| M2.5 screws + standoffs for the case | a bag | Amazon | 8 |
-That's it. The board arrives with every other part soldered. Plug the screen into the header, click the battery in, flash the firmware over USB.
+| M2.5 screws + standoffs for the case corners | a bag | Amazon | 8 |
+That's it. Zero soldering, truly: the board arrives with every part on it. Screw the screen onto 4 standoffs, plug its cable into J1, click the battery into J2, flash the firmware over USB.
