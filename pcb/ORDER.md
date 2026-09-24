@@ -23,7 +23,8 @@ Goal: learn the process and the real clock. 5 boards, JLCPCB assembled, zero sol
 
 | Date | Step | Note |
 |---|---|---|
-| 2026-09-23 | quote | $190.83 for 5 assembled (PCB $4 + PCBA $186.83). PCB 24 h, assembly 4–5 days. Shipping + US tariff show after the address step. Cart saved on the JLCPCB account (Google sign-in, ethereum.org). Project "fab_Y2", PCBA SMT026092364372 |
+| 2026-09-23 | quote v0.4 | $190.83 for 5 assembled. Superseded. |
+| 2026-09-23 | quote v0.7 | **$221.55** for 5 assembled (PCB $4 + PCBA $217.55). 25/25 parts matched incl. the bare panel (JLCPCB places it, $3.59 ea) and the Pico. PCB 24 h, assembly 4–5 days. Cart project "fab_Y3", PCBA SMT026092460529. Old fab_Y2 removed from the cart. |
 | | paid | |
 | | in production | |
 | | shipped | tracking |
@@ -51,13 +52,13 @@ Goal: learn the process and the real clock. 5 boards, JLCPCB assembled, zero sol
 3. Open the PCBA item → Component Placements → Bottom. Confirm U1 (Pico) sits USB-left.
 4. Pay. Write the number and dates in the log above.
 
-## v0.7 (after the quote): NOT yet re-uploaded
-Switch overhangs the edge, PWR + CHG LEDs, bare 2" panel on an FPC latch with its own backlight driver, battery moved to the back. Board 82×44. The cart still holds v0.4. Re-upload `v0/fab.zip` + BOM + CPL before paying, or the boards come without the lights and with the switch inboard.
+## v0.7: uploaded 2026-09-23, in the cart
+Switch overhangs the edge, PWR + CHG LEDs, bare 2" panel on an FPC latch with its own backlight driver, battery moved to the back. Board 82×44. JLCPCB matched the panel as a placeable part, so it ships ON the board. Gotcha hit twice: the quote page's "Both Sides" click silently reverts to Top/Economic and drops the Pico; always re-open "Change PCB specifications", click Standard + Both Sides, and confirm the order page says "Assembly Side: Both Sides" before uploading the BOM.
 
 ## Shopping list — everything the board does NOT come with
 | Item | Qty | Where | ~USD |
 |---|---|---|---|
-| **Bare panel HS20HS072RX** (2", 320×240, ST7789, 12-pin ribbon) — it is IN the BOM as DISP1 (C5329582). If JLCPCB places/ships it, nothing to buy. If they flag it, buy 5 from lcsc.com (same login) at $3.77 | 5 | JLCPCB or LCSC | 19 |
+| ~~Bare panel~~ JLCPCB places it (matched, $3.59 ea). Nothing to buy. | 0 | — | 0 |
 | LiPo 402030, 200 mAh, 4 mm thick, protection board, JST-PH 2.0 plug | 5 | Amazon | 25 |
 | Micro-USB cable, data not charge-only | 1 | you have these | 0 |
 | M2.5 screws + standoffs for the case corners | a bag | Amazon | 8 |
