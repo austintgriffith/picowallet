@@ -24,7 +24,7 @@ Goal: learn the process and the real clock. 5 boards, JLCPCB assembled, zero sol
 | Date | Step | Note |
 |---|---|---|
 | 2026-09-23 | quote v0.4 | $190.83 for 5 assembled. Superseded. |
-| 2026-09-23 | quote v0.7 | **$221.55** for 5 assembled (PCB $4 + PCBA $217.55). 25/25 parts matched incl. the bare panel (JLCPCB places it, $3.59 ea) and the Pico. PCB 24 h, assembly 4–5 days. Cart project "fab_Y3", PCBA SMT026092460529. Old fab_Y2 removed from the cart. |
+| 2026-09-23 | quote v0.7 | **$221.55** for 5 assembled (PCB $4 + PCBA $217.55). 25/25 parts matched incl. the bare panel (JLCPCB places it, $3.59 ea) and the Pico. PCB 24 h, assembly 4–5 days. Cart project "fab_Y3", PCBA SMT026092460529. Old fab_Y2 removed from the cart (2026-09-24). Cart = 1 item, fab_Y3. |
 | | paid | |
 | | in production | |
 | | shipped | tracking |
