@@ -99,7 +99,7 @@ export default () => (
     <resistor name="R3" resistance="5.1k" supplierPartNumbers={{ jlcpcb: ["C23186"] }} footprint="0603" pcbX={30.5} pcbY={-16.5} pcbRotation={90} />
     <capacitor name="C3" capacitance="10uF" footprint="0603" pcbX={19} pcbY={-20.5} pcbRotation={90} />
     <SS14 name="D1" pcbX={13.5} pcbY={-20.5} />
-    <MSK12C02 name="SW6" pcbX={-18} pcbY={-20.7} pcbRotation={180} />  {/* knob hangs past the bottom edge */}
+    <MSK12C02 name="SW6" pcbX={-18} pcbY={-18} pcbRotation={0} />  {/* pins inboard, knob side at the edge: knob hangs past the board */}
     <trace from="U3.VCC" to="net.VBUS" />
     <trace from="U3.CE" to="net.VBUS" />
     <trace from="U3.GND" to="net.GND" />

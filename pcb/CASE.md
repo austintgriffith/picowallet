@@ -9,7 +9,7 @@ Board: 68 × 44 × 1.6 mm, square corners. 3D model of the whole thing: `v0/boar
 | Screen module (1.3" ST7789) on its header | 14 mm to glass | header 8.5 + module PCB 1.6 + panel ~3.5. Module 27.8 × 39.2 mm, its center at (1.6, 0). Only the top ~20 mm of that is active display. |
 | Joystick SW5 | 5 mm body, stem to 7 mm | 7.5 × 7.5 body rotated 45°, so a 10.6 mm diamond |
 | Buttons SW1, SW2 | 5 mm, plunger to 6 | 6 × 6 body, 3.5 mm round plunger |
-| Power switch SW6 | 2.8 mm tall; body face at the edge, knob hangs ~1.5 mm past the bottom edge, slides left-right | 8 × 2.8 body, center (-18, -20.7) |
+| Power switch SW6 | 2.8 mm tall; knob hangs ~1 mm past the bottom edge, slides left-right | 8 × 2.8 body, center (-18, -18), pins inboard |
 | LEDs PWR (-27, -20) green, CHG (-12, -20) red | 0.8 mm | 0603, light pipes or a clear window if the case covers them |
 | Battery plug J2 | 6 mm | JST-PH, opening faces +Y (top edge) |
 | LiPo 402030 | 4 mm, under the screen | 20 × 30, centered (1.6, 1) |
