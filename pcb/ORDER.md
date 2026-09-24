@@ -1,4 +1,4 @@
-# Test order — go through the motions (v0.4, 2026-09-23)
+# Test order — go through the motions (v0.5, 2026-09-23)
 
 Goal: learn the process and the real clock. 5 boards, JLCPCB assembled, zero soldering: the board arrives with every part on it, you plug in the screen and the battery. Human does every click.
 
@@ -50,3 +50,15 @@ Goal: learn the process and the real clock. 5 boards, JLCPCB assembled, zero sol
 2. Pick shipping. Read the tariff line (DDP prepaid). Expect ~$30–45 shipping + ~$50–90 tariff on top of $190.83.
 3. Open the PCBA item → Component Placements → Bottom. Confirm U1 (Pico) sits USB-left.
 4. Pay. Write the number and dates in the log above.
+
+## v0.5 (after the quote): NOT yet re-uploaded
+Switch overhangs the edge, PWR + CHG LEDs added (2 basic parts + 2 resistors, ~$0.50 on the order, no feeder fee). The cart still holds v0.4. Re-upload `v0/fab.zip` + BOM + CPL before paying, or the boards come without the lights and with the switch inboard.
+
+## Shopping list — everything the board does NOT come with
+| Item | Qty | Where | ~USD |
+|---|---|---|---|
+| 1.3" ST7789 240×240 IPS module, 7-pin header (GND VCC SCL SDA RES DC BLK) | 5 | Amazon B09QS544FX or MakerFocus B07P9X3L7M | 20 |
+| LiPo 402030, 200 mAh, 4 mm thick, protection board, JST-PH 2.0 plug | 5 | Amazon | 25 |
+| Micro-USB cable, data not charge-only | 1 | you have these | 0 |
+| M2.5 screws + standoffs for the case | a bag | Amazon | 8 |
+That's it. The board arrives with every other part soldered. Plug the screen into the header, click the battery in, flash the firmware over USB.

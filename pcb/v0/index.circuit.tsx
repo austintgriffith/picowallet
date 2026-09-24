@@ -8,7 +8,7 @@ import { MSK12C02 } from "./imports/MSK12C02"
 import { SS14 } from "./imports/SS14"
 import { B2B_PH_K_S_LF__SN_ } from "./imports/B2B_PH_K_S_LF__SN_"
 
-// picowallet one-board v0.4, 68 x 44 mm. Zero soldering: every part but the LiPo and the screen module is an LCSC part.
+// picowallet one-board v0.5, 68 x 44 mm. Zero soldering: every part but the LiPo and the screen module is an LCSC part.
 // Screen = the common 7-pin 1.3" ST7789 240x240 module (27.8 x 39.2 mm, GND VCC SCL SDA RES DC BLK, no CS:
 // those modules tie CS low internally; the firmware still toggles GP9, into nothing). An 8-pin module also fits, its BLK pin hangs off the end.
 // FRONT: joystick | screen module on an 8.5 mm female header | A over B.
@@ -99,7 +99,7 @@ export default () => (
     <resistor name="R3" resistance="5.1k" supplierPartNumbers={{ jlcpcb: ["C23186"] }} footprint="0603" pcbX={30.5} pcbY={-16.5} pcbRotation={90} />
     <capacitor name="C3" capacitance="10uF" footprint="0603" pcbX={19} pcbY={-20.5} pcbRotation={90} />
     <SS14 name="D1" pcbX={13.5} pcbY={-20.5} />
-    <MSK12C02 name="SW6" pcbX={-18} pcbY={-19} pcbRotation={180} />  {/* knob faces the bottom edge */}
+    <MSK12C02 name="SW6" pcbX={-18} pcbY={-20.7} pcbRotation={180} />  {/* knob hangs past the bottom edge */}
     <trace from="U3.VCC" to="net.VBUS" />
     <trace from="U3.CE" to="net.VBUS" />
     <trace from="U3.GND" to="net.GND" />
@@ -116,10 +116,25 @@ export default () => (
     <trace from="SW6.pin3" to="D1.anode" />
     <trace from="D1.cathode" to="net.VSYS" />
 
+    {/* two lights by the power switch. PWR: on whenever the Pico has 3V3 (switch on, or USB in).
+        CHG: the TP4056 pulls its CHRG pin low while charging, so this lights from VBUS with no GPIO. */}
+    <led name="LED1" color="green" footprint="0603" pinLabels={{ pin1: "cathode", pin2: "anode" }} supplierPartNumbers={{ jlcpcb: ["C12624"] }} pcbX={-27} pcbY={-20} pcbRotation={180} />
+    <resistor name="R4" resistance="1k" footprint="0603" pcbX={-27} pcbY={-17} />
+    <trace from="R4.pin1" to="net.V3_3" />
+    <trace from="R4.pin2" to="LED1.anode" />
+    <trace from="LED1.cathode" to="net.GND" />
+    <silkscreentext text="PWR" pcbX={-27} pcbY={-22.5} fontSize={0.8} />
+    <led name="LED2" color="red" footprint="0603" supplierPartNumbers={{ jlcpcb: ["C2286"] }} pcbX={-12} pcbY={-20} pcbRotation={180} />
+    <resistor name="R5" resistance="1k" footprint="0603" pcbX={-12} pcbY={-17} />
+    <trace from="R5.pin1" to="net.VBUS" />
+    <trace from="R5.pin2" to="LED2.anode" />
+    <trace from="LED2.cathode" to="U3.N_CHRG" />
+    <silkscreentext text="CHG" pcbX={-12} pcbY={-22.5} fontSize={0.8} />
+
     <hole pcbX={-31} pcbY={20} diameter="2.7mm" />
     <hole pcbX={31} pcbY={20} diameter="2.7mm" />
     <hole pcbX={31} pcbY={-20} diameter="2.7mm" />
     <hole pcbX={-31} pcbY={-13} diameter="2.7mm" />
-    <silkscreentext text="picowallet v0.4" pcbX={4} pcbY={-21} fontSize={1.2} />
+    <silkscreentext text="picowallet v0.5" pcbX={4} pcbY={-21} fontSize={1.2} />
   </board>
 )
