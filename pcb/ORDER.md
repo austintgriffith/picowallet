@@ -1,4 +1,4 @@
-# Test order — go through the motions (v0.6, 2026-09-23)
+# Test order — go through the motions (v0.7, 2026-09-23)
 
 Goal: learn the process and the real clock. 5 boards, JLCPCB assembled, zero soldering: the board arrives with every part on it, you plug in the screen and the battery. Human does every click.
 
@@ -32,7 +32,7 @@ Goal: learn the process and the real clock. 5 boards, JLCPCB assembled, zero sol
 
 ## When it arrives
 
-1. Screw the Waveshare screen onto the 4 standoffs, plug its cable into J1.
+1. Fold the panel ribbon under its left edge, slide it into J3, flip the latch. Lay the panel flat.
 2. Power over USB with the switch OFF. Check 3V3 on the ATECC VCC pin. Flash firmware, run `keytest.py`, map joystick directions.
 3. Click the LiPo into J2 (red to BAT+), switch ON, unplug USB. Does it stay up. Plug USB back in, does the TP4056 get warm (charging).
 
@@ -51,14 +51,13 @@ Goal: learn the process and the real clock. 5 boards, JLCPCB assembled, zero sol
 3. Open the PCBA item → Component Placements → Bottom. Confirm U1 (Pico) sits USB-left.
 4. Pay. Write the number and dates in the log above.
 
-## v0.6 (after the quote): NOT yet re-uploaded
-Switch overhangs the edge, PWR + CHG LEDs, and the screen header is now a JST-PH 8-pin socket for the Waveshare module (no loose-header module to solder). Board 72×44. The cart still holds v0.4. Re-upload `v0/fab.zip` + BOM + CPL before paying, or the boards come without the lights and with the switch inboard.
+## v0.7 (after the quote): NOT yet re-uploaded
+Switch overhangs the edge, PWR + CHG LEDs, bare 2" panel on an FPC latch with its own backlight driver, battery moved to the back. Board 82×44. The cart still holds v0.4. Re-upload `v0/fab.zip` + BOM + CPL before paying, or the boards come without the lights and with the switch inboard.
 
 ## Shopping list — everything the board does NOT come with
 | Item | Qty | Where | ~USD |
 |---|---|---|---|
-| **Waveshare 1.3inch LCD Module** (45×31, ST7789, ships with its PH2.0 8-pin cable, plug already on it) | 5 | waveshare.com $9.49 or Amazon "Waveshare 1.3inch LCD Module" | 50 |
-| M2 × 6 mm standoffs + M2 screws (screen mounts on 4) | 20 | Amazon | 8 |
+| **Bare panel HS20HS072RX** (2", 320×240, ST7789, 12-pin ribbon) — it is IN the BOM as DISP1 (C5329582). If JLCPCB places/ships it, nothing to buy. If they flag it, buy 5 from lcsc.com (same login) at $3.77 | 5 | JLCPCB or LCSC | 19 |
 | LiPo 402030, 200 mAh, 4 mm thick, protection board, JST-PH 2.0 plug | 5 | Amazon | 25 |
 | Micro-USB cable, data not charge-only | 1 | you have these | 0 |
 | M2.5 screws + standoffs for the case corners | a bag | Amazon | 8 |
