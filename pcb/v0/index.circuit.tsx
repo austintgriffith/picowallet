@@ -33,7 +33,7 @@ export default () => (
 
     {/* FRONT: the panel itself. Drawn as a slab; the part number lets JLCPCB tell us if they'll supply it. */}
     <chip name="DISP1" pcbX={2} pcbY={0} supplierPartNumbers={{ jlcpcb: ["C5329582"] }}
-      footprint={<footprint><smtpad shape="rect" width="0.6mm" height="0.6mm" pcbX={0} pcbY={17} portHints={["pin1"]} /></footprint>}
+      footprint={<footprint><smtpad shape="rect" width="0.6mm" height="0.6mm" pcbX={0} pcbY={0} portHints={["pin1"]} /></footprint>}
       cadModel={{ jscad: { type: "cuboid", size: [51.8, 36.2, 2.05] }, positionOffset: { x: 0, y: 0, z: 2.3 } }} />
 
     {/* FRONT, under the panel's left edge: FPC latch, double-sided contacts, mouth toward the panel edge (-X).

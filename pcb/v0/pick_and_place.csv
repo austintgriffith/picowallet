@@ -1,6 +1,6 @@
 Designator,Mid X,Mid Y,Layer,Rotation
 U1,-8.000,0.000,bottom,0
-DISP1,2.000,17.000,top,0
+DISP1,2.000,0.000,top,0
 J3,-15.775,2.800,top,270
 C4,-14.000,-6.000,top,0
 R6,4.000,-20.500,top,0
