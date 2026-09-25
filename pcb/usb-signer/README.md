@@ -1,4 +1,6 @@
-# usb-signer v0.2 — ATECC608B on a USB-C stick (2026-09-24)
+# usb-signer v0.3 — ATECC608B on a USB-C stick (2026-09-24)
+
+Full design report with every decision and risk: `REPORT.md`.
 
 Plug it into a laptop. The computer talks I2C to the secure element through an MCP2221A bridge. No
 firmware on the stick; the host does everything. Same chip, same key handling as picowallet, minus the
