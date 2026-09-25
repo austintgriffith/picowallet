@@ -19,9 +19,9 @@ export default () => (
     <trace from="J1.GND6" to="net.GND" />
     <trace from="J1.DP2" to="net.DP" />
     <trace from="J1.DN2" to="net.DN" />
-    {/* 5.1k on CC tells the host we're a device that wants 5 V */}
+    {/* 5.1k Rd on A5 = CC per the USB-IF plug rule (A5 only; B5 = VCONN stays open). Tells the host we are a device. */}
     <resistor name="R1" resistance="5.1k" footprint="0603" layer="bottom" pcbX={-3} pcbY={4} pcbRotation={90} />
-    <trace from="J1.CC2" to="R1.pin1" />
+    <trace from="J1.CC1" to="R1.pin1" />
     <trace from="R1.pin2" to="net.GND" />
 
     {/* USB to I2C bridge */}
@@ -68,10 +68,10 @@ export default () => (
     <trace from="LED1.cathode" to="net.GND" />
     <led name="LED2" color="blue" footprint="0603" pinLabels={{ pin1: "cathode", pin2: "anode" }} pcbX={13.8} pcbY={-3.5} pcbRotation={90} />
     <resistor name="R6" resistance="1k" footprint="0603" layer="bottom" pcbX={11.8} pcbY={-3.5} pcbRotation={0} />
-    <trace from="U1.GP3" to="R6.pin1" />
+    <trace from="R6.pin1" to="net.VBUS" />
     <trace from="R6.pin2" to="LED2.anode" />
-    <trace from="LED2.cathode" to="net.GND" />
+    <trace from="LED2.cathode" to="U1.GP3" />  {/* LED_I2C pulses LOW on traffic, so the LED sits between VBUS and GP3 like Microchip's own board */}
 
-    <silkscreentext text="usb-signer v0.2" pcbX={4} pcbY={-5.4} fontSize={0.8} />
+    <silkscreentext text="usb-signer v0.3" pcbX={4} pcbY={-5.4} fontSize={0.8} />
   </board>
 )

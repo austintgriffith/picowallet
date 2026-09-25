@@ -12,7 +12,7 @@ Board: 82 × 44 × 1.6 mm, square corners. 3D model of the whole thing: `v0/boar
 | Power switch SW6 | 2.8 mm tall; knob hangs ~1 mm past the bottom edge, slides left-right | 8 × 2.8 body, center (-18, -18), pins inboard |
 | LEDs PWR (-27, -20) green, CHG (-12, -20) red | 0.8 mm | 0603, light pipes or a clear window if the case covers them |
 | Battery plug J2 | 6 mm | JST-PH, opening faces +Y (top edge) |
-| Ribbon latch J3 | 2 mm, 10.6 × 4.75 | at (-14, 2.8) under the panel, mouth facing -X |
+| Ribbon latch J3 | 1 mm, 8.1 × 3.3 | at (-4.3, 0.4) under the panel, mouth facing -X; the panel rests on its lid |
 
 | Everything else | ≤ 1.5 mm | |
 

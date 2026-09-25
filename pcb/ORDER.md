@@ -24,7 +24,7 @@ Goal: learn the process and the real clock. 5 boards, JLCPCB assembled, zero sol
 | Date | Step | Note |
 |---|---|---|
 | 2026-09-23 | quote v0.4 | $190.83 for 5 assembled. Superseded. |
-| 2026-09-23 | quote v0.7 | **$221.55** for 5 assembled (PCB $4 + PCBA $217.55). 25/25 parts matched incl. the bare panel (JLCPCB places it, $3.59 ea) and the Pico. PCB 24 h, assembly 4–5 days. Cart project "fab_Y3", PCBA SMT026092460529. Superseded 2026-09-24 by fab_Y4 (see below). |
+| 2026-09-23 | quote v0.7 | **$221.55** for 5 assembled (PCB $4 + PCBA $217.55). 25/25 parts matched incl. the bare panel (JLCPCB places it, $3.59 ea) and the Pico. PCB 24 h, assembly 4–5 days. Cart project "fab_Y3", PCBA SMT026092460529. Superseded. |
 | 2026-09-24 | quote v0.7b | **$221.24** for 5 assembled, cart item **fab_Y4** (PCBA SMT026092462580). Fixes after seeing JLCPCB's bottom preview: Pico moved to the left edge (was 6 mm inboard), Pico rotation set to 180 in the CPL so its USB faces the edge in JLCPCB's view, BT1 placeholder stripped from BOM/CPL (JLCPCB had merged it into a 100 nF cap). fab_Y3 deleted. |
 | | paid | |
 | | in production | |
@@ -69,3 +69,4 @@ That's it. Zero soldering, truly: the board arrives with every part on it. Screw
 - tscircuit writes bottom-layer rotation with a mirror convention; JLCPCB rendered the Pico (pcbRotation 180 in the design, exported as 0) with its USB pointing INTO the board. Patched to 180 in `pick_and_place.csv` after export. Always look at JLCPCB's Bottom preview for any polarized bottom part.
 - A BOM row with blank value/footprint (the drawn battery) gets merged into whatever row is above it. Strip placeholder parts from BOM + CPL before upload.
 - JLCPCB's Edit Order on a cart item needs a real mouse click on the row; headless it never navigated. Fresh upload + delete the old item was faster.
+| 2026-09-24 | quote v0.7c | **$221.37**, cart item **fab_Y6** (PCBA SMT026092560265). Changes: backlight 27 Ω, PROG 6.2 k, latch swapped to 1 mm AFC42 (C466532) and moved to (-4.3, 0.4) so the 20.7 mm ribbon lies flat. fab_Y4/Y5 deleted. Full dossier in `pcb/dossier/`. |

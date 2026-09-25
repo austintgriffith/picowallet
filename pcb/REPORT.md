@@ -1,4 +1,6 @@
-# picowallet one-board v0.7b — review report (2026-09-24)
+# picowallet one-board v0.7c — review report (2026-09-24)
+
+**Full dossier with every file, image, datasheet and the worked ribbon-fold geometry: `pcb/dossier/DOSSIER.md`.**
 
 **Ask for the reviewer:** find the thing that makes board #1 dead. Everything below is what was done, what was checked, and what was not. Files: `pcb/v0/index.circuit.tsx` (the design, 130 lines), `pcb/v0/fab.zip` (Gerbers), `pcb/v0/bom.csv`, `pcb/v0/pick_and_place.csv`, renders in `pcb/v0/render/`, live 3D at the link in ORDER.md.
 
@@ -12,10 +14,10 @@ Turn the three-part picowallet (Pico 2 W + Waveshare LCD hat + ATECC608 breakout
 |---|---|---|
 | Brain | Raspberry Pi Pico 2 W module, soldered on the back, USB at the left edge | Runs the existing MicroPython firmware unchanged. GPIOs identical to today. |
 | Secure element | ATECC608B (SOIC-8) on I2C0: SDA GP4, SCL GP5, 4.7k pull-ups, 100 nF | Same chip as the Adafruit breakout. |
-| Screen | Bare 2" 320×240 ST7789 panel (LCSC C5329582), 12-pin ribbon into a 0.5 mm double-contact latch (J3) | CS GP9, DC GP8, SCK GP10, MOSI GP11, RST GP12. VCC and IOVCC on 3V3. |
-| Backlight | VSYS → 22 Ω → LEDA; LEDK → 2N7002 → GND; gate GP13 with 10k pulldown | 4 white LEDs in parallel, 3.0 V, 80 mA rated. |
+| Screen | Bare 2" 320×240 ST7789 panel (LCSC C5329582), 12-pin ribbon folded under the panel into a 1 mm 0.5 mm double-contact latch (J3, LCSC C466532) | CS GP9, DC GP8, SCK GP10, MOSI GP11, RST GP12. VCC and IOVCC on 3V3. |
+| Backlight | VSYS → 27 Ω → LEDA; LEDK → 2N7002 → GND; gate GP13 with 10k pulldown | 4 white LEDs in parallel, 3.0 V, 80 mA rated. |
 | Input | ALPS 5-way joystick (up GP2, down GP18, left GP16, right GP20, press GP3), buttons A GP15, B GP17 | All switch to GND, internal pull-ups. |
-| Power | LiPo (JST-PH J2 on the back) → slide switch → SS14 Schottky → VSYS. TP4056 charger fed from VBUS, PROG 5.1k (~235 mA), CE high, TEMP grounded, 10 µF in/out | USB powers the board through the Pico's own path whether the switch is on or off. |
+| Power | LiPo (JST-PH J2 on the back) → slide switch → SS14 Schottky → VSYS. TP4056 charger fed from VBUS, PROG 6.2k (~195 mA), CE high, TEMP grounded, 10 µF in/out | USB powers the board through the Pico's own path whether the switch is on or off. |
 | Lights | Green PWR on 3V3 via 1k. Red CHG from VBUS via 1k into the TP4056 CHRG pin | CHG lights only while charging. |
 | Board | 82 × 44 mm, 2 layers, 4 corner holes Ø2.7 | Panel lies flat on the front, 2 mm. Pico and battery on the back, 4 mm. |
 
@@ -24,7 +26,7 @@ Turn the three-part picowallet (Pico 2 W + Waveshare LCD hat + ATECC608 breakout
 1. Design in tscircuit (React → circuit). Autorouted. Passed netlist, placement, shorts, and trace-clearance checks.
 2. Net-by-net review against datasheets: Pico pinout (all 40), ATECC608B, TP4056, SS14, ALPS joystick (center/common), panel ribbon table.
 3. tscircuit's own checks caught two real bugs before upload: green LED pin polarity backwards vs the LCSC part, and a resistor whose value changed but part number didn't.
-4. Uploaded to JLCPCB. All 25 parts matched to in-stock parts, including the bare panel, which JLCPCB will place. Standard assembly, both sides, 5 boards, parts-placement confirmation on. Quote $221.24 before shipping and tariff. Cart item fab_Y4.
+4. Uploaded to JLCPCB. All 25 parts matched to in-stock parts, including the bare panel, which JLCPCB will place. Standard assembly, both sides, 5 boards, parts-placement confirmation on. Quote $221.37 before shipping and tariff. Cart item fab_Y6.
 5. JLCPCB's placement preview caught three more: Pico 6 mm inboard from the edge; Pico rotated 180° (tscircuit exports bottom rotation with a mirror convention JLCPCB reads differently); a placeholder battery row merged into a capacitor. All fixed and re-uploaded. Bottom preview re-checked: USB at the edge, pin 1 at the USB end.
 
 ## Sure (checked, evidence in hand)
@@ -41,11 +43,11 @@ Turn the three-part picowallet (Pico 2 W + Waveshare LCD hat + ATECC608 breakout
 
 ## Not sure (ranked by how much it worries me)
 
-1. **Ribbon pin order after the fold.** The panel's tail folds under the panel's left edge into J3. Which end is pin 1 once folded is a guess from the datasheet drawing. If reversed: the panel's RS input gets VSYS through 22 Ω. On battery (≤4.2 V) that's inside the panel's 4.6 V absolute max; on USB (5 V) it is not. So: **first power-up on battery only, screen dark → flip the ribbon**. Nothing else on the board is at risk.
+1. **Ribbon pin order after the fold.** Worked out from the datasheet drawing (dossier §3): pin 1 lands on connector pad 1 if the "1 … 12" labels are in the front view, which is how I read it. If wrong, a reversed ribbon puts 3V3 onto GP10/GP11 and VSYS onto the panel's RS pin: not harmless. **Before first power with the panel: multimeter J3 pad 1 to GND (≈0 Ω) and pad 8 to 3V3 (≈0 Ω). If pad 12 reads 0 instead, flip the ribbon.**
 2. **Latch mouth direction.** I assumed the connector's opening faces the panel edge (rotation 270). If it faces the other way the ribbon needs an extra fold. Awkward, not fatal.
 3. **Panel orientation as JLCPCB places it.** Their preview shows only a marker for the panel. The parts-placement confirmation email is the check: the ribbon must exit toward J3 (left). Approve only if it does.
-4. **Backlight resistor.** 22 Ω from VSYS: 91 mA at 5 V USB (rating 80), 55 mA at 4.2 V, 27 mA at 3.7 V. Firmware should cap the PWM at ~80% when on USB, or the reviewer may prefer 27 Ω. A resistor swap is a 10-minute re-upload.
-5. **Charge current.** 235 mA into a 200 mAh cell is 1.2C. Spec is 1C. 6.2k on PROG gives 194 mA. Same 10-minute swap.
+4. ~~Backlight resistor~~ Changed to 27 Ω: 74 mA at 5 V, 44 mA at 4.2 V, 26 mA at 3.7 V.
+5. ~~Charge current~~ Changed to 6.2k: ~195 mA, 1C.
 6. **Load sharing.** With USB in and the switch on, the charger and the load share the battery. Standard TP4056 hobby-board behavior: charge may never terminate. Fine for the bench, wrong for a product.
 7. **Slide switch common pin.** Middle pad wired as common, by geometry and convention. Datasheet PDF wouldn't download. Wrong = switch dead, fix with a wire.
 8. **Battery plug polarity.** Amazon LiPos ship with red on either side. Check red = BAT+ on the silkscreen before plugging in.
@@ -66,9 +68,9 @@ Turn the three-part picowallet (Pico 2 W + Waveshare LCD hat + ATECC608 breakout
 
 1. No battery, no panel. USB in, switch off. PWR LED on? Measure 3V3 on the ATECC VCC pin. Flash firmware, run `keytest.py`: joystick and buttons.
 2. Battery in, USB out, switch on. Board stays up? USB back in: CHG LED on?
-3. Panel in, **battery only, USB out**. Screen shows anything? Dark → flip the ribbon end-for-end, retry.
+3. Everything off. Ribbon in, latched. Multimeter: J3 pad 1 ↔ GND ≈ 0, pad 8 ↔ 3V3 ≈ 0. Reversed → flip. Then battery only, USB out, init the panel.
 4. Only then USB + panel together.
 
 ## Cost
 
-$221.24 JLCPCB + shipping + US tariff (shown at checkout) + ~$25 batteries. About $50 a wallet.
+$221.37 JLCPCB + shipping + US tariff (shown at checkout) + ~$25 batteries. About $50 a wallet.

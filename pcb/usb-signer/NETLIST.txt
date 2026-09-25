@@ -1,0 +1,90 @@
+# usb-signer v0.3 compiled netlist (from dist/index/circuit.json)
+
+## Components (mm, origin = board center, +X right, +Y up, looking at the front)
+J1    layer=top    center=(-13.95,  0.00) size=1.5x7.9 rot=270
+R1    layer=bottom center=( -3.00,  4.00) size=1.0x2.5 rot=90
+U1    layer=top    center=(  1.00,  0.00) size=7.3x4.3 rot=90
+C1    layer=bottom center=( -2.00, -1.00) size=1.0x2.5 rot=90
+C2    layer=bottom center=(  1.00, -3.50) size=2.5x1.0 rot=0
+R2    layer=bottom center=(  1.00,  3.50) size=2.5x1.0 rot=0
+R3    layer=bottom center=(  5.00,  1.00) size=0.9x2.5 rot=90
+R4    layer=bottom center=(  7.00,  1.00) size=0.9x2.5 rot=90
+U2    layer=top    center=(  9.00,  0.00) size=7.0x4.4 rot=90
+C3    layer=bottom center=(  8.00, -3.50) size=2.5x1.0 rot=0
+LED1  layer=top    center=( 13.80,  3.50) size=0.9x2.5 rot=90
+R5    layer=bottom center=( 11.80,  3.50) size=2.4x1.0 rot=0
+LED2  layer=top    center=( 13.80, -3.50) size=0.9x2.5 rot=90
+R6    layer=bottom center=( 11.80, -3.50) size=2.4x1.0 rot=0
+
+## J1 (USB-C plug) pads
+['pin27'] layer=bottom center=(-13.95,-2.75) 1.50x0.30
+['pin28'] layer=bottom center=(-13.95,-2.25) 1.50x0.30
+['pin29'] layer=bottom center=(-13.95,-1.75) 1.50x0.30
+['pin30'] layer=bottom center=(-13.95,-1.25) 1.50x0.30
+['pin31'] layer=bottom center=(-13.95,-0.75) 1.50x0.30
+['pin32'] layer=bottom center=(-13.95,-0.25) 1.50x0.30
+['pin33'] layer=bottom center=(-13.95,0.25) 1.50x0.30
+['pin34'] layer=bottom center=(-13.95,0.75) 1.50x0.30
+['pin35'] layer=bottom center=(-13.95,1.25) 1.50x0.30
+['pin36'] layer=bottom center=(-13.95,1.75) 1.50x0.30
+['pin37'] layer=bottom center=(-13.95,2.25) 1.50x0.30
+['pin38'] layer=bottom center=(-13.95,2.75) 1.50x0.30
+['pin26'] layer=top center=(-13.90,3.60) 1.40x0.70
+['pin39'] layer=top center=(-13.95,-2.75) 1.50x0.30
+['pin40'] layer=top center=(-13.95,-2.25) 1.50x0.30
+['pin41'] layer=top center=(-13.95,-1.75) 1.50x0.30
+['pin42'] layer=top center=(-13.95,-1.25) 1.50x0.30
+['pin43'] layer=top center=(-13.95,-0.75) 1.50x0.30
+['pin44'] layer=top center=(-13.95,-0.25) 1.50x0.30
+['pin45'] layer=top center=(-13.95,0.25) 1.50x0.30
+['pin46'] layer=top center=(-13.95,0.75) 1.50x0.30
+['pin47'] layer=top center=(-13.95,1.25) 1.50x0.30
+['pin48'] layer=top center=(-13.95,1.75) 1.50x0.30
+['pin49'] layer=top center=(-13.95,2.25) 1.50x0.30
+['pin50'] layer=top center=(-13.95,2.75) 1.50x0.30
+['pin25'] layer=bottom center=(-13.90,-3.60) 1.40x0.70
+
+## Connections
+  J1.B9 -- VBUS
+  J1.B4 -- VBUS
+  J1.B12 -- GND
+  J1.B1 -- GND
+  J1.GND3 -- GND
+  J1.GND6 -- GND
+  J1.B6 -- DP
+  J1.B7 -- DN
+  J1.A5 -- R1.pin1
+  R1.pin2 -- GND
+  U1.VDD -- VBUS
+  U1.VSS -- GND
+  U1.D_POS -- DP
+  U1.D_NEG -- DN
+  U1.SDA -- SDA
+  U1.SCL -- SCL
+  U1.VUSB -- C1.pin1
+  C1.pin2 -- GND
+  C2.pin1 -- VBUS
+  C2.pin2 -- GND
+  U1.N_RST -- R2.pin1
+  R2.pin2 -- VBUS
+  R3.pin1 -- SDA
+  R3.pin2 -- VBUS
+  R4.pin1 -- SCL
+  R4.pin2 -- VBUS
+  U2.VCC -- VBUS
+  U2.GND -- GND
+  U2.SDA -- SDA
+  U2.SCL -- SCL
+  C3.pin1 -- VBUS
+  C3.pin2 -- GND
+  R5.pin1 -- VBUS
+  R5.pin2 -- LED1.anode
+  LED1.cathode -- GND
+  R6.pin1 -- VBUS
+  R6.pin2 -- LED2.anode
+  LED2.cathode -- U1.GP3
+
+## Board
+[(30, 12, 0.8)]
+
+## PCB traces: 32  vias: 29
