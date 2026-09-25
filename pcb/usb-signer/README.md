@@ -1,4 +1,4 @@
-# usb-signer v0.1 — ATECC608B on a USB-C stick (2026-09-23)
+# usb-signer v0.2 — ATECC608B on a USB-C stick (2026-09-24)
 
 Plug it into a laptop. The computer talks I2C to the secure element through an MCP2221A bridge. No
 firmware on the stick; the host does everything. Same chip, same key handling as picowallet, minus the
@@ -9,7 +9,7 @@ laptop USB-C  ──►  MCP2221A (USB→I2C)  ──I2C──►  ATECC608B
 ```
 
 ## Board
-- 40 × 14 mm, **0.8 mm thick** (the plug needs it), 2 layers. Left 13 mm is the plug's tongue.
+- 30 × 12 mm, **0.8 mm thick** (the plug needs it), 2 layers. Left 13 mm is the plug tongue. Chips on the front, passives and lights on the back.
 - Everything runs on the 5 V from USB. MCP2221A and ATECC608B both take 3–5.5 V, so no regulator.
 - Zero soldering: every part is an LCSC part JLCPCB places. Design: `index.circuit.tsx`, fab files: `fab.zip`.
 
