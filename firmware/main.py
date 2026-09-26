@@ -3,6 +3,8 @@
 import sys
 try:
     import lcd     # first: grabs the framebuffer while the heap is fresh (RP2040 boards need this)
+    import loader
+    loader.load("wallet")   # its files load one by one under the boot logo's bar
     import wallet
     wallet.start()
 except Exception as e:

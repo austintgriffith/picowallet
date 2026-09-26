@@ -66,7 +66,7 @@ async function doShip(name, file, src, port, target, boot) {
     if (target === "wifi" || /wallet/.test(mainNow)) bootNote = "main.py left alone: this looks like the wallet Pico";
     else {
       const lcdFirst = dependencies(name).includes("lcd.py") && name !== "lcd" ? "    import lcd     # first: framebuffer on a fresh heap (RP2040)\n" : "";
-      writeFileSync(join(SKETCHES, ".main.py"), `# written by the emulator's send: run ${name} at power-up\nimport sys\ntry:\n${lcdFirst}    import ${name}\n${entryFor(name) ? "    " + entryFor(name) + "\n" : ""}except Exception as e:\n    sys.print_exception(e)\n`);
+      writeFileSync(join(SKETCHES, ".main.py"), `# written by the emulator's send: run ${name} at power-up\nimport sys\ntry:\n${lcdFirst}    import loader\n    loader.load("${name}")\n    import ${name}\n${entryFor(name) ? "    " + entryFor(name) + "\n" : ""}except Exception as e:\n    sys.print_exception(e)\n`);
       bootNote = `main.py now runs ${name} at power-up`;
     }
   }
@@ -79,7 +79,11 @@ async function doShip(name, file, src, port, target, boot) {
     if (f && dep !== file.name) args.push("cp", join(f.src === "firmware" ? FIRMWARE : SKETCHES, dep), `:${dep}`, "+");
   }
   args.push("cp", src, `:${file.name}`, "+");
-  if (bootNote.startsWith("main.py now")) args.push("cp", join(SKETCHES, ".main.py"), ":main.py", "+");
+  if (bootNote.startsWith("main.py now")) {
+    // the boot logo and loading bar come with a boot main.py
+    for (const f of ["lcd.py", "loader.py", "logo.bin", "bar.bin", "boot.py"]) if (!dependencies(name).includes(f)) args.push("cp", join(FIRMWARE, f), `:${f}`, "+");
+    args.push("cp", join(SKETCHES, ".main.py"), ":main.py", "+");
+  }
   args.push("exec", "import os\nif hasattr(os, 'sync'): os.sync()");
   const c = await mp(port, args, 120000);
   if (c.code !== 0) return { ok: false, port, error: "copy failed", lines: lines(c.out) };

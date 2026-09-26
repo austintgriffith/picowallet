@@ -1,0 +1,149 @@
+#!/usr/bin/env python3
+# Boot loading bar art: renders the plastic-look bar (white shell, recessed track, dark rounded fill)
+# at 4x and scales it down, then writes firmware/bar.bin for firmware/loader.py:
+#   header: 8 big-endian uint16  X Y W H  F0 F1 CW CR
+#     X, Y, W, H  where the strip goes on screen and its size
+#     F0, F1      strip columns where the fill starts and where a full fill ends
+#     CW, CR      width of the cap piece, and how many of its columns sit left of the fill's end
+#   then RGB565 pixels, row by row: the strip empty (W*H), the strip full (W*H), the cap (CW*H),
+#   and the strip full in green (W*H), shown once loading is done.
+# The chip builds any progress P from these: full strip left of P - CR, the cap, empty strip after.
+# The background is the logo's corner colour, so the strip sits on logo.bin without a seam.
+# Also writes art/bar_screen.png: logo plus the bar at a few progress values, 2x.
+#   tools/bar [logo image]              default art/logo.jpg
+import struct, sys
+from pathlib import Path
+from PIL import Image, ImageDraw, ImageFilter, ImageChops
+
+root = Path(__file__).resolve().parent.parent
+logo = Path(sys.argv[1]) if len(sys.argv) > 1 else root / "art/logo.jpg"
+BG = Image.open(logo).convert("RGB").getpixel((0, 0))
+
+S = 4                                   # supersampling
+W, H = 170, 46                          # strip, device px
+X, Y = (240 - W) // 2, 158              # on screen
+SHELL = (10, 8, 150, 30)                # x, y, w, h inside the strip
+TRACK_INSET = (11, 7)                   # track inside the shell, x and y
+PAD = 2                                 # fill inside the track
+CAP_EXTRA = 3                           # cap columns right of the fill's end (its shadow)
+
+
+def grad(w, h, top, bottom):
+    g = Image.new("RGB", (1, h))
+    for y in range(h):
+        t = y / max(h - 1, 1)
+        g.putpixel((0, y), tuple(int(top[i] * (1 - t) + bottom[i] * t) for i in range(3)))
+    return g.resize((w, h))
+
+
+def pill(w, h, box):
+    m = Image.new("L", (w, h), 0)
+    x0, y0, x1, y1 = box
+    ImageDraw.Draw(m).rounded_rectangle(box, radius=(y1 - y0) / 2, fill=255)
+    return m
+
+
+GREY_FILL = ((124, 125, 127), (72, 73, 75))
+GREEN_FILL = ((70, 205, 100), (22, 140, 52))    # the logo's green stripe, top to bottom
+
+
+def render(fill_end, colors=GREY_FILL):
+    """The strip with the fill's right end at device column fill_end (None: empty)."""
+    w, h = W * S, H * S
+    img = Image.new("RGB", (w, h), BG)
+    sx, sy, sw, sh = (v * S for v in SHELL)
+    shell = (sx, sy, sx + sw, sy + sh)
+
+    # soft drop shadow under the shell
+    sh_m = pill(w, h, (shell[0] + 1 * S, shell[1] + 4 * S, shell[2] + 1 * S, shell[3] + 4 * S))
+    sh_m = sh_m.filter(ImageFilter.GaussianBlur(4 * S)).point(lambda v: v * 70 // 255)
+    img.paste((0, 0, 0), (0, 0), sh_m)
+
+    # shell: white plastic, a touch darker at the bottom, bright rim along the top
+    shell_m = pill(w, h, shell)
+    img.paste(grad(w, h, (255, 255, 255), (232, 233, 235)).crop((0, 0, w, h)), (0, 0), shell_m)
+    rim = ImageChops.subtract(shell_m, pill(w, h, (shell[0], shell[1] + 1.5 * S, shell[2], shell[3] + 1.5 * S)))
+    img.paste((255, 255, 255), (0, 0), rim)
+    low = ImageChops.subtract(shell_m, pill(w, h, (shell[0], shell[1] - 1.5 * S, shell[2], shell[3] - 1.5 * S)))
+    img.paste((205, 206, 208), (0, 0), low.point(lambda v: v * 150 // 255))
+
+    # recessed track: grey, darker at the top, with a shadow cast inward from its top edge
+    tx, ty = TRACK_INSET[0] * S, TRACK_INSET[1] * S
+    track = (shell[0] + tx, shell[1] + ty, shell[2] - tx, shell[3] - ty)
+    track_m = pill(w, h, track)
+    img.paste(grad(w, h, (192, 193, 195), (218, 219, 221)), (0, 0), track_m)
+    inner = ImageChops.subtract(track_m, pill(w, h, (track[0], track[1] + 2.5 * S, track[2], track[3] + 1 * S)))
+    inner = ImageChops.multiply(inner.filter(ImageFilter.GaussianBlur(1.5 * S)), track_m)
+    img.paste((70, 70, 72), (0, 0), inner.point(lambda v: v * 150 // 255))
+    lip = ImageChops.subtract(pill(w, h, (track[0] - S, track[1] - S, track[2] + S, track[3] + S)), track_m)
+    img.paste((225, 226, 228), (0, 0), lip)
+
+    if fill_end is not None:
+        p = PAD * S
+        fill = (track[0] + p, track[1] + p, fill_end * S, track[3] - p)
+        # shadow the fill casts on the track
+        fs = pill(w, h, (fill[0] + 0.5 * S, fill[1] + 1.5 * S, fill[2] + 0.5 * S, fill[3] + 1.5 * S))
+        fs = ImageChops.multiply(fs.filter(ImageFilter.GaussianBlur(1.5 * S)), track_m)
+        img.paste((40, 40, 42), (0, 0), fs.point(lambda v: v * 110 // 255))
+        fm = pill(w, h, fill)
+        img.paste(grad(w, h, *colors), (0, 0), fm)
+        # gloss: a soft light band along the top of the fill
+        fh = fill[3] - fill[1]
+        gloss = ImageChops.subtract(fm, pill(w, h, (fill[0], fill[1] + fh * 0.35, fill[2], fill[3] + fh * 0.35)))
+        img.paste((255, 255, 255), (0, 0), gloss.filter(ImageFilter.GaussianBlur(1 * S)).point(lambda v: v * 45 // 255))
+        # dark edge at the bottom
+        foot = ImageChops.subtract(fm, pill(w, h, (fill[0], fill[1] - 1.2 * S, fill[2], fill[3] - 1.2 * S)))
+        img.paste((40, 40, 42), (0, 0), foot.point(lambda v: v * 120 // 255))
+    return img.resize((W, H), Image.LANCZOS)
+
+
+def rgb565(img):
+    out = bytearray()
+    for y in range(img.height):
+        for x in range(img.width):
+            r, g, b = img.getpixel((x, y))
+            c = ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3)
+            out += bytes((c >> 8, c & 0xFF))
+    return out
+
+
+track_x0 = SHELL[0] + TRACK_INSET[0]
+track_x1 = SHELL[0] + SHELL[2] - TRACK_INSET[0]
+fill_h = SHELL[3] - 2 * TRACK_INSET[1] - 2 * PAD
+F0, F1 = track_x0 + PAD, track_x1 - PAD
+CR = fill_h // 2 + 1                     # the rounded end, plus a column of slack
+CW = CR + CAP_EXTRA
+mid = (F0 + F1) // 2
+
+empty, full = render(None), render(F1)
+cap = render(mid).crop((mid - CR, 0, mid + CAP_EXTRA, H))
+green = render(F1, GREEN_FILL)
+data = struct.pack(">8H", X, Y, W, H, F0, F1, CW, CR) + rgb565(empty) + rgb565(full) + rgb565(cap) + rgb565(green)
+logo_bin = (root / "firmware/logo.bin").read_bytes()
+under = {logo_bin[(y * 240 + x) * 2:(y * 240 + x) * 2 + 2] for y in range(Y, Y + H) for x in range(X, X + W)}
+if len(under) != 1:     # loader.py hides the bar by painting one background row; the logo must not reach under it
+    sys.exit("the logo reaches under the bar (rows %d-%d); move the bar or the logo" % (Y, Y + H - 1))
+(root / "firmware/bar.bin").write_bytes(data)
+
+
+def at(p):
+    """What the chip shows at fill end p, built the same way loader.py builds it."""
+    s = empty.copy()
+    if p >= F1 - CAP_EXTRA:
+        return full
+    s.paste(full.crop((0, 0, p - CR, H)), (0, 0))
+    s.paste(cap, (p - CR, 0))
+    return s
+
+
+shot = Image.open(root / "art/logo_screen.png").resize((240, 240))
+sheet = Image.new("RGB", (240 * 4, 240))
+for i, frac in enumerate((0.0, 0.55, 1.0, None)):
+    frame = shot.copy()
+    p = F0 + int((F1 - F0) * (frac or 0))
+    frame.paste(green if frac is None else empty if frac == 0 else at(max(p, F0 + 2 * CR)), (X, Y))
+    sheet.paste(frame, (240 * i, 0))
+r, g, b = sheet.split()                 # the screen's 5-6-5 bit colour
+sheet = Image.merge("RGB", (r.point(lambda v: v & 0xF8), g.point(lambda v: v & 0xFC), b.point(lambda v: v & 0xF8)))
+sheet.resize((240 * 4 * 2, 480), Image.NEAREST).save(root / "art/bar_screen.png")
+print(f"firmware/bar.bin ({len(data)} bytes), preview art/bar_screen.png")

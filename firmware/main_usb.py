@@ -4,6 +4,8 @@
 import sys
 try:
     import lcd          # first: grabs the framebuffer while the heap is fresh (RP2040 boards)
+    import loader
+    loader.load("usbwallet")   # its files load one by one under the boot logo's bar
     import usbwallet
     usbwallet.run()
 except KeyboardInterrupt:

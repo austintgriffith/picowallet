@@ -6,6 +6,10 @@ for f in firmware/*.py; do
   case "$f" in *secrets.example.py) continue;; esac
   ./tools/pico cp "$f" ":$(basename "$f")" || exit 1
 done
+# boot logo and loading bar (lcd.splash, loader.py)
+for f in firmware/logo.bin firmware/bar.bin; do
+  ./tools/pico cp "$f" ":$(basename "$f")" || exit 1
+done
 # schedule the reset so mpremote returns before the socket drops
 ./tools/pico exec 'import machine; machine.Timer(period=300, mode=machine.Timer.ONE_SHOT, callback=lambda t: machine.reset())'
 echo "pushed, rebooting"

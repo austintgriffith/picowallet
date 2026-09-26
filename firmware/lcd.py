@@ -1,7 +1,7 @@
 # Waveshare Pico-LCD-1.3: 240x240 ST7789 over SPI1, plus joystick and A/B/X/Y keys.
 # Pins from waveshare.com/wiki/Pico-LCD-1.3.
 from machine import Pin, SPI, PWM
-import framebuf, time
+import framebuf, os, time
 
 DC, CS, SCK, MOSI, RST, BL = 8, 9, 10, 11, 12, 13
 KEYS = {"A": 15, "B": 17, "X": 19, "Y": 21, "up": 2, "down": 18, "left": 16, "right": 20, "press": 3}
@@ -23,10 +23,29 @@ YELLOW, GREY, DARK = color(255, 220, 0), color(120, 120, 120), color(30, 30, 30)
 # has been compiled the heap is too fragmented and LCD() dies with MemoryError. So anything that
 # runs a big module (main.py, the emulator's send) imports lcd first, and LCD() reuses this.
 _BUF = bytearray(240 * 240 * 2)
+_panel_up = False   # set once the panel is initialised; later LCD()s keep whatever it shows
+_on_show = None     # loader.py: called at the app's first show(), i.e. its first screen
+
+
+def splash(path="logo.bin"):
+    """Boot logo, called first thing from boot.py: the raw frame from tools/logo goes straight into
+    the framebuffer and onto the panel, backlight last so the first thing seen is the logo. It stays
+    up until the app's first show(). No file, no logo."""
+    if _panel_up:
+        return
+    try:
+        if os.stat(path)[6] != len(_BUF):   # made for another screen size (tools/logo makes 240x240)
+            return
+        with open(path, "rb") as f:
+            f.readinto(_BUF)
+    except OSError:
+        return
+    LCD(logo=True)
 
 
 class LCD(framebuf.FrameBuffer):
-    def __init__(self):
+    def __init__(self, logo=False):
+        global _panel_up
         self.width = self.height = 240
         self.cs = Pin(CS, Pin.OUT, value=1)
         self.rst = Pin(RST, Pin.OUT, value=1)
@@ -34,13 +53,19 @@ class LCD(framebuf.FrameBuffer):
         self.spi = SPI(1, 62_500_000, polarity=0, phase=0, sck=Pin(SCK), mosi=Pin(MOSI), miso=None)
         self.bl = PWM(Pin(BL))
         self.bl.freq(1000)
-        self.backlight(100)
         self.buffer = _BUF
         super().__init__(self.buffer, self.width, self.height, framebuf.RGB565)
-        self._init_panel()
+        if not _panel_up:   # after splash() the panel is already up; resetting it would blank the logo
+            self.backlight(0)
+            self._init_panel()
+            if not logo:
+                self.fill(BLACK)
+            self.show()
+            _panel_up = True
+        self.backlight(100)
 
     def backlight(self, pct):
-        self.bl.duty_u16(int(65535 * pct / 100))
+        self.bl.duty_u16(int(65535 * max(0, min(100, pct)) / 100))
 
     def _cmd(self, cmd, data=None):
         self.dc(0); self.cs(0); self.spi.write(bytes([cmd])); self.cs(1)
@@ -68,6 +93,8 @@ class LCD(framebuf.FrameBuffer):
         self._cmd(0x29)                # display on
 
     def show(self):
+        if _on_show:
+            _on_show()
         self._cmd(0x2A, [0x00, 0x00, 0x00, 0xEF])
         self._cmd(0x2B, [0x00, 0x00, 0x00, 0xEF])
         self._cmd(0x2C)
