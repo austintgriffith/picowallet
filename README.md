@@ -106,7 +106,10 @@ joystick poke through. Keycaps and a joystick dome are in `case/out/` (PLA, 0.12
 3. On the computer: `uv tool install mpremote` (or `pip install mpremote`).
 4. Copy `firmware/secrets.example.py` to `firmware/secrets.py`. Put in your WiFi and the app URL
    (step 6 gives you that, `http://<your-laptop-lan-ip>:3001`).
-5. First time, over USB: `mpremote cp firmware/*.py :` then `mpremote reset`.
+5. First time, over USB: `./tools/mpy` (needs `uv tool install mpy-cross==1.26.1.post2`), then
+   `mpremote cp firmware/*.py firmware/*.mpy firmware/*.bin : + rm :splash.py + rm :lcd.py + rm :loader.py + reset`.
+   That is the firmware plus the boot logo and loading bar; the three bootloader modules go as
+   pre-compiled `.mpy` (a `.py` of the same name on the board would be used instead).
 
 The passwordless WiFi console is disabled by default because it grants full control of the signer.
 For isolated development only, set `ENABLE_NETWORK_CONSOLE = True`; then `./tools/push` deploys

@@ -24,16 +24,17 @@ def _starts(s, words):
 
 
 def _imports(path):
-    """Modules a .py file loads when it is imported: the import lines above its first top-level
-    def or class (reading the whole file is slow on the board, and imports go at the top). Read
-    line by line so a big file never needs one big block of RAM."""
+    """Modules a .py file always loads when it is imported: unindented import lines above its first
+    top-level def or class (reading the whole file is slow on the board, and imports go at the top).
+    Indented ones sit in a try or an if, may be meant to fail or be skipped, so the app does those
+    itself. Read line by line so a big file never needs one big block of RAM."""
     out = []
     with open(path) as f:
         for line in f:
             s = line.split("#")[0].split(";")[0].strip()
-            if not s:
+            if not s or line[0] in " \t":
                 continue
-            if line[0] not in " \t" and _starts(s, ("def ", "class ", "async def ", "@")):
+            if _starts(s, ("def ", "class ", "async def ", "@")):
                 break
             if s.startswith("import "):
                 out += [p.split()[0].split(".")[0] for p in s[7:].split(",") if p.strip()]
