@@ -46,8 +46,11 @@ export function bootselDrives() {
 }
 
 export function listDevices() {
-  const out = [];
-  for (const port of serialPorts()) {
+  const out = [], ports = serialPorts(), drives = bootselDrives();
+  // a port name comes back the same after a replug or reflash, so re-ask the board: forget ports that
+  // are gone, and forget everything while a board sits in its bootloader (it is about to change)
+  for (const port of [...known.keys()]) if (drives.length || !ports.includes(port)) known.delete(port);
+  for (const port of ports) {
     const k = known.get(port);
     if (!k) { known.set(port, "pending"); identify(port); }
     const short = port.replace(/^\/dev\/(cu\.)?/, "");
@@ -55,7 +58,7 @@ export function listDevices() {
     out.push({ kind: "serial", port, board: k.board, mp: k.mp, product: k.product, banner: k.banner,
       label: k.mp ? `${k.board} · ${short}` : `${k.product || "board"}${k.manufacturer ? " (" + k.manufacturer + ")" : ""} · ${short} - not MicroPython${k.banner ? ", prints \"" + k.banner.split("\n")[0].slice(0, 24) + "\"" : ""}` });
   }
-  return out.concat(bootselDrives());
+  return out.concat(drives);
 }
 
 export function forget(port) { known.delete(port); }
