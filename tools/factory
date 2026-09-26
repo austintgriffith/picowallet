@@ -1,7 +1,24 @@
 #!/bin/sh
-# Factory test page on http://localhost:4343 (WebSerial needs localhost or https). Chrome or Edge.
+# Factory test page. WebSerial needs https or localhost, so it serves https with a self-signed
+# cert (made once in ~/.picowallet-factory) on every interface: https://<this Mac's LAN IP>:4343.
+# First visit from another computer: click through the certificate warning once.
 cd "$(dirname "$0")/../factory" || exit 1
-PORT=${PORT:-4343}
-lsof -ti tcp:$PORT >/dev/null 2>&1 || (python3 -m http.server $PORT --bind 127.0.0.1 >/dev/null 2>&1 &)
-sleep 0.5
-open -a "Google Chrome" "http://localhost:$PORT/"
+PORT=${FACTORY_PORT:-4343}
+D="$HOME/.picowallet-factory"
+IPS=$(for i in en0 en1 en7 en8; do ipconfig getifaddr $i; done 2>/dev/null)
+if [ ! -f "$D/cert.pem" ]; then
+  mkdir -p "$D"
+  SAN="DNS:localhost,IP:127.0.0.1$(for ip in $IPS; do printf ',IP:%s' "$ip"; done)"
+  openssl req -x509 -newkey rsa:2048 -nodes -days 3650 -subj "/CN=picowallet-factory" \
+    -addext "subjectAltName=$SAN" -keyout "$D/key.pem" -out "$D/cert.pem" 2>/dev/null
+fi
+lsof -ti tcp:$PORT >/dev/null 2>&1 || python3 - "$PORT" "$D" >/dev/null 2>&1 <<'PY' &
+import http.server, ssl, sys
+port, d = int(sys.argv[1]), sys.argv[2]
+s = http.server.ThreadingHTTPServer(("0.0.0.0", port), http.server.SimpleHTTPRequestHandler)
+c = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER); c.load_cert_chain(d + "/cert.pem", d + "/key.pem")
+s.socket = c.wrap_socket(s.socket, server_side=True)
+s.serve_forever()
+PY
+sleep 1
+for ip in $IPS; do echo "https://$ip:$PORT/"; done
