@@ -1,7 +1,8 @@
 // Every Pico-like thing on USB, for the page's device picker and `tools/emu devices`.
 //   listDevices() -> [{ kind: "serial", port, label, board? } | { kind: "bootsel", path, label, board }]
 // serial: /dev/cu.usbmodem* (mac) or /dev/ttyACM* (linux), a board running MicroPython. The first
-// time a port is seen it is asked what it is (os.uname().machine, one short mpremote call, cached).
+// time a port is seen its USB info says whether it runs MicroPython (cached); the board itself is
+// never interrupted.
 // bootsel: a board plugged in with BOOTSEL held mounts as a drive (RPI-RP2 for RP2040, RP2350 for
 // Pico 2) with INFO_UF2.TXT; it has no serial port and runs nothing until a .uf2 is copied on.
 //   flash(path, { version }) downloads the MicroPython .uf2 for that board and copies it over.
@@ -84,13 +85,13 @@ async function identify(port) {
   if (lock.busy) { known.delete(port); return; }
   lock.busy = true;
   try {
+    // MicroPython says so in its USB descriptor. Only ask the USB info: talking to the board (mpremote)
+    // would Ctrl-C whatever it is running, like a wallet halfway through booting.
     const info = await portInfo(port);
-    const r = await run(MPREMOTE, ["connect", port, "resume", "exec", "import os; print('MACHINE:', os.uname().machine)"], 8000);
-    const m = r.out.match(/MACHINE:\s*(.+)/);
-    let banner = "";
-    if (!m) banner = (await run(PY, [USBINFO, "banner", port], 4000)).out.trim();
+    const mp = info.manufacturer === "MicroPython";
+    const banner = mp ? "" : (await run(PY, [USBINFO, "banner", port], 4000)).out.trim();
     if (!serialPorts().includes(port)) known.delete(port);
-    else known.set(port, { mp: !!m, board: m ? m[1].trim().replace(/ with RP2\d+/, "") : null, product: info.product, manufacturer: info.manufacturer, banner });
+    else known.set(port, { mp, board: mp ? "MicroPython board" : null, product: info.product, manufacturer: info.manufacturer, banner });
   } finally { lock.busy = false; }
 }
 
