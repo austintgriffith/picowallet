@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
-# Boot logo: turn an image into firmware/logo.bin, the raw 240x240 RGB565 frame the screen takes
-# (big-endian, row by row, the same bytes lcd.py's framebuffer holds). The image goes in at half
-# size (LOGO px square), leaving room below for the loading bar (tools/bar); the rest
-# is the image's corner colour. Also writes art/logo_screen.png, a 2x preview of what the screen shows.
+# Boot logo: turn an image into firmware/logo.bin for lcd.splash(). The image goes in at half size
+# (LOGO px square) on a 240x240 screen, leaving room below for the loading bar (tools/bar). Only the
+# box around what differs from the background is stored; the chip paints the rest in one colour.
+#   header: 5 big-endian uint16  X Y W H BG     the box on screen, and the background as RGB565
+#   then the box's RGB565 pixels, row by row (the bytes the panel takes)
+# Also writes art/logo_screen.png, a 2x preview of what the screen shows.
 #   tools/logo [image] [out.bin]        defaults: art/logo.jpg -> firmware/logo.bin
-import sys
+import struct, sys
 from pathlib import Path
 from PIL import Image
 
@@ -21,14 +23,28 @@ im.thumbnail((LOGO, LOGO), Image.LANCZOS)
 frame = Image.new("RGB", (W, H), bg)
 frame.paste(im, ((W - im.width) // 2, LOGO_Y + (LOGO - im.height) // 2))
 
-data, shown = bytearray(), Image.new("RGB", (W, H))
+def rgb565(p):
+    r, g, b = p
+    return ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3)
+
+
+px = [[rgb565(frame.getpixel((x, y))) for x in range(W)] for y in range(H)]
+BG = rgb565(bg)
+xs = [x for y in range(H) for x in range(W) if px[y][x] != BG]
+ys = [y for y in range(H) if any(v != BG for v in px[y])]
+X, Y, BW, BH = min(xs), min(ys), max(xs) - min(xs) + 1, max(ys) - min(ys) + 1
+
+data = bytearray(struct.pack(">5H", X, Y, BW, BH, BG))
+for y in range(Y, Y + BH):
+    for x in range(X, X + BW):
+        data += bytes((px[y][x] >> 8, px[y][x] & 0xFF))
+out.write_bytes(data)
+
+shown = Image.new("RGB", (W, H))
 for y in range(H):
     for x in range(W):
-        r, g, b = frame.getpixel((x, y))
-        c = ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3)
-        data += bytes((c >> 8, c & 0xFF))
+        c = px[y][x]
         shown.putpixel((x, y), ((c >> 11) << 3, ((c >> 5) & 63) << 2, (c & 31) << 3))
-out.write_bytes(data)
 preview = root / "art/logo_screen.png"
 shown.resize((W * 2, H * 2), Image.NEAREST).save(preview)
-print(f"{out} ({len(data)} bytes), preview {preview}")
+print(f"{out} ({len(data)} bytes, box {BW}x{BH} at {X},{Y}), preview {preview}")

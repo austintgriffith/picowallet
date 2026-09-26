@@ -119,10 +119,10 @@ empty, full = render(None), render(F1)
 cap = render(mid).crop((mid - CR, 0, mid + CAP_EXTRA, H))
 green = render(F1, GREEN_FILL)
 data = struct.pack(">8H", X, Y, W, H, F0, F1, CW, CR) + rgb565(empty) + rgb565(full) + rgb565(cap) + rgb565(green)
-logo_bin = (root / "firmware/logo.bin").read_bytes()
-under = {logo_bin[(y * 240 + x) * 2:(y * 240 + x) * 2 + 2] for y in range(Y, Y + H) for x in range(X, X + W)}
-if len(under) != 1:     # loader.py hides the bar by painting one background row; the logo must not reach under it
-    sys.exit("the logo reaches under the bar (rows %d-%d); move the bar or the logo" % (Y, Y + H - 1))
+lx, ly, lw, lh = struct.unpack(">4H", (root / "firmware/logo.bin").read_bytes()[:8])
+if lx < X + W and X < lx + lw and ly < Y + H and Y < ly + lh:
+    # loader.py hides the bar by painting one background row; the logo must not reach under it
+    sys.exit("the logo (rows %d-%d) reaches under the bar (rows %d-%d); move one" % (ly, ly + lh - 1, Y, Y + H - 1))
 (root / "firmware/bar.bin").write_bytes(data)
 
 

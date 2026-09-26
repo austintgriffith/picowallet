@@ -1,7 +1,7 @@
 # Waveshare Pico-LCD-1.3: 240x240 ST7789 over SPI1, plus joystick and A/B/X/Y keys.
 # Pins from waveshare.com/wiki/Pico-LCD-1.3.
 from machine import Pin, SPI, PWM
-import framebuf, os, time
+import framebuf, os, struct, time
 
 DC, CS, SCK, MOSI, RST, BL = 8, 9, 10, 11, 12, 13
 KEYS = {"A": 15, "B": 17, "X": 19, "Y": 21, "up": 2, "down": 18, "left": 16, "right": 20, "press": 3}
@@ -28,17 +28,22 @@ _on_show = None     # loader.py: called at the app's first show(), i.e. its firs
 
 
 def splash(path="logo.bin"):
-    """Boot logo, called first thing from boot.py: the raw frame from tools/logo goes straight into
-    the framebuffer and onto the panel, backlight last so the first thing seen is the logo. It stays
-    up until the app's first show(). No file, no logo."""
+    """Boot logo, called first thing from boot.py. logo.bin (tools/logo) holds only the box around the
+    logo plus the background colour: the framebuffer gets the colour, the box's rows go in at their
+    place, then the frame goes to the panel, backlight last so the first thing seen is the logo. It
+    stays up until the app's first show(). No file or a bad one, no logo."""
     if _panel_up:
         return
     try:
-        if os.stat(path)[6] != len(_BUF):   # made for another screen size (tools/logo makes 240x240)
-            return
         with open(path, "rb") as f:
-            f.readinto(_BUF)
-    except OSError:
+            x, y, w, h, bg = struct.unpack(">5H", f.read(10))
+            if x + w > 240 or y + h > 240 or os.stat(path)[6] != 10 + w * h * 2:
+                return
+            framebuf.FrameBuffer(_BUF, 240, 240, framebuf.RGB565).fill((bg >> 8) | (bg & 255) << 8)
+            mv = memoryview(_BUF)
+            for r in range(y, y + h):
+                f.readinto(mv[(r * 240 + x) * 2:(r * 240 + x + w) * 2])
+    except (OSError, ValueError):
         return
     LCD(logo=True)
 
