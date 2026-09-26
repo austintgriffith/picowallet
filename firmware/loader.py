@@ -1,10 +1,10 @@
-# Boot loading bar. boot.py already put the logo on screen (lcd.splash). load(app) reads the app's
+# Boot loading bar. boot.py already put the logo on screen (splash.show). load(app) reads the app's
 # import lines, loads the files it needs from flash one at a time, and fills the bar (bar.bin, from
 # tools/bar) by each file's share of the total size. The app itself is left for main.py to import:
 # many apps draw as soon as they load, and the bar must not paint over them. Apps need no changes.
 # main.py: import lcd, loader.load("app"), then import and start the app as usual.
 import os, sys, time, gc, struct, micropython
-import lcd
+import lcd, splash
 
 
 def _size(name):
@@ -168,7 +168,7 @@ class _Bar:
         # The logo is plain background under the bar (tools/bar checks), so one row of that colour
         # repaints it. Not the framebuffer itself: the app is drawing into that by now.
         self.row = self.rv
-        bg = self.d.buffer[(self.Y * self.d.width + self.X) * 2:(self.Y * self.d.width + self.X) * 2 + 2]
+        bg = splash.bg
         for i in range(0, len(self.row), 2):
             self.row[i:i + 2] = bg
         x0, x1, y0, y1 = self.X, self.X + self.W - 1, self.Y, self.Y + self.H - 1
@@ -193,7 +193,7 @@ class _Bar:
 
 
 def _bar():
-    if not lcd._panel_up:                # no logo on screen: load without a bar
+    if not splash.up or not splash.bg:   # no logo on screen: load without a bar
         return None
     try:
         with open("bar.bin", "rb") as f:

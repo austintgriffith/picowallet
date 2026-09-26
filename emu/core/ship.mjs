@@ -81,7 +81,7 @@ async function doShip(name, file, src, port, target, boot) {
   args.push("cp", src, `:${file.name}`, "+");
   if (bootNote.startsWith("main.py now")) {
     // the boot logo and loading bar come with a boot main.py
-    for (const f of ["lcd.py", "loader.py", "logo.bin", "bar.bin", "boot.py"]) if (!dependencies(name).includes(f)) args.push("cp", join(FIRMWARE, f), `:${f}`, "+");
+    for (const f of ["splash.py", "lcd.py", "loader.py", "logo.bin", "bar.bin", "boot.py"]) if (!dependencies(name).includes(f)) args.push("cp", join(FIRMWARE, f), `:${f}`, "+");
     args.push("cp", join(SKETCHES, ".main.py"), ":main.py", "+");
   }
   args.push("exec", "import os\nif hasattr(os, 'sync'): os.sync()");

@@ -1,7 +1,7 @@
 # Runs before main.py. The boot logo goes up first, before anything slow loads.
 try:
-    import lcd
-    lcd.splash()
+    import splash
+    splash.show()
 except Exception as e:
     print("splash:", e)
 # The passwordless development console is disabled by default in secrets.py.

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Boot logo: turn an image into firmware/logo.bin for lcd.splash(). The image goes in at half size
+# Boot logo: turn an image into firmware/logo.bin for splash.show(). The image goes in at half size
 # (LOGO px square) on a 240x240 screen, leaving room below for the loading bar (tools/bar). Only the
 # box around what differs from the background is stored; the chip paints the rest in one colour.
 #   header: 5 big-endian uint16  X Y W H BG     the box on screen, and the background as RGB565

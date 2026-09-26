@@ -6,7 +6,7 @@ for f in firmware/*.py; do
   case "$f" in *secrets.example.py) continue;; esac
   ./tools/pico cp "$f" ":$(basename "$f")" || exit 1
 done
-# boot logo and loading bar (lcd.splash, loader.py)
+# boot logo and loading bar (splash.py, loader.py)
 for f in firmware/logo.bin firmware/bar.bin; do
   ./tools/pico cp "$f" ":$(basename "$f")" || exit 1
 done

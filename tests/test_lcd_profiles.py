@@ -62,7 +62,8 @@ class DisplayProfilesTest(unittest.TestCase):
             "time": types.SimpleNamespace(sleep_ms=lambda ms: None, sleep_us=lambda us: None,
                                           ticks_ms=lambda: 0, ticks_diff=lambda a, b: a - b),
         }
-        with patch.dict(sys.modules, modules):
+        with patch.dict(sys.modules, modules), patch.object(sys, "path", [str(ROOT / "firmware")] + sys.path):
+            sys.modules.pop("splash", None)
             lcd = load(ROOT / "firmware/lcd.py", "lcd_under_test")
             display = lcd.LCD()
         self.assertEqual((display.width, display.height), (width, height))
