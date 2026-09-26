@@ -12,7 +12,7 @@ th { background:#eee; font-size:14px; }
 .note { font-size: 14px; color:#333; margin-top:16px; line-height:1.45; max-width: 330px; }
 </style></head><body>
 <h1>Pico wallet: ATECC608 wires (the white/yellow/black/red bag)</h1>
-<div class="sub">The bag of white / yellow / black / red JST cables into the LCD board header, beside the Pico pins. USB at the top. Count down from the USB end.</div>
+<div class="sub">The bag of white / yellow / black / red JST cables into the LCD board header, beside the Pico pins. USB at the top. Count down from the USB end.<br><b>Look at the Pico side of the sandwich, not the screen side.</b> Checked 2026-09-26: two chips (ATECC608 on 9/14, Trust M on 9/17) answered with exactly this wiring.</div>
 <div class="wrap">
 <svg width="400" height="470" viewBox="0 0 400 470" font-family="Helvetica, Arial" font-size="13">
   <!-- board -->
@@ -68,7 +68,7 @@ th { background:#eee; font-size:14px; }
 <tr><td><span class="sw" style="background:#d62828"></span>Red</td><td>SCL (GP5)</td><td>Left</td><td><b>7th</b></td><td>7</td></tr>
 </table>
 <div class="note">
-<b>Right side, top down:</b> VBUS, VSYS, <b>GND (white)</b>, 3V3_EN, <b>3V3 (yellow)</b>. Skip 1st, 2nd and 4th.<br><br>
+<b>Right side, top down:</b> VBUS, VSYS, <b>GND (white)</b>, 3V3_EN, <b>3V3 (yellow)</b>. Skip 1st, 2nd and 4th. Never put a wire in the 4th (3V3_EN): GND there shuts off 3.3 V.<br><br>
 <b>Left side, top down:</b> GP0, GP1, GND, GP2, GP3, <b>GP4 (black)</b>, <b>GP5 (red)</b>.<br><br>
 Push the bare ends into the LCD board's socket beside the Pico pins. Tug lightly. Jam the breakout flat in the gap.<br><br>
 Bare pins on the Pico itself are in the same order, board face up, USB at top.<br><br><b>Rule:</b> the plug is GND, V+, SDA, SCL from the GND end. This bag colors that white, yellow, black, red. Trust the order, not the colors.
