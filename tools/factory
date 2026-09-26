@@ -1,0 +1,7 @@
+#!/bin/sh
+# Factory test page on http://localhost:4343 (WebSerial needs localhost or https). Chrome or Edge.
+cd "$(dirname "$0")/../factory" || exit 1
+PORT=${PORT:-4343}
+lsof -ti tcp:$PORT >/dev/null 2>&1 || (python3 -m http.server $PORT --bind 127.0.0.1 >/dev/null 2>&1 &)
+sleep 0.5
+open -a "Google Chrome" "http://localhost:$PORT/"

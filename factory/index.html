@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Picowallet Factory Test</title>
+<style>
+:root {
+  --bg: #f6f6f3; --card: #fff; --ink: #151515; --mute: #666; --line: #deded8;
+  --ok: #138a3e; --okbg: #e3f5e9; --bad: #c62828; --badbg: #fde8e8; --warn: #9a6700; --warnbg: #fff4d6;
+  --run: #1f5fbf; --key: #e9e9e4; --keyon: #ffb300;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #121212; --card: #1c1c1c; --ink: #eee; --mute: #999; --line: #333;
+    --okbg: #0f2e1a; --badbg: #3a1414; --warnbg: #33290d; --key: #2a2a2a;
+    --ok: #4cc27a; --bad: #ff6b6b; --warn: #e0b040; --run: #6ea8ff;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.45 -apple-system, Helvetica, Arial, sans-serif; }
+main { max-width: 860px; margin: 0 auto; padding: 20px 16px 60px; }
+h1 { font-size: 24px; margin: 0 0 2px; }
+.sub { color: var(--mute); margin-bottom: 18px; }
+.bar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 16px; }
+button { font: inherit; font-weight: 600; padding: 10px 18px; border-radius: 8px; border: 1px solid var(--line);
+  background: var(--card); color: var(--ink); cursor: pointer; }
+button.primary { background: var(--run); color: #fff; border-color: var(--run); }
+button:disabled { opacity: .45; cursor: default; }
+.banner { padding: 16px 18px; border-radius: 10px; font-size: 20px; font-weight: 700; margin-bottom: 16px;
+  background: var(--card); border: 1px solid var(--line); }
+.banner.ok { background: var(--okbg); color: var(--ok); border-color: var(--ok); }
+.banner.bad { background: var(--badbg); color: var(--bad); border-color: var(--bad); }
+.step { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; margin-bottom: 12px; }
+.step h2 { font-size: 17px; margin: 0; display: flex; align-items: center; gap: 10px; }
+.badge { font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: 99px; background: var(--key); color: var(--mute); }
+.badge.ok { background: var(--okbg); color: var(--ok); }
+.badge.bad { background: var(--badbg); color: var(--bad); }
+.badge.warn { background: var(--warnbg); color: var(--warn); }
+.badge.run { color: var(--run); }
+.body { margin-top: 8px; }
+.body:empty { display: none; }
+.kv { display: grid; grid-template-columns: 150px 1fr; gap: 3px 12px; font-size: 14px; }
+.kv div:nth-child(odd) { color: var(--mute); }
+.mono { font-family: ui-monospace, Menlo, monospace; font-size: 13px; word-break: break-all; }
+.big { font-size: 20px; font-weight: 700; }
+.note { font-size: 14px; margin-top: 8px; padding: 8px 10px; border-radius: 6px; }
+.note.bad { background: var(--badbg); color: var(--bad); }
+.note.warn { background: var(--warnbg); color: var(--warn); }
+.keys { display: grid; grid-template-columns: repeat(3, 64px) 40px 64px; grid-template-rows: repeat(4, 50px); gap: 8px; margin-top: 10px; }
+.k { display: flex; align-items: center; justify-content: center; border-radius: 8px; background: var(--key);
+  font-weight: 700; font-size: 14px; border: 2px solid transparent; }
+.k.down { background: var(--keyon); color: #000; }
+.k.done { background: var(--okbg); color: var(--ok); border-color: var(--ok); }
+.k.stuck { background: var(--badbg); color: var(--bad); border-color: var(--bad); }
+.swatch { display: inline-block; width: 28px; height: 28px; border-radius: 6px; vertical-align: middle; margin-right: 8px; border: 1px solid var(--line); }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+td, th { text-align: left; padding: 5px 6px; border-bottom: 1px solid var(--line); }
+th { color: var(--mute); font-weight: 600; }
+details { margin-top: 10px; }
+pre { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px; font-size: 12px;
+  max-height: 260px; overflow: auto; white-space: pre-wrap; }
+@media (max-width: 560px) { .kv { grid-template-columns: 110px 1fr; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Picowallet factory test</h1>
+  <div class="sub">Plug a finished wallet into USB, press Connect. Chrome or Edge only (WebSerial).</div>
+
+  <div class="bar">
+    <button id="connect" class="primary">Connect a board</button>
+    <button id="again" disabled>Test again</button>
+    <label style="font-size:14px;color:var(--mute)"><input type="checkbox" id="auto" checked> start by itself when a board is plugged in</label>
+  </div>
+
+  <div id="banner" class="banner">No board yet.</div>
+
+  <div class="step" id="s-board"><h2>1. Board <span class="badge">waiting</span></h2><div class="body"></div></div>
+  <div class="step" id="s-chip"><h2>2. Secure chip <span class="badge">waiting</span></h2><div class="body"></div></div>
+  <div class="step" id="s-screen"><h2>3. Screen <span class="badge">waiting</span></h2><div class="body"></div></div>
+  <div class="step" id="s-keys"><h2>4. Buttons <span class="badge">waiting</span></h2><div class="body"></div></div>
+
+  <div class="step">
+    <h2>Tested on this computer <span class="badge" id="count">0</span></h2>
+    <div class="body" id="history"></div>
+    <div class="bar" style="margin:10px 0 0"><button id="csv">Download CSV</button><button id="clear">Clear list</button></div>
+  </div>
+
+  <details><summary>Serial log</summary><pre id="log"></pre></details>
+</main>
+
+<script>
+"use strict";
+const $ = s => document.querySelector(s);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const logEl = $("#log");
+function log(s) { logEl.textContent = (logEl.textContent + s).slice(-20000); logEl.scrollTop = 1e9; }
+
+// ---- MicroPython raw REPL over WebSerial --------------------------------------------------------
+class Repl {
+  constructor(port) { this.port = port; this.buf = ""; this.waiters = []; this.onLine = null; this.lineBuf = ""; }
+  async open() {
+    await this.port.open({ baudRate: 115200 });
+    this.writer = this.port.writable.getWriter();
+    this.reader = this.port.readable.getReader();
+    this.alive = true;
+    (async () => {
+      const dec = new TextDecoder("latin1");
+      try {
+        while (true) {
+          const { value, done } = await this.reader.read();
+          if (done) break;
+          const s = dec.decode(value);
+          log(s.replace(/[\x01-\x08]/g, c => "^" + String.fromCharCode(64 + c.charCodeAt(0))));
+          this.buf += s;
+          this.feedLines(s);
+          this.check();
+        }
+      } catch (e) {}
+      this.alive = false;
+      this.check(true);
+    })();
+  }
+  feedLines(s) {
+    if (!this.onLine) return;
+    this.lineBuf += s;
+    let i;
+    while ((i = this.lineBuf.indexOf("\n")) >= 0) {
+      const line = this.lineBuf.slice(0, i).replace(/\r$/, "").replace(/^[\x04>]*(OK)?/, "");
+      this.lineBuf = this.lineBuf.slice(i + 1);
+      if (line.startsWith("@")) {
+        const sp = line.indexOf(" ");
+        try { this.onLine(line.slice(1, sp), JSON.parse(line.slice(sp + 1))); } catch (e) {}
+      }
+    }
+  }
+  check(dead) {
+    this.waiters = this.waiters.filter(w => {
+      const i = this.buf.indexOf(w.str);
+      if (i >= 0) { const before = this.buf.slice(0, i); this.buf = this.buf.slice(i + w.str.length); clearTimeout(w.t); w.res(before); return false; }
+      if (dead) { clearTimeout(w.t); w.rej(new Error("board unplugged")); return false; }
+      return true;
+    });
+  }
+  waitFor(str, ms = 5000) {
+    return new Promise((res, rej) => {
+      const w = { str, res, rej };
+      w.t = setTimeout(() => { this.waiters = this.waiters.filter(x => x !== w); rej(new Error("board did not answer (waiting for " + JSON.stringify(str) + ")")); }, ms);
+      this.waiters.push(w);
+      this.check();
+    });
+  }
+  async write(s) {
+    const bytes = new TextEncoder().encode(s);
+    for (let i = 0; i < bytes.length; i += 256) { await this.writer.write(bytes.slice(i, i + 256)); if (bytes.length > 256) await sleep(5); }
+  }
+  // Stop whatever runs, raw REPL, soft reset so no wallet timers keep running (main.py is skipped in raw mode).
+  async enter() {
+    await this.write("\r\x03\x03"); await sleep(150);
+    this.buf = "";
+    await this.write("\x01");
+    await this.waitFor("raw REPL; CTRL-B to exit\r\n>", 4000);
+    await this.write("\x04");
+    await this.waitFor("soft reboot", 4000);
+    await this.waitFor("raw REPL; CTRL-B to exit\r\n>", 25000);   // boot.py may bring WiFi up
+  }
+  // Run code. Resolves with {out, err} when it finishes; @tag lines stream to onLine as they print.
+  async exec(code, ms = 30000) {
+    this.buf = ""; this.lineBuf = "";
+    await this.write(code + "\x04");
+    await this.waitFor("OK", 5000);
+    const out = await this.waitFor("\x04", ms);
+    const err = await this.waitFor("\x04", 5000);
+    await this.waitFor(">", 2000).catch(() => {});
+    if (err.trim()) throw new Error(err.trim().split("\n").pop());
+    return out;
+  }
+  interrupt() { return this.write("\x03"); }
+  // Leave raw mode and soft reset: the wallet's main.py runs again.
+  async leave() { try { await this.write("\x02"); await sleep(50); await this.write("\x04"); } catch (e) {} }
+  async close() {
+    try { this.reader.cancel(); } catch (e) {}
+    try { this.writer.releaseLock(); } catch (e) {}
+    try { await this.port.close(); } catch (e) {}
+  }
+}
+
+// ---- UI helpers ---------------------------------------------------------------------------------
+function step(id, state, html) {
+  const el = $("#s-" + id), b = el.querySelector(".badge");
+  const text = { wait: "waiting", run: "testing…", ok: "PASS", bad: "FAIL", warn: "PASS, see note", ask: "look at the wallet" }[state] || state;
+  b.textContent = text; b.className = "badge " + (state === "ask" ? "run" : state);
+  if (html !== undefined) el.querySelector(".body").innerHTML = html;
+}
+const kv = rows => '<div class="kv">' + rows.map(([k, v]) => `<div>${k}</div><div>${v}</div>`).join("") + "</div>";
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+function banner(cls, text) { const b = $("#banner"); b.className = "banner " + cls; b.textContent = text; }
+function reset() { for (const s of ["board", "chip", "screen", "keys"]) step(s, "wait", ""); }
+
+function boardName(i) {
+  if (i.cpu === "RP2350") return i.wifi ? "Raspberry Pi Pico 2 W" : "Pico 2 (RP2350, no WiFi)";
+  if (i.cpu === "RP2040") return i.wifi ? "Raspberry Pi Pico W" : "RP2040 board, no WiFi (plain Pico or pink USB-C clone)";
+  return i.machine;
+}
+const kb = n => Math.round(n / 1024) + " KB";
+
+// ---- the test -----------------------------------------------------------------------------------
+let keysSeen = new Set();
+let repl = null, running = false, report = null, probeSrc = null, answer = null;
+const KEYS = ["up", "down", "left", "right", "press", "A", "B", "X", "Y"];
+// Grid spots: joystick cross on the left, A B X Y in a column on the right, like the wallet.
+const KEYPOS = { up: [1, 2], left: [2, 1], press: [2, 2], right: [2, 3], down: [3, 2], A: [1, 5], B: [2, 5], X: [3, 5], Y: [4, 5] };
+
+function ask(question, choices) {
+  return new Promise(res => {
+    answer = res;
+    const html = question + '<div class="bar" style="margin:10px 0 0">' +
+      choices.map((c, i) => `<button class="${i === 0 ? "primary" : ""}" data-a="${c}">${c}</button>`).join("") + "</div>";
+    step("screen", "ask", html);
+    $("#s-screen").querySelectorAll("button[data-a]").forEach(b => b.onclick = () => { answer = null; res(b.dataset.a); });
+  });
+}
+
+async function runTest(port) {
+  if (running) return;
+  running = true; $("#connect").disabled = true; $("#again").disabled = true;
+  reset();
+  report = { time: new Date().toISOString(), result: "FAIL" };
+  const fails = [], warns = [];
+  const got = {};
+  try {
+    banner("", "Talking to the board…");
+    step("board", "run");
+    if (!probeSrc) probeSrc = await fetch("probe.py", { cache: "no-store" }).then(r => { if (!r.ok) throw new Error("probe.py missing next to this page"); return r.text(); });
+    repl = new Repl(port);
+    repl.onLine = (tag, v) => { got[tag] = v; onEvent(tag, v); };
+    await repl.open();
+    try { await repl.enter(); }
+    catch (e) { throw new Error("No MicroPython on this port. Is the firmware flashed? (" + e.message + ")"); }
+    await repl.exec(probeSrc, 10000);
+
+    // 1. board
+    await repl.exec("info()", 15000);
+    const i = got.info; report.board = boardName(i); report.uid = i.uid; report.cpu = i.cpu; report.wifi = i.wifi || "";
+    const hasWallet = i.files.includes("main.py") && i.files.some(f => f.startsWith("usbwallet") || f.startsWith("wallet"));
+    const bnotes = [];
+    if (!i.wifi && i.cpu === "RP2350") { bnotes.push("No WiFi chip answered on a Pico 2. A Pico 2 W should have one."); warns.push("no WiFi"); }
+    if (!hasWallet) { bnotes.push("Wallet firmware is not on this board yet."); warns.push("no wallet firmware"); }
+    step("board", bnotes.length ? "warn" : "ok",
+      `<div class="big">${esc(report.board)}</div>` + kv([
+        ["Board ID", `<span class="mono">${i.uid}</span>`],
+        ["MicroPython", esc(i.micropython) + " — " + esc(i.machine)],
+        ["CPU", `${i.cpu} at ${i.mhz} MHz, ${kb(i.heap)} free heap`],
+        ["WiFi", i.wifi ? "yes, MAC " + i.wifi : "none"],
+        ["Flash (files)", kb(i.fs) + ", " + i.files.length + " files" + (hasWallet ? ", wallet firmware present" : "")],
+      ]) + bnotes.map(n => `<div class="note warn">${n}</div>`).join(""));
+
+    // 2. chip
+    step("chip", "run");
+    await repl.exec("chip()", 20000);
+    const c = got.chip, ch = c.found.find(f => !f.error);
+    if (ch) {
+      report.chip = ch.type; report.chipId = ch.serial || ch.uid || "";
+      const rows = [["Type", `<span class="big">${ch.type}</span>`]];
+      if (ch.type === "ATECC608") {
+        rows.push(["Serial", `<span class="mono">${ch.serial}</span>`], ["Config zone", ch.configLocked ? "locked" : "not locked (fresh)"], ["Data zone", ch.dataLocked ? "locked" : "not locked"]);
+      } else {
+        rows.push(["Chip UID", `<span class="mono">${ch.uid || "not read: " + esc(ch.uidError)}</span>`], ["Firmware build", ch.build || "?"], ["I2C state", ch.state]);
+      }
+      const n = ch.type !== "ATECC608" ? `<div class="note warn">This is a Trust M. The wallet firmware only uses the ATECC608 today, so the wallet will show "no chip" with it.</div>` : "";
+      if (n) warns.push("Trust M chip");
+      step("chip", n ? "warn" : "ok", kv(rows) + n);
+    } else {
+      report.chip = "none";
+      let why;
+      if (!c.lines.sda || !c.lines.scl) why = `SDA/SCL are not pulled up (SDA ${c.lines.sda}, SCL ${c.lines.scl}). The breakout is not connected or has no power. Check <b>white → right 3rd</b> and <b>yellow → right 5th</b>, then black/red.`;
+      else why = `The data lines are pulled up, so the breakout has power, but no chip answered. Check <b>black → left 6th</b> and <b>red → left 7th</b> are not swapped.`;
+      const errs = c.found.filter(f => f.error).map(f => esc(f.type + ": " + f.error)).join("<br>");
+      step("chip", "bad", kv([["Found", "nothing at 0x60 (ATECC608) or 0x30 (Trust M)"], ["I2C scan", c.scan.join(", ") || "nothing"]]) +
+        `<div class="note bad">${why}</div>` + (errs ? `<div class="note bad mono">${errs}</div>` : ""));
+      fails.push("no chip");
+    }
+
+    // 3. screen
+    step("screen", "run");
+    await repl.exec("screen()", 10000);
+    let seen = true;
+    for (const [name, css] of [["red", "#f00"], ["green", "#0f0"], ["blue", "#00f"]]) {
+      await repl.exec(`screen("${name}")`, 10000);
+      const a = await ask(`<span class="swatch" style="background:${css}"></span>Is the wallet screen <b>${name.toUpperCase()}</b> edge to edge?`, ["Yes", "No"]);
+      if (a !== "Yes") { seen = false; break; }
+    }
+    if (seen) step("screen", "ok", "Red, green and blue all showed.");
+    else { step("screen", "bad", '<div class="note bad">Screen did not show the colour. Check the LCD board is seated on the Pico.</div>'); fails.push("screen"); }
+
+    // 4. keys
+    step("keys", "run", '<div>Press and release every button: the joystick up, down, left, right, push it in, then A, B, X, Y. They turn green here and on the wallet.</div>' +
+      '<div class="keys">' + KEYS.map(k => `<div class="k" id="k-${k}" style="grid-row:${KEYPOS[k][0]};grid-column:${KEYPOS[k][1]}">${k}</div>`).join("") + "</div>" +
+      '<div class="bar" style="margin:12px 0 0"><button id="skipkeys">A button is broken: stop</button></div>');
+    $("#skipkeys").onclick = () => repl.interrupt();
+    let keysOk = false;
+    keysSeen = new Set();
+    try { await repl.exec("keys(180)", 190000); } catch (e) {}
+    const done = got.keysDone || [...keysSeen], stuck = got.stuck || [];
+    const missing = KEYS.filter(k => !done.includes(k));
+    keysOk = missing.length === 0 && stuck.length === 0;
+    report.keysMissing = missing.join(" ");
+    const kb2 = $("#s-keys .bar"); if (kb2) kb2.remove();
+    if (keysOk) step("keys", "ok");
+    else {
+      step("keys", "bad");
+      $("#s-keys .body").insertAdjacentHTML("beforeend", `<div class="note bad">${stuck.length ? "Held down from the start (stuck or shorted): " + stuck.join(", ") + ". " : ""}${missing.length ? "Never pressed: " + missing.join(", ") : ""}</div>`);
+      fails.push("buttons");
+    }
+    await repl.exec("screen('green' if " + (fails.length === 0 ? "True" : "False") + " else 'red')", 10000).catch(() => {});
+  } catch (e) {
+    fails.push(e.message);
+    for (const s of ["board", "chip", "screen", "keys"]) {
+      const b = $("#s-" + s + " .badge");
+      if (b.textContent === "testing…" || b.textContent === "look at the wallet") step(s, "bad", `<div class="note bad">${esc(e.message)}</div>`);
+    }
+  }
+  report.result = fails.length ? "FAIL" : "PASS";
+  report.notes = fails.concat(warns).join("; ");
+  if (fails.length) banner("bad", "FAIL — " + fails.join(", "));
+  else banner("ok", "PASS — " + (report.board || "") + " + " + (report.chip || "") + (warns.length ? "  (notes: " + warns.join(", ") + ")" : "") + ". Unplug it and plug in the next one.");
+  if (report.uid) saveReport(report);
+  if (repl) { await repl.leave(); await repl.close(); repl = null; }
+  running = false; $("#connect").disabled = false; $("#again").disabled = false;
+}
+
+function onEvent(tag, v) {
+  if (tag === "stuck") v.forEach(k => { const el = $("#k-" + k); if (el) el.className = "k stuck"; });
+  if (tag === "key") {
+    if (!v.down) keysSeen.add(v.key);
+    const el = $("#k-" + v.key); if (!el || el.classList.contains("stuck")) return;
+    if (v.down) el.className = "k down"; else el.className = "k done";
+  }
+}
+
+// ---- history ------------------------------------------------------------------------------------
+function loadHist() { try { return JSON.parse(localStorage.getItem("factory-history") || "[]"); } catch (e) { return []; } }
+function saveReport(r) { const h = loadHist(); h.unshift(r); try { localStorage.setItem("factory-history", JSON.stringify(h.slice(0, 500))); } catch (e) {} drawHist(); }
+function drawHist() {
+  const h = loadHist();
+  $("#count").textContent = h.length;
+  $("#history").innerHTML = h.length ? "<table><tr><th>When</th><th>Result</th><th>Board</th><th>Board ID</th><th>Chip</th><th>Chip ID</th><th>Notes</th></tr>" +
+    h.slice(0, 50).map(r => `<tr><td>${new Date(r.time).toLocaleString()}</td><td><b style="color:var(--${r.result === "PASS" ? "ok" : "bad"})">${r.result}</b></td><td>${esc(r.board || "")}</td><td class="mono">${r.uid || ""}</td><td>${esc(r.chip || "")}</td><td class="mono">${esc(r.chipId || "")}</td><td>${esc(r.notes || "")}</td></tr>`).join("") + "</table>" : "";
+}
+$("#csv").onclick = () => {
+  const cols = ["time", "result", "board", "uid", "cpu", "wifi", "chip", "chipId", "keysMissing", "notes"];
+  const csv = [cols.join(",")].concat(loadHist().map(r => cols.map(c => '"' + String(r[c] ?? "").replace(/"/g, '""') + '"').join(","))).join("\n");
+  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" })); a.download = "picowallet-factory-" + new Date().toISOString().slice(0, 10) + ".csv"; a.click();
+};
+$("#clear").onclick = () => { if (confirm("Clear the list of tested boards?")) { try { localStorage.removeItem("factory-history"); } catch (e) {} drawHist(); } };
+drawHist();
+
+// ---- ports --------------------------------------------------------------------------------------
+let lastPort = null;
+async function pick() {
+  const ports = await navigator.serial.getPorts();
+  const p = ports.find(p => p.getInfo().usbVendorId === 0x2e8a) || ports[0];
+  if (p) return p;
+  return navigator.serial.requestPort({ filters: [{ usbVendorId: 0x2e8a }] });
+}
+if (!("serial" in navigator)) {
+  banner("bad", "This browser has no WebSerial. Open this page in Chrome or Edge.");
+  $("#connect").disabled = true;
+} else {
+  $("#connect").onclick = async () => {
+    try { lastPort = await pick(); runTest(lastPort); } catch (e) { banner("", "No board picked."); }
+  };
+  $("#again").onclick = () => lastPort && runTest(lastPort);
+  navigator.serial.addEventListener("connect", async e => {
+    if (!$("#auto").checked || running) return;
+    lastPort = e.port || e.target;
+    banner("", "Board plugged in, waiting for it to boot…");
+    await sleep(1500);
+    runTest(lastPort);
+  });
+  navigator.serial.addEventListener("disconnect", () => {
+    if (!running) { banner("", "Board unplugged. Plug in the next one."); reset(); }
+  });
+}
+</script>
+</body>
+</html>
