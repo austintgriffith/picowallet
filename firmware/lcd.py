@@ -65,7 +65,8 @@ class LCD(framebuf.FrameBuffer):
             self._init_panel()
             if not logo:
                 self.fill(BLACK)
-            self.show()
+            self.show()                  # into panel RAM while it still sleeps: part of the wait below
+            self._wake()
             _panel_up = True
         self.backlight(100)
 
@@ -78,7 +79,11 @@ class LCD(framebuf.FrameBuffer):
             self.dc(1); self.cs(0); self.spi.write(bytes(data)); self.cs(1)
 
     def _init_panel(self):
-        self.rst(1); time.sleep_ms(10); self.rst(0); time.sleep_ms(10); self.rst(1); time.sleep_ms(120)
+        # ST7789 timing minimums: reset pulse >= 10 us, commands 5 ms after it, sleep out no sooner
+        # than 120 ms after it (_wake), display on 5 ms after sleep out.
+        self.rst(0); time.sleep_us(20); self.rst(1)
+        self._reset_at = time.ticks_ms()
+        time.sleep_ms(5)
         self._cmd(0x36, [0x70])        # memory access: landscape, matches Waveshare demo
         self._cmd(0x3A, [0x05])        # 16-bit color
         self._cmd(0xB2, [0x0C, 0x0C, 0x00, 0x33, 0x33])
@@ -93,8 +98,13 @@ class LCD(framebuf.FrameBuffer):
         self._cmd(0xE0, [0xD0, 0x04, 0x0D, 0x11, 0x13, 0x2B, 0x3F, 0x54, 0x4C, 0x18, 0x0D, 0x0B, 0x1F, 0x23])
         self._cmd(0xE1, [0xD0, 0x04, 0x0C, 0x11, 0x13, 0x2C, 0x3F, 0x44, 0x51, 0x2F, 0x1F, 0x1F, 0x20, 0x23])
         self._cmd(0x21)                # inversion on
+
+    def _wake(self):
+        wait = 120 - time.ticks_diff(time.ticks_ms(), self._reset_at)
+        if wait > 0:
+            time.sleep_ms(wait)
         self._cmd(0x11)                # sleep out
-        time.sleep_ms(120)
+        time.sleep_ms(5)
         self._cmd(0x29)                # display on
 
     def show(self):

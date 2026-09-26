@@ -59,7 +59,8 @@ class DisplayProfilesTest(unittest.TestCase):
         modules = {
             "machine": types.SimpleNamespace(Pin=Pin, SPI=SPI, PWM=PWM),
             "framebuf": types.SimpleNamespace(FrameBuffer=FrameBuffer, RGB565=1),
-            "time": types.SimpleNamespace(sleep_ms=lambda ms: None),
+            "time": types.SimpleNamespace(sleep_ms=lambda ms: None, sleep_us=lambda us: None,
+                                          ticks_ms=lambda: 0, ticks_diff=lambda a, b: a - b),
         }
         with patch.dict(sys.modules, modules):
             lcd = load(ROOT / "firmware/lcd.py", "lcd_under_test")
@@ -71,7 +72,11 @@ class DisplayProfilesTest(unittest.TestCase):
         writes = display.spi.writes
         self.assertEqual(writes[writes.index(b"\x2a") + 1], bytes([0, 0, (width-1) >> 8, (width-1) & 255]))
         self.assertEqual(writes[writes.index(b"\x2b") + 1], bytes([0, 0, (height-1) >> 8, (height-1) & 255]))
-        self.assertEqual(len(writes[-1]), width * height * 2)
+        ram = len(writes) - 1 - writes[::-1].index(b"\x2c")      # the last RAM write command (0x2c is also a data byte earlier)
+        self.assertEqual(len(writes[ram + 1]), width * height * 2)
+        # the frame goes into panel RAM before sleep out (0x11), then display on (0x29) comes last
+        self.assertLess(ram, writes.index(b"\x11"))
+        self.assertEqual(writes[-1], b"\x29")
         display.backlight(-5)
         display.backlight(105)
         self.assertEqual(display.bl.duties[-2:], [0, 65535])
