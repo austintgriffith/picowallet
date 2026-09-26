@@ -46,11 +46,15 @@ export function bootselDrives() {
   return out;
 }
 
+let hadDrive = false;
 export function listDevices() {
   const out = [], ports = serialPorts(), drives = bootselDrives();
   // a port name comes back the same after a replug or reflash, so re-ask the board: forget ports that
-  // are gone, and forget everything while a board sits in its bootloader (it is about to change)
-  for (const port of [...known.keys()]) if (drives.length || !ports.includes(port)) known.delete(port);
+  // are gone, and forget everything once when a bootloader drive appears (a board is being reflashed
+  // and may come back under a name we still have)
+  const newDrive = drives.length > 0 && !hadDrive;
+  hadDrive = drives.length > 0;
+  for (const port of [...known.keys()]) if (newDrive || !ports.includes(port)) known.delete(port);
   for (const port of ports) {
     const k = known.get(port);
     if (!k) { known.set(port, "pending"); identify(port); }
