@@ -1,0 +1,11 @@
+[Symbol('property'), 'Reference', 'U1', [Symbol('at'), 0, -3, 0], [Symbol('layer'), Symbol('F.SilkS')], [Symbol('hide'), Symbol('yes')], [Symbol('uuid'), Symbol('65eabe80-6cf1-7821-3fcd-aec212a9e563')], [Symbol('effects'), [Symbol('font'), [Symbol('size'), 1.27, 1.27], [Symbol('thickness'), 0.15]]]] [Symbol('at'), 87, 100, 180]
+[[Symbol('pad'), '41', Symbol('smd'), Symbol('rect'), [Symbol('at'), 10.94001495, 2.499741, 0], [Symbol('size'), 1.499997, 1.499997], [Symbol('layers'), Symbol('B.Cu'), Symbol('B.Paste'), Symbol('B.Mask')], [Symbol('uuid'), Symbol('40f42da0-1100-1d1f-62f4-67de4b174d63')]]]
+[Symbol('property'), 'Reference', 'DISP1', [Symbol('at'), 0, -3, 0], [Symbol('layer'), Symbol('F.SilkS')], [Symbol('hide'), Symbol('yes')], [Symbol('uuid'), Symbol('3f96211e-480e-e29e-5087-a41e5900659e')], [Symbol('effects'), [Symbol('font'), [Symbol('size'), 1.27, 1.27], [Symbol('thickness'), 0.15]]]] [Symbol('at'), 102, 100, 0]
+[[Symbol('pad'), '1', Symbol('smd'), Symbol('rect'), [Symbol('at'), 0, 0, 0], [Symbol('size'), 0.6, 0.6], [Symbol('layers'), Symbol('F.Cu'), Symbol('F.Paste'), Symbol('F.Mask')], [Symbol('uuid'), Symbol('4aa8ac20-4409-3dbf-3d69-cf5e36ca60fd')]]]
+[Symbol('property'), 'Reference', 'J3', [Symbol('at'), 0, -3, 0], [Symbol('layer'), Symbol('F.SilkS')], [Symbol('hide'), Symbol('yes')], [Symbol('uuid'), Symbol('7282ec60-6059-4a41-3335-80e20611b783')], [Symbol('effects'), [Symbol('font'), [Symbol('size'), 1.27, 1.27], [Symbol('thickness'), 0.15]]]] [Symbol('at'), 95.73, 99.6, 270]
+[[Symbol('pad'), '1', Symbol('smd'), Symbol('rect'), [Symbol('at'), -2.75, -1.2700000000000005, 0], [Symbol('size'), 0.8, 0.25], [Symbol('layers'), Symbol('F.Cu'), Symbol('F.Paste'), Symbol('F.Mask')], [Symbol('net'), 1, 'GND'], [Symbol('uuid'), Symbol('42c45ea0-128d-045f-67de-675e42d035a3')]]]
+KiCad elements Counter({'segment': 448, 'via': 62, 'footprint': 30, 'net': 28, 'gr_text': 5, 'gr_line': 4, 'version': 1, 'generator': 1, 'generator_version': 1, 'general': 1, 'paper': 1, 'layers': 1, 'setup': 1})
+KiCad SMT pad positions compared 132 mismatches []
+JSON track segments 448 KiCad track segments 448 missing from KiCad 0 extra in KiCad 0
+Missing sample []
+Extra sample []

@@ -4,9 +4,9 @@ const pinLabels = {
   pin1: ["A"],
   pin2: ["CEN"],
   pin3: ["C"],
-  pin4: ["D"],
+  pin4: ["B"],
   pin5: ["COM"],
-  pin6: ["B"],
+  pin6: ["D"],
   pin7: ["pin7"],
   pin8: ["pin8"]
 } as const

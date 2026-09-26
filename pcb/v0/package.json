@@ -11,15 +11,15 @@
   ],
   "scripts": {
     "dev": "tsci dev",
-    "build": "tsci build",
+    "build": "tsci build index.circuit.tsx",
     "snapshot": "tsci snapshot",
     "snapshot:update": "tsci snapshot --update",
     "start": "tsci dev",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "@types/react": "^19.3.0",
-    "tscircuit": "^0.0.2646",
-    "typescript": "^5.0.0"
+    "@types/react": "19.3.0",
+    "tscircuit": "0.0.2646",
+    "typescript": "5.9.3"
   }
 }

@@ -1,3 +1,5 @@
+> SUPERSEDED: this document describes v0.7c. Use [the revised v0.8 design](picowallet-v0.8-reviewed.zip) and pcb/v0/README.md. The old cart, renders and ribbon safety instructions are not valid for the revision.
+
 # picowallet one-board v0.7c — review report (2026-09-24)
 
 **Full dossier with every file, image, datasheet and the worked ribbon-fold geometry: `pcb/dossier/DOSSIER.md`.**

@@ -1,3 +1,5 @@
+> SUPERSEDED: this document describes v0.7c. Use [the revised v0.8 design](picowallet-v0.8-reviewed.zip) and pcb/v0/README.md. The old cart, renders and ribbon safety instructions are not valid for the revision.
+
 # Test order — go through the motions (v0.7, 2026-09-23)
 
 Goal: learn the process and the real clock. 5 boards, JLCPCB assembled, zero soldering: the board arrives with every part on it, you plug in the screen and the battery. Human does every click.

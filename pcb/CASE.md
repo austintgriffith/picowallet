@@ -1,3 +1,5 @@
+> SUPERSEDED: this document describes v0.7c. Use [the revised v0.8 design](picowallet-v0.8-reviewed.zip) and pcb/v0/README.md. The old cart, renders and ribbon safety instructions are not valid for the revision.
+
 # picowallet v0.7 — dimensions for a case (2026-09-23)
 
 Coordinates: mm, origin = board center, X right, Y up, looking at the FRONT (screen side).

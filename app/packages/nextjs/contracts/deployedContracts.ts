@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   1: {
     ChipAccount: {
-      address: "0x4564fa634b073acbca814dca5210835ec9376324",
+      address: "0xeed7ff22e56e58ae72412c48be11bd1a992b9f8c",
       abi: [
         {
           type: "constructor",
@@ -1149,12 +1149,12 @@ const deployedContracts = {
         },
       ],
       inheritedFunctions: {},
-      deployedOnBlock: 25920704,
+      deployedOnBlock: 25986429,
     },
   },
   31337: {
     ChipAccount: {
-      address: "0x05b4cb126885fb10464fdd12666feb25e2563b76",
+      address: "0x19a1c09fe3399c4daaa2c98b936a8e460fc5eaa4",
       abi: [
         {
           type: "constructor",
@@ -2296,10 +2296,10 @@ const deployedContracts = {
         },
       ],
       inheritedFunctions: {},
-      deployedOnBlock: 12,
+      deployedOnBlock: 18,
     },
     MockUSDS: {
-      address: "0x2a264f26859166c5bf3868a54593ee716aebc848",
+      address: "0x5b3120d0da5fdcba7aef87a9c3c64829c1c0d76b",
       abi: [
         {
           type: "constructor",
@@ -2634,7 +2634,52 @@ const deployedContracts = {
         },
       ],
       inheritedFunctions: {},
-      deployedOnBlock: 14,
+      deployedOnBlock: 17,
+    },
+    MockReverseRegistrar: {
+      address: "0x33b1b5aa9aa4da83a332f0bc5cac6a903fde5d92",
+      abi: [
+        {
+          type: "function",
+          name: "names",
+          inputs: [
+            {
+              name: "",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+          outputs: [
+            {
+              name: "",
+              type: "string",
+              internalType: "string",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "setName",
+          inputs: [
+            {
+              name: "name",
+              type: "string",
+              internalType: "string",
+            },
+          ],
+          outputs: [
+            {
+              name: "node",
+              type: "bytes32",
+              internalType: "bytes32",
+            },
+          ],
+          stateMutability: "nonpayable",
+        },
+      ],
+      inheritedFunctions: {},
+      deployedOnBlock: 18,
     },
   },
 } as const;

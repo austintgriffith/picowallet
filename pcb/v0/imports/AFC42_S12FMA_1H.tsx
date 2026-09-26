@@ -31,7 +31,7 @@ export const AFC42_S12FMA_1H = (props: ChipProps<typeof pinLabels>) => {
   ]
 }}
       manufacturerPartNumber="AFC42-S12FMA-1H"
-      footprint="fpc12_p0.5mm_pw0.25mm_pl0.8mm_mpx7.5mm_mpy2.54mm_mpw0.6mm_mpl0.8mm"
+      footprint="fpc12_p0.5mm_pw0.3mm_pl0.8mm_mpx7.5mm_mpy2.5mm_mpw0.4mm_mpl0.8mm"
       cadModel={{
         objUrl: "https://modelcdn.tscircuit.com/easyeda_models/assets/C466532.obj?uuid=d6b530de5673497c95e0193749927dbb",
         stepUrl: "https://modelcdn.tscircuit.com/easyeda_models/assets/C466532.step?uuid=d6b530de5673497c95e0193749927dbb",

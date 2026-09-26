@@ -1,3 +1,5 @@
+> SUPERSEDED: this document describes v0.7c. Use [the revised v0.8 design](../picowallet-v0.8-reviewed.zip) and pcb/v0/README.md. The old cart, renders and ribbon safety instructions are not valid for the revision.
+
 # Netlist and placement dump (from the compiled circuit.json, v0.7c)
 
 Coordinates in mm, origin = board center, X right, Y up, viewed from the FRONT (top layer). Bottom-layer parts are placed with their X as seen from the front.

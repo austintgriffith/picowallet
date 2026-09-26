@@ -1,3 +1,5 @@
+> SUPERSEDED: this document describes v0.7c. Use [the revised v0.8 design](../picowallet-v0.8-reviewed.zip) and pcb/v0/README.md. The old cart, renders and ribbon safety instructions are not valid for the revision.
+
 # picowallet one-board v0.7c — full review dossier
 
 Written 2026-09-24 for an independent reviewer. Goal of the review: find anything that makes board #1 dead or damages a part. Everything I know is here or linked. Nothing has been powered.

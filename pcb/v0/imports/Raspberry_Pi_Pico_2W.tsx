@@ -70,12 +70,12 @@ export const Raspberry_Pi_Pico_2W = (props: ChipProps<typeof pinLabels>) => {
 }}
       manufacturerPartNumber="Raspberry Pi Pico 2W"
       footprint={<footprint>
-        <smtpad portHints={["pin41"]} pcbX="-10.94001495mm" pcbY="-2.499741mm" width="1.499997mm" height="1.499997mm" shape="rect" />
-<smtpad portHints={["pin42"]} pcbX="-13.44013695mm" pcbY="-2.499741mm" width="1.499997mm" height="1.499997mm" shape="rect" />
-<smtpad portHints={["pin43"]} pcbX="-15.94000495mm" pcbY="-2.499741mm" width="1.499997mm" height="1.499997mm" shape="rect" />
-<smtpad portHints={["pin44"]} pcbX="-24.23996295mm" pcbY="-0.999871mm" width="1.499997mm" height="1.499997mm" shape="rect" />
-<smtpad portHints={["pin45"]} pcbX="-24.23996295mm" pcbY="1.000125mm" width="1.499997mm" height="1.499997mm" shape="rect" />
-<smtpad portHints={["pin46"]} pcbX="-20.93999495mm" pcbY="0.000127mm" width="1.499997mm" height="1.499997mm" shape="rect" />
+        
+
+
+
+
+
 <smtpad portHints={["pin1"]} pcbX="-24.07003695mm" pcbY="-9.689973mm" width="1.5999968mm" height="3.1999936mm" shape="rect" />
 <smtpad portHints={["pin40"]} pcbX="-24.07003695mm" pcbY="9.689973mm" width="1.5999968mm" height="3.1999936mm" shape="rect" />
 <smtpad portHints={["pin2"]} pcbX="-21.53003695mm" pcbY="-9.689973mm" width="1.5999968mm" height="3.1999936mm" shape="rect" />

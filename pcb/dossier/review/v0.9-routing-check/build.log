@@ -1,0 +1,105 @@
+$ tsci build index.circuit.tsx --autorouter-timeout "120s"
+Building 1 file(s)...
+Building index.circuit.tsx...
+Generating circuit JSON...
+Each child in a list should have a unique "key" prop.
+
+Check the render method of `board`. It was passed a child from default. See https://react.dev/link/warning-keys for more information.
+Autorouting phase 1/1 has been running for 10.1s; enabling phase diagnostics. Re-run with --autorouter-debug for full autorouter logs from the start.
+Autorouting <board#865 /> phase 1/1 long-running start: connections=50, obstacles=204, previous_traces=0, router=tscircuit, solver=AutoroutingPipelineSolver9_PreloadedTraceGraph, cache=miss, cache_id=12cad7cd/cfb79751
+  connections: U1.GP9_SPI1CSn_I2C0SCL_UART1RX to U4.A1, U4.B1 to R11.pin1, R11.pin2 to J3.pin2, U1.GP8_SPI1RX_I2C0SDA_UART1TX to U4.A2, U4.B2 to R12.pin1, R12.pin2 to J3.pin3, U1.GP10_SPI1SCK_I2C1SDA to U4.A3, U4.B3 to R13.pin1, R13.pin2 to J3.pin4, U1.GP11_SPI1TX_I2C1SCL to U4.A4, U4.B4 to R14.pin1, R14.pin2 to J3.pin5, U1.GP12_SPI1RX_I2C0SDA_UART0TX to U4.A5, U4.B5 to R15.pin1, R15.pin2 to J3.pin6, R16.pin1 to U1.GP9_SPI1CSn_I2C0SCL_UART1RX, R17.pin1 to U1.GP12_SPI1RX_I2C0SDA_UART0TX, R18.pin1 to U1.GP10_SPI1SCK_I2C1SDA, R19.pin1 to U1.GP11_SPI1TX_I2C1SCL, R20.pin1 to U1.GP8_SPI1RX_I2C0SDA_UART1TX, J3.pin10 to R6.pin2, J3.pin11 to Q1.D, Q1.G to U1.GP13_SPI1CSn_I2C0SCL_UART0RX, R7.pin1 to Q1.G, SW5.A to U1.GP2, SW5.D to U1.GP18_SPI0SCK_I2C1SDA, SW5.C to U1.GP16_SPI0RX_UART0RX, SW5.B to U1.GP20_I2C0SDA, SW5.CEN to U1.GP3, SW1.pin1 to U1.GP15_SPI1TX_I2C1SCL, SW2.pin1 to U1.GP17_SPI0CSn_UART0TX, SJ1.pin2 to U3.CE, R10.pin1 to U3.CE, U3.PROG to R3.pin1, Q2.D to D1.anode, R8.pin1 to Q2.S, R8.pin2 to Q2.G, SW6.pin2 to R9.pin1, R9.pin2 to Q2.G, R4.pin2 to LED1.anode, R5.pin2 to LED2.pin1, LED2.pin2 to U3.N_CHRG, , net.V3_3, net.VSYS, net.VBUS, net.LCD_2V8, net.SDA, net.SCL, net.BAT
+  phase 1/1 progress: solver=AutoroutingPipelineSolver9_PreloadedTraceGraph solver_phase=mutatedPreloadedTraceSimplificationSolver steps=34 progress=75% iterations_per_second=10456 elapsed=10.2s
+  phase 1/1 progress: solver=AutoroutingPipelineSolver9_PreloadedTraceGraph solver_phase=globalDrcForceImproveSolver steps=35 progress=83% iterations_per_second=33940 elapsed=10.7s
+  phase 1/1 done: routed_traces=112, jumpers=0, errors=0, elapsed=11.2s
+Circuit JSON written to dist/index/circuit.json
+The "J" prefix is being used with a <chip />, try using it with a <connector /> or <jumper />
+The "Q" prefix is being used with a <chip />, try using it with a <transistor />
+The "J" prefix is being used with a <chip />, try using it with a <connector /> or <jumper />
+The "S" prefix is being used with a <chip />, try using it with a <switch /> or <pushbutton />
+The "Q" prefix is being used with a <chip />, try using it with a <transistor />
+<trace#173(from:U1.pin12 to:U4.pin2) /> is missing a name. Add a name prop to make the trace easier to identify.
+<trace#174(from:U4.pin18 to:R11.pin1) /> is missing a name. Add a name prop to make the trace easier to identify.
+<trace#175(from:R11.pin2 to:J3.pin2) /> is missing a name. Add a name prop to make the trace easier to identify.
+<trace#189(from:U1.pin11 to:U4.pin3) /> is missing a name. Add a name prop to make the trace easier to identify.
+<trace#190(from:U4.pin17 to:R12.pin1) /> is missing a name. Add a name prop to make the trace easier to identify.
+<trace#191(from:R12.pin2 to:J3.pin3) /> is missing a name. Add a name prop to make the trace easier to identify.
+<trace#205(from:U1.pin14 to:U4.pin4) /> is missing a name. Add a name prop to make the trace easier to identify.
+<trace#206(from:U4.pin16 to:R13.pin1) /> is missing a name. Add a name prop to make the trace easier to identify.
+<trace#207(from:R13.pin2 to:J3.pin4) /> is missing a name. Add a name prop to make the trace easier to identify.
+<trace#221(from:U1.pin15 to:U4.pin5) /> is missing a name. Add a name prop to make the trace easier to identify.
+<trace#222(from:U4.pin15 to:R14.pin1) /> is missing a name. Add a name prop to make the trace easier to identify.
+<trace#223(from:R14.pin2 to:J3.pin5) /> is missing a name. Add a name prop to make the trace easier to identify.
+<trace#237(from:U1.pin16 to:U4.pin6) /> is missing a name. Add a name prop to make the trace easier to identify.
+<trace#238(from:U4.pin14 to:R15.pin1) /> is missing a name. Add a name prop to make the trace easier to identify.
+<trace#239(from:R15.pin2 to:J3.pin6) /> is missing a name. Add a name prop to make the trace easier to identify.
+<trace#253(from:R16.pin1 to:U1.pin12) /> is missing a name. Add a name prop to make the trace easier to identify.
+<trace#268(from:R17.pin1 to:U1.pin16) /> is missing a name. Add a name prop to make the trace easier to identify.
+<trace#283(from:R18.pin1 to:U1.pin14) /> is missing a name. Add a name prop to make the trace easier to identify.
+<trace#298(from:R19.pin1 to:U1.pin15) /> is missing a name. Add a name prop to make the trace easier to identify.
+<trace#313(from:R20.pin1 to:U1.pin11) /> is missing a name. Add a name prop to make the trace easier to identify.
+<trace#359(from:J3.pin10 to:R6.pin2) /> is missing a name. Add a name prop to make the trace easier to identify.
+<trace#360(from:J3.pin11 to:Q1.D) /> is missing a name. Add a name prop to make the trace easier to identify.
+<trace#408(from:Q1.G to:U1.pin17) /> is missing a name. Add a name prop to make the trace easier to identify.
+<trace#422(from:R7.pin1 to:Q1.G) /> is missing a name. Add a name prop to make the trace easier to identify.
+<trace#434(from:SW5.A to:U1.pin4) /> is missing a name. Add a name prop to make the trace easier to identify.
+<trace#435(from:SW5.D to:U1.pin24) /> is missing a name. Add a name prop to make the trace easier to identify.
+<trace#436(from:SW5.C to:U1.pin21) /> is missing a name. Add a name prop to make the trace easier to identify.
+<trace#437(from:SW5.B to:U1.pin26) /> is missing a name. Add a name prop to make the trace easier to identify.
+<trace#438(from:SW5.CEN to:U1.pin5) /> is missing a name. Add a name prop to make the trace easier to identify.
+<trace#460(from:SW1.pin1 to:U1.pin20) /> is missing a name. Add a name prop to make the trace easier to identify.
+<trace#483(from:SW2.pin1 to:U1.pin22) /> is missing a name. Add a name prop to make the trace easier to identify.
+<trace#730(from:SJ1.pin2 to:U3.CE) /> is missing a name. Add a name prop to make the trace easier to identify.
+<trace#731(from:R10.pin1 to:U3.CE) /> is missing a name. Add a name prop to make the trace easier to identify.
+<trace#745(from:U3.PROG to:R3.pin1) /> is missing a name. Add a name prop to make the trace easier to identify.
+<trace#796(from:Q2.D to:D1.anode) /> is missing a name. Add a name prop to make the trace easier to identify.
+<trace#797(from:R8.pin1 to:Q2.S) /> is missing a name. Add a name prop to make the trace easier to identify.
+<trace#798(from:R8.pin2 to:Q2.G) /> is missing a name. Add a name prop to make the trace easier to identify.
+<trace#799(from:SW6.pin2 to:R9.pin1) /> is missing a name. Add a name prop to make the trace easier to identify.
+<trace#800(from:R9.pin2 to:Q2.G) /> is missing a name. Add a name prop to make the trace easier to identify.
+<trace#828(from:R4.pin2 to:LED1.anode) /> is missing a name. Add a name prop to make the trace easier to identify.
+<trace#855(from:R5.pin2 to:LED2.anode) /> is missing a name. Add a name prop to make the trace easier to identify.
+<trace#856(from:LED2.cathode to:U3.N_CHRG) /> is missing a name. Add a name prop to make the trace easier to identify.
+Port pin7 on SW5 is missing a trace
+Port pin8 on SW5 is missing a trace
+Port pin3 on SW1 is missing a trace
+Port pin4 on SW1 is missing a trace
+Port pin3 on SW2 is missing a trace
+Port pin4 on SW2 is missing a trace
+Port pin4 on SW6 is missing a trace
+Port pin5 on SW6 is missing a trace
+Port pin6 on SW6 is missing a trace
+Port pin7 on SW6 is missing a trace
+No <schematicsheet> was found. Add a <schematicsheet> to define the schematic drawing area.
+component is inferred to face x- from its cable insertion center because no explicit footprint insertionDirection is defined, but should face y+ so the connector is accessible from the board edge. Set insertionDirection on the <footprint> to specify the actual direction in the footprint's unrotated orientation; for example, <footprint insertionDirection="from_above"> for a connector accessed from above the PCB (+Z).
+DISP1 has no courtyard
+BT1 has no courtyard
+SJ1 has no courtyard
+<led#831 name=".LED2" /> footprint "0603" does not match supplier footprint jlcpcb:C2286 (copper IoU 0.7906).
+<led#804 name=".LED1" /> footprint "0603" does not match supplier footprint jlcpcb:C12624 (copper IoU 0.7901).
+All pins on DISP1 are underspecified (no pinAttributes set)
+All pins on J3 are underspecified (no pinAttributes set)
+All pins on Q1 are underspecified (no pinAttributes set)
+All pins on BT1 are underspecified (no pinAttributes set)
+All pins on J2 are underspecified (no pinAttributes set)
+All pins on SJ1 are underspecified (no pinAttributes set)
+All pins on Q2 are underspecified (no pinAttributes set)
+U1 has no pin with requires_power=true
+J3 has no pin with requires_power=true
+U5 has no pin with requires_power=true
+Q1 has no pin with requires_power=true
+J2 has no pin with requires_power=true
+SJ1 has no pin with requires_power=true
+Q2 has no pin with requires_power=true
+J3 has no pin with requires_ground=true
+Q1 has no pin with requires_ground=true
+J2 has no pin with requires_ground=true
+SJ1 has no pin with requires_ground=true
+Q2 has no pin with requires_ground=true
+
+Build complete
+  Circuits  1 passed
+  Options   autorouter-timeout
+  Output    dist
+
+✓ Done
+Build exiting with code 0: build finished successfully

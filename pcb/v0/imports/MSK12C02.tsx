@@ -1,17 +1,9 @@
 import type { SwitchProps } from "@tscircuit/props"
 
+// Pins 1-3 are switch contacts; 4-7 are mechanical mounting lands.
 const pinLabels = {
-  pin1: ["pin1"],
-  pin2: ["pin2"],
-  pin3: ["pin3"],
-  pin4: ["pin4"]
-} as const
-
-const footprinterPinLabels = {
-  ...pinLabels,
-  "pin4": [...pinLabels["pin4"], "pin5"],
-  "pin4": [...pinLabels["pin4"], "pin6"],
-  "pin4": [...pinLabels["pin4"], "pin7"],
+  pin1: ["pin1"], pin2: ["pin2"], pin3: ["pin3"],
+  pin4: ["pin4"], pin5: ["pin5"], pin6: ["pin6"], pin7: ["pin7"],
 } as const
 
 export const MSK12C02 = (props: SwitchProps) => {
@@ -20,7 +12,7 @@ export const MSK12C02 = (props: SwitchProps) => {
   return (
     <switch
       name={name}
-      pinLabels={footprinterPinLabels}
+      pinLabels={pinLabels}
       supplierPartNumbers={{
   "jlcpcb": [
     "C431540"

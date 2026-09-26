@@ -1,0 +1,1814 @@
+{
+    "$schema": "https://schemas.kicad.org/drc.v1.json",
+    "coordinate_units": "mm",
+    "date": "2026-09-25T15:26:58",
+    "ignored_checks": [
+        {
+            "description": "Footprint has no courtyard defined",
+            "key": "missing_courtyard"
+        },
+        {
+            "description": "Track endpoint not centered on via",
+            "key": "track_not_centered_on_via"
+        },
+        {
+            "description": "Tuning profile track geometries",
+            "key": "tuning_profile_track_geometries"
+        },
+        {
+            "description": "Footprint doesn't match symbol's footprint filters",
+            "key": "footprint_filters_mismatch"
+        },
+        {
+            "description": "Footprint component type doesn't match footprint pads",
+            "key": "footprint_type_mismatch"
+        }
+    ],
+    "included_severities": [
+        "error",
+        "warning"
+    ],
+    "kicad_version": "10.0.6",
+    "schematic_parity": [],
+    "source": "circuit.kicad_pcb",
+    "unconnected_items": [],
+    "violations": [
+        {
+            "description": "Items not allowed (keepout area)",
+            "items": [
+                {
+                    "description": "Footprint U1",
+                    "pos": {
+                        "x": 89.0,
+                        "y": 100.059963
+                    },
+                    "uuid": "75611b00-1f27-8d9f-3711-ffc272b472dd"
+                }
+            ],
+            "severity": "error",
+            "type": "items_not_allowed"
+        },
+        {
+            "description": "Items not allowed (keepout area)",
+            "items": [
+                {
+                    "description": "NPTH pad of SW6",
+                    "pos": {
+                        "x": 68.5,
+                        "y": 125.0502
+                    },
+                    "uuid": "ecb53082-d1e5-472b-86b4-76e7556b380b"
+                }
+            ],
+            "severity": "error",
+            "type": "items_not_allowed"
+        },
+        {
+            "description": "Items not allowed (keepout area)",
+            "items": [
+                {
+                    "description": "NPTH pad of SW6",
+                    "pos": {
+                        "x": 71.5,
+                        "y": 125.0502
+                    },
+                    "uuid": "ac2f3379-39f7-4208-9079-91e4d088cc7e"
+                }
+            ],
+            "severity": "error",
+            "type": "items_not_allowed"
+        },
+        {
+            "description": "Items not allowed (keepout area)",
+            "items": [
+                {
+                    "description": "Footprint SW6",
+                    "pos": {
+                        "x": 70.0,
+                        "y": 124.29405
+                    },
+                    "uuid": "10865440-2647-66bf-3c08-793e51c98bbd"
+                }
+            ],
+            "severity": "error",
+            "type": "items_not_allowed"
+        },
+        {
+            "description": "Silkscreen clipped by board edge",
+            "items": [
+                {
+                    "description": "Segment on Edge.Cuts",
+                    "pos": {
+                        "x": 96.0,
+                        "y": 116.5
+                    },
+                    "uuid": "793bea1b-d055-4850-bd6e-b9a13ced9861"
+                },
+                {
+                    "description": "Segment of U1 on B.Silkscreen",
+                    "pos": {
+                        "x": 99.499877,
+                        "y": 125.559988
+                    },
+                    "uuid": "57c6aa0d-7d93-45ac-87e4-19f77f548b29"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_edge_clearance"
+        },
+        {
+            "description": "Silkscreen clipped by board edge",
+            "items": [
+                {
+                    "description": "Segment on Edge.Cuts",
+                    "pos": {
+                        "x": 82.0,
+                        "y": 127.0
+                    },
+                    "uuid": "7f1ef880-ffdb-4ef9-bd95-014a217b400e"
+                },
+                {
+                    "description": "Segment of U1 on B.Silkscreen",
+                    "pos": {
+                        "x": 85.428862,
+                        "y": 125.559988
+                    },
+                    "uuid": "d0853821-e3ce-400e-b74b-e622b73efbd1"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_edge_clearance"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint U1",
+                    "pos": {
+                        "x": 89.0,
+                        "y": 100.059963
+                    },
+                    "uuid": "75611b00-1f27-8d9f-3711-ffc272b472dd"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint DISP1",
+                    "pos": {
+                        "x": 102.0,
+                        "y": 96.5
+                    },
+                    "uuid": "3d035ada-309a-d8fa-2432-571a17c9d53a"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint J3",
+                    "pos": {
+                        "x": 93.75,
+                        "y": 96.93
+                    },
+                    "uuid": "72097e80-7c67-5421-793a-d63e6edd009d"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint U4",
+                    "pos": {
+                        "x": 107.0,
+                        "y": 92.0
+                    },
+                    "uuid": "704e4782-2741-ba7e-412e-43825661be7e"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint U5",
+                    "pos": {
+                        "x": 109.0,
+                        "y": 82.0
+                    },
+                    "uuid": "25530582-431c-f87e-5473-098213fcf47e"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint R11",
+                    "pos": {
+                        "x": 101.7,
+                        "y": 86.3
+                    },
+                    "uuid": "1cd9458c-4ed7-2cb4-4578-610c26381134"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint R12",
+                    "pos": {
+                        "x": 104.9,
+                        "y": 86.3
+                    },
+                    "uuid": "0f0d9500-7abe-0740-1991-8680521eebc0"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint R13",
+                    "pos": {
+                        "x": 108.1,
+                        "y": 86.3
+                    },
+                    "uuid": "6b2b62ba-2924-2b06-428c-473a51c34686"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint R14",
+                    "pos": {
+                        "x": 111.3,
+                        "y": 86.3
+                    },
+                    "uuid": "1434ea30-7fe5-5c70-146a-3150574640f0"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint R15",
+                    "pos": {
+                        "x": 114.5,
+                        "y": 86.3
+                    },
+                    "uuid": "401bc4bc-5433-c904-177c-a93c7cd2e484"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint R16",
+                    "pos": {
+                        "x": 107.0,
+                        "y": 103.0
+                    },
+                    "uuid": "680fc364-7478-4544-7f1f-38dc72b6b6fc"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint R17",
+                    "pos": {
+                        "x": 110.0,
+                        "y": 103.0
+                    },
+                    "uuid": "4500fcaa-3898-7aca-2c2f-f8ea1fc7770a"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint R18",
+                    "pos": {
+                        "x": 107.0,
+                        "y": 106.0
+                    },
+                    "uuid": "705a41d2-63f1-bff2-5789-3e124b20bc32"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint R19",
+                    "pos": {
+                        "x": 110.0,
+                        "y": 106.0
+                    },
+                    "uuid": "1d6b01e0-1102-8000-0499-fe2007ce83c0"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint R20",
+                    "pos": {
+                        "x": 113.0,
+                        "y": 106.0
+                    },
+                    "uuid": "48b7f7d8-3c4f-75f8-2fe6-f418237e7238"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint C5",
+                    "pos": {
+                        "x": 113.8,
+                        "y": 89.2
+                    },
+                    "uuid": "1cee91e0-274c-6781-31aa-3d223c0812c3"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint C6",
+                    "pos": {
+                        "x": 104.5,
+                        "y": 82.0
+                    },
+                    "uuid": "7be80540-04bf-b4ff-7a98-90c2060f297d"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint C7",
+                    "pos": {
+                        "x": 113.0,
+                        "y": 82.0
+                    },
+                    "uuid": "25436cc0-7fb3-aaa1-25dc-177e34942663"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint C4",
+                    "pos": {
+                        "x": 90.0,
+                        "y": 104.0
+                    },
+                    "uuid": "3d588b40-6837-36df-0dc6-f8fe4ca944e3"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint R6",
+                    "pos": {
+                        "x": 104.0,
+                        "y": 120.5
+                    },
+                    "uuid": "74cc098c-1f83-8434-4c2c-ee0c48229fb4"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint Q1",
+                    "pos": {
+                        "x": 110.0,
+                        "y": 120.3
+                    },
+                    "uuid": "0a39e3d2-6176-8e6e-32d8-ff5238d772ee"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint R7",
+                    "pos": {
+                        "x": 109.0,
+                        "y": 116.5
+                    },
+                    "uuid": "5b67447a-1049-2dc6-7bf9-a0061855edba"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint SW5",
+                    "pos": {
+                        "x": 67.0,
+                        "y": 99.99991
+                    },
+                    "uuid": "3357c8fe-4ede-8a1e-6a65-4b3e7a13f3a2"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint SW1",
+                    "pos": {
+                        "x": 134.0,
+                        "y": 89.5
+                    },
+                    "uuid": "10a5ad40-6eb2-9881-11f5-21be6d632403"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint SW2",
+                    "pos": {
+                        "x": 134.0,
+                        "y": 103.5
+                    },
+                    "uuid": "39fb1614-5a54-77ac-115b-fa947d0c6cd4"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint U2",
+                    "pos": {
+                        "x": 67.0,
+                        "y": 85.0
+                    },
+                    "uuid": "1646c1c4-5229-3c3c-4566-c5c42309383c"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint R1",
+                    "pos": {
+                        "x": 73.0,
+                        "y": 81.0
+                    },
+                    "uuid": "32f8b8c0-6497-4940-03d8-b4c06c48b2c0"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint R2",
+                    "pos": {
+                        "x": 73.0,
+                        "y": 89.0
+                    },
+                    "uuid": "1f9dcb52-77f2-36ae-0f82-38ae58edc552"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint C1",
+                    "pos": {
+                        "x": 73.0,
+                        "y": 85.0
+                    },
+                    "uuid": "26260dcc-7169-f434-08f9-f6345f7607cc"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint BT1",
+                    "pos": {
+                        "x": 128.0,
+                        "y": 98.0
+                    },
+                    "uuid": "0755a4c0-61c5-e2a1-43c9-df7e16a65e63"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint J2",
+                    "pos": {
+                        "x": 128.0,
+                        "y": 80.0
+                    },
+                    "uuid": "540ef860-5180-c9bf-08ef-7422635fb203"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint C2",
+                    "pos": {
+                        "x": 124.0,
+                        "y": 116.0
+                    },
+                    "uuid": "4f43349c-5bab-b67c-6814-385c747cba3c"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint U3",
+                    "pos": {
+                        "x": 130.0,
+                        "y": 117.5
+                    },
+                    "uuid": "05472864-6669-49dc-2de6-43e43dca2e5c"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint R3",
+                    "pos": {
+                        "x": 135.5,
+                        "y": 117.5
+                    },
+                    "uuid": "11ab81c2-5308-6022-6b9a-c17e2a3de31e"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint C3",
+                    "pos": {
+                        "x": 124.0,
+                        "y": 120.5
+                    },
+                    "uuid": "2fed7462-3bc2-fdde-588c-8fe21323e25e"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint D1",
+                    "pos": {
+                        "x": 118.0,
+                        "y": 120.5
+                    },
+                    "uuid": "781d5f2e-0c6c-ecee-5f43-8552350c086e"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint SW6",
+                    "pos": {
+                        "x": 70.0,
+                        "y": 124.29405
+                    },
+                    "uuid": "10865440-2647-66bf-3c08-793e51c98bbd"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint SJ1",
+                    "pos": {
+                        "x": 139.0,
+                        "y": 110.0
+                    },
+                    "uuid": "056ffbe4-11d8-7dc4-1e40-ffa42aa98184"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint R10",
+                    "pos": {
+                        "x": 137.5,
+                        "y": 114.0
+                    },
+                    "uuid": "19cacf88-7a84-be38-0ed4-4bf85cdc2648"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint <no reference designator>",
+                    "pos": {
+                        "x": 127.7,
+                        "y": 117.5
+                    },
+                    "uuid": "60df952c-5dc3-8c74-1c66-ae1424f6304c"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint <no reference designator>",
+                    "pos": {
+                        "x": 132.3,
+                        "y": 117.5
+                    },
+                    "uuid": "546945d4-6a39-dbcc-28dc-fd6c187fe0f4"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint Q2",
+                    "pos": {
+                        "x": 118.0,
+                        "y": 116.0
+                    },
+                    "uuid": "2e1d7f5c-21b4-fd7c-154c-7b9c08e3f9bc"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint R8",
+                    "pos": {
+                        "x": 113.0,
+                        "y": 116.0
+                    },
+                    "uuid": "5e1d149c-6a85-967c-76ee-185c7ca965c4"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint R9",
+                    "pos": {
+                        "x": 77.0,
+                        "y": 116.0
+                    },
+                    "uuid": "3b90c100-69ff-011f-0f8e-c33e4ae17aa3"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint LED1",
+                    "pos": {
+                        "x": 64.0,
+                        "y": 116.5
+                    },
+                    "uuid": "678ce980-191a-d0bf-663d-75021a6a453d"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint R4",
+                    "pos": {
+                        "x": 69.0,
+                        "y": 116.5
+                    },
+                    "uuid": "54d67c00-2a81-c9c1-5625-f07e29325543"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint LED2",
+                    "pos": {
+                        "x": 64.0,
+                        "y": 113.0
+                    },
+                    "uuid": "0443f200-5eb4-2fe1-46db-923e1394aba3"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint R5",
+                    "pos": {
+                        "x": 69.0,
+                        "y": 113.0
+                    },
+                    "uuid": "28df1580-7cb0-ac9f-2240-6ebe382fcf23"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint <no reference designator>",
+                    "pos": {
+                        "x": 61.5,
+                        "y": 75.5
+                    },
+                    "uuid": "59eae2a0-4f8d-0cff-452f-375e3ad161bd"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint <no reference designator>",
+                    "pos": {
+                        "x": 138.5,
+                        "y": 75.5
+                    },
+                    "uuid": "30d3faea-3adc-7756-5973-166a123d5bd6"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint <no reference designator>",
+                    "pos": {
+                        "x": 138.5,
+                        "y": 124.5
+                    },
+                    "uuid": "01e33260-0c41-0801-169e-dda220fcb343"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "The current configuration does not include the footprint library 'tscircuit'",
+            "items": [
+                {
+                    "description": "Footprint <no reference designator>",
+                    "pos": {
+                        "x": 61.5,
+                        "y": 124.5
+                    },
+                    "uuid": "74c0ff1e-49e2-2282-0885-442238d79a3e"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_issues"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.7000 mm)",
+            "items": [
+                {
+                    "description": "Reference field of J3",
+                    "pos": {
+                        "x": 96.3,
+                        "y": 96.93
+                    },
+                    "uuid": "50358808-5909-43c5-ad34-ef6e9c86c935"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.4000 mm)",
+            "items": [
+                {
+                    "description": "Reference field of R11",
+                    "pos": {
+                        "x": 101.7,
+                        "y": 84.925
+                    },
+                    "uuid": "3c309bad-41b0-4fea-89f5-b95ae98f0bf6"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.4000 mm)",
+            "items": [
+                {
+                    "description": "Reference field of R12",
+                    "pos": {
+                        "x": 104.9,
+                        "y": 84.925
+                    },
+                    "uuid": "19dee2e7-5909-4f09-b6ec-09b65ca0b33f"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.4000 mm)",
+            "items": [
+                {
+                    "description": "Reference field of R13",
+                    "pos": {
+                        "x": 108.1,
+                        "y": 84.925
+                    },
+                    "uuid": "f2eeb15c-3e2c-4cab-ba6b-8998bc30c882"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.4000 mm)",
+            "items": [
+                {
+                    "description": "Reference field of R14",
+                    "pos": {
+                        "x": 111.3,
+                        "y": 84.925
+                    },
+                    "uuid": "f611ddf1-5140-4b2e-b744-dc7f0c3822ee"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.4000 mm)",
+            "items": [
+                {
+                    "description": "Reference field of R15",
+                    "pos": {
+                        "x": 114.5,
+                        "y": 84.925
+                    },
+                    "uuid": "099cf3d2-0be3-4b96-af56-b28fb6c28cfc"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.4000 mm)",
+            "items": [
+                {
+                    "description": "Reference field of R16",
+                    "pos": {
+                        "x": 107.0,
+                        "y": 101.625
+                    },
+                    "uuid": "54c8031b-b848-415f-beba-5cdfeb02a1a9"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.4000 mm)",
+            "items": [
+                {
+                    "description": "Reference field of R17",
+                    "pos": {
+                        "x": 110.0,
+                        "y": 101.625
+                    },
+                    "uuid": "ae26bacd-7633-4687-94e4-224d6d5d8510"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.4000 mm)",
+            "items": [
+                {
+                    "description": "Reference field of R18",
+                    "pos": {
+                        "x": 107.0,
+                        "y": 104.625
+                    },
+                    "uuid": "70f86bc0-16c3-4abb-9078-928d1baa0976"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.4000 mm)",
+            "items": [
+                {
+                    "description": "Reference field of R19",
+                    "pos": {
+                        "x": 110.0,
+                        "y": 104.625
+                    },
+                    "uuid": "d6a289a3-2480-45ad-8aaf-95f280e166af"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.4000 mm)",
+            "items": [
+                {
+                    "description": "Reference field of R20",
+                    "pos": {
+                        "x": 113.0,
+                        "y": 104.625
+                    },
+                    "uuid": "422f5ad3-aef7-4702-b703-32481f069f77"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.4000 mm)",
+            "items": [
+                {
+                    "description": "Reference field of C5",
+                    "pos": {
+                        "x": 113.8,
+                        "y": 87.825
+                    },
+                    "uuid": "2ebb5ec2-f851-48cf-847c-4b6d7e1c15df"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.4000 mm)",
+            "items": [
+                {
+                    "description": "Reference field of C6",
+                    "pos": {
+                        "x": 104.5,
+                        "y": 80.4
+                    },
+                    "uuid": "376a9c53-2ceb-4c79-adec-6cacbf57fd49"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.4000 mm)",
+            "items": [
+                {
+                    "description": "Reference field of C7",
+                    "pos": {
+                        "x": 113.0,
+                        "y": 80.4
+                    },
+                    "uuid": "352ab18d-020a-40ed-a63a-e8f4d27e1c71"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.4000 mm)",
+            "items": [
+                {
+                    "description": "Reference field of C4",
+                    "pos": {
+                        "x": 90.0,
+                        "y": 102.625
+                    },
+                    "uuid": "cd206d37-e8be-427e-bab8-17d351de94e9"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.4000 mm)",
+            "items": [
+                {
+                    "description": "Reference field of R6",
+                    "pos": {
+                        "x": 104.0,
+                        "y": 118.725
+                    },
+                    "uuid": "4fc8105d-a8a7-45d0-a15e-66bac842d988"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.5000 mm)",
+            "items": [
+                {
+                    "description": "Reference field of Q1",
+                    "pos": {
+                        "x": 110.0,
+                        "y": 122.8
+                    },
+                    "uuid": "76efc473-d9a2-4e82-8259-d14296c101c6"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.4000 mm)",
+            "items": [
+                {
+                    "description": "Reference field of R7",
+                    "pos": {
+                        "x": 109.0,
+                        "y": 115.125
+                    },
+                    "uuid": "7ad2bb30-ed35-4700-b80c-eef35472f6dc"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.7833 mm)",
+            "items": [
+                {
+                    "description": "Reference field of SW1",
+                    "pos": {
+                        "x": 130.1,
+                        "y": 89.5
+                    },
+                    "uuid": "ec682966-6763-4bc3-b039-afc6959398bf"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.7833 mm)",
+            "items": [
+                {
+                    "description": "Reference field of SW2",
+                    "pos": {
+                        "x": 130.1,
+                        "y": 103.5
+                    },
+                    "uuid": "86949bdb-b3cf-4a58-a6f0-27e15a5dcd4d"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6196 mm)",
+            "items": [
+                {
+                    "description": "Reference field of U2",
+                    "pos": {
+                        "x": 64.0825,
+                        "y": 85.0
+                    },
+                    "uuid": "c7365c7b-3c8d-4a80-98b9-e06e42f23c24"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.4000 mm)",
+            "items": [
+                {
+                    "description": "Reference field of R1",
+                    "pos": {
+                        "x": 73.0,
+                        "y": 79.625
+                    },
+                    "uuid": "44a9dfda-1a5f-401b-bebc-3fad8d9c79a6"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.4000 mm)",
+            "items": [
+                {
+                    "description": "Reference field of R2",
+                    "pos": {
+                        "x": 73.0,
+                        "y": 87.625
+                    },
+                    "uuid": "db8ef54d-e7e9-40ef-bd40-c4041b1968ef"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.4000 mm)",
+            "items": [
+                {
+                    "description": "Reference field of C1",
+                    "pos": {
+                        "x": 73.0,
+                        "y": 83.625
+                    },
+                    "uuid": "ab056537-4e25-4d23-b46d-6fb0cea7d0df"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.7000 mm)",
+            "items": [
+                {
+                    "description": "Reference field of J2",
+                    "pos": {
+                        "x": 128.0,
+                        "y": 82.0
+                    },
+                    "uuid": "5452279b-5736-44ba-a4e0-50a749c444fc"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.5200 mm)",
+            "items": [
+                {
+                    "description": "Footprint text of J2 (pin1)",
+                    "pos": {
+                        "x": 127.0,
+                        "y": 81.4
+                    },
+                    "uuid": "d3f6ad34-31a8-43a2-86c2-58e652d02ae9"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.5200 mm)",
+            "items": [
+                {
+                    "description": "Footprint text of J2 (pin2)",
+                    "pos": {
+                        "x": 129.0,
+                        "y": 81.4
+                    },
+                    "uuid": "359a88bd-b10e-4c40-8f8b-6bb4ad5b3b3e"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.4000 mm)",
+            "items": [
+                {
+                    "description": "Reference field of C2",
+                    "pos": {
+                        "x": 124.0,
+                        "y": 114.625
+                    },
+                    "uuid": "79c3b59d-1ddf-4eb7-bae7-fb9cf67e9745"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6204 mm)",
+            "items": [
+                {
+                    "description": "Reference field of U3",
+                    "pos": {
+                        "x": 127.0775,
+                        "y": 117.5
+                    },
+                    "uuid": "256f3e13-c7c4-4bbd-8d73-d7084bdb665a"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.4000 mm)",
+            "items": [
+                {
+                    "description": "Reference field of R3",
+                    "pos": {
+                        "x": 134.125,
+                        "y": 117.5
+                    },
+                    "uuid": "b72ebff8-159d-4c55-a5aa-d0d65d0f73d1"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.4000 mm)",
+            "items": [
+                {
+                    "description": "Reference field of C3",
+                    "pos": {
+                        "x": 124.0,
+                        "y": 119.125
+                    },
+                    "uuid": "db88ae75-7558-42db-b0ae-231d2ca5921b"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.6000 mm)",
+            "items": [
+                {
+                    "description": "Reference field of D1",
+                    "pos": {
+                        "x": 118.0,
+                        "y": 118.86
+                    },
+                    "uuid": "94642717-081a-4f2e-8658-eeb08703f463"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.7000 mm)",
+            "items": [
+                {
+                    "description": "Reference field of SW6",
+                    "pos": {
+                        "x": 70.0,
+                        "y": 121.438
+                    },
+                    "uuid": "c12afa25-4fe0-4fdf-8cc6-e2ec03950bd9"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.4000 mm)",
+            "items": [
+                {
+                    "description": "Reference field of R10",
+                    "pos": {
+                        "x": 137.5,
+                        "y": 112.625
+                    },
+                    "uuid": "46217df3-05fb-4dd1-9f35-2c91bf56a029"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.5000 mm)",
+            "items": [
+                {
+                    "description": "Reference field of Q2",
+                    "pos": {
+                        "x": 118.0,
+                        "y": 118.5
+                    },
+                    "uuid": "6f9a49a7-4684-44ba-801d-09dc922a7443"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.4000 mm)",
+            "items": [
+                {
+                    "description": "Reference field of R8",
+                    "pos": {
+                        "x": 113.0,
+                        "y": 114.625
+                    },
+                    "uuid": "7ca2cde1-d354-4728-ba1a-afd66873cfd6"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.4000 mm)",
+            "items": [
+                {
+                    "description": "Reference field of R9",
+                    "pos": {
+                        "x": 77.0,
+                        "y": 114.625
+                    },
+                    "uuid": "79c7c893-29c7-4222-b92e-3dccf8eb4160"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.4000 mm)",
+            "items": [
+                {
+                    "description": "Reference field of LED1",
+                    "pos": {
+                        "x": 64.0,
+                        "y": 117.875
+                    },
+                    "uuid": "6112f9b2-e471-4993-87e4-82afc37417ac"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.4000 mm)",
+            "items": [
+                {
+                    "description": "Reference field of R4",
+                    "pos": {
+                        "x": 69.0,
+                        "y": 115.125
+                    },
+                    "uuid": "57f9a3d4-2cee-4e8a-af79-7fce5fb90560"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.4000 mm)",
+            "items": [
+                {
+                    "description": "Reference field of LED2",
+                    "pos": {
+                        "x": 64.0,
+                        "y": 114.375
+                    },
+                    "uuid": "4065b5be-e560-4352-8005-07af5038757a"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        },
+        {
+            "description": "Text height out of range (board setup constraints silk text height min height 0.8000 mm; actual 0.4000 mm)",
+            "items": [
+                {
+                    "description": "Reference field of R5",
+                    "pos": {
+                        "x": 69.0,
+                        "y": 111.625
+                    },
+                    "uuid": "e189ad70-7ac2-4aa5-83d4-9d426546b3ac"
+                }
+            ],
+            "severity": "warning",
+            "type": "text_height"
+        },
+        {
+            "description": "Silkscreen clearance",
+            "items": [
+                {
+                    "description": "PCB text 'CHG EN' on F.Silkscreen",
+                    "pos": {
+                        "x": 137.5,
+                        "y": 112.0
+                    },
+                    "uuid": "386bd200-503e-cb60-2716-974061940620"
+                },
+                {
+                    "description": "Reference field of R10",
+                    "pos": {
+                        "x": 137.5,
+                        "y": 112.625
+                    },
+                    "uuid": "46217df3-05fb-4dd1-9f35-2c91bf56a029"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        },
+        {
+            "description": "Silkscreen clearance",
+            "items": [
+                {
+                    "description": "Segment of SW2 on F.Silkscreen",
+                    "pos": {
+                        "x": 130.5,
+                        "y": 97.3001
+                    },
+                    "uuid": "31748674-582a-46e5-a845-e83715614f57"
+                },
+                {
+                    "description": "Segment of SW1 on F.Silkscreen",
+                    "pos": {
+                        "x": 132.75,
+                        "y": 96.2624
+                    },
+                    "uuid": "3faf90c0-a0dc-46b9-98d5-cef8e9084473"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        },
+        {
+            "description": "Silkscreen clearance",
+            "items": [
+                {
+                    "description": "Segment of SW2 on F.Silkscreen",
+                    "pos": {
+                        "x": 130.5,
+                        "y": 97.3001
+                    },
+                    "uuid": "31748674-582a-46e5-a845-e83715614f57"
+                },
+                {
+                    "description": "Segment of SW1 on F.Silkscreen",
+                    "pos": {
+                        "x": 131.625,
+                        "y": 97.3874
+                    },
+                    "uuid": "f2d59271-fd04-4003-857d-cb362a504cae"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        },
+        {
+            "description": "Silkscreen clearance",
+            "items": [
+                {
+                    "description": "Segment of SW1 on F.Silkscreen",
+                    "pos": {
+                        "x": 131.625,
+                        "y": 97.3874
+                    },
+                    "uuid": "f2d59271-fd04-4003-857d-cb362a504cae"
+                },
+                {
+                    "description": "Segment of SW2 on F.Silkscreen",
+                    "pos": {
+                        "x": 137.5,
+                        "y": 97.3001
+                    },
+                    "uuid": "f9248573-9e47-4a6e-b697-267e32f587d2"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        },
+        {
+            "description": "Silkscreen clearance",
+            "items": [
+                {
+                    "description": "Segment of SW2 on F.Silkscreen",
+                    "pos": {
+                        "x": 130.5,
+                        "y": 97.3001
+                    },
+                    "uuid": "31748674-582a-46e5-a845-e83715614f57"
+                },
+                {
+                    "description": "Segment of SW1 on F.Silkscreen",
+                    "pos": {
+                        "x": 133.875,
+                        "y": 97.3874
+                    },
+                    "uuid": "5cf46dc4-534a-4db5-ae6f-5503cc09b792"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        },
+        {
+            "description": "Silkscreen clearance",
+            "items": [
+                {
+                    "description": "Segment of SW1 on F.Silkscreen",
+                    "pos": {
+                        "x": 133.875,
+                        "y": 97.3874
+                    },
+                    "uuid": "5cf46dc4-534a-4db5-ae6f-5503cc09b792"
+                },
+                {
+                    "description": "Segment of SW2 on F.Silkscreen",
+                    "pos": {
+                        "x": 137.5,
+                        "y": 97.3001
+                    },
+                    "uuid": "f9248573-9e47-4a6e-b697-267e32f587d2"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        },
+        {
+            "description": "Silkscreen clearance",
+            "items": [
+                {
+                    "description": "PCB text 'CHG' on F.Silkscreen",
+                    "pos": {
+                        "x": 64.0,
+                        "y": 114.5
+                    },
+                    "uuid": "2bd5caae-4b7f-97f2-3d2b-056e3a2a5d32"
+                },
+                {
+                    "description": "Reference field of LED2",
+                    "pos": {
+                        "x": 64.0,
+                        "y": 114.375
+                    },
+                    "uuid": "4065b5be-e560-4352-8005-07af5038757a"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        },
+        {
+            "description": "Silkscreen clearance",
+            "items": [
+                {
+                    "description": "Reference field of Q2",
+                    "pos": {
+                        "x": 118.0,
+                        "y": 118.5
+                    },
+                    "uuid": "6f9a49a7-4684-44ba-801d-09dc922a7443"
+                },
+                {
+                    "description": "Reference field of D1",
+                    "pos": {
+                        "x": 118.0,
+                        "y": 118.86
+                    },
+                    "uuid": "94642717-081a-4f2e-8658-eeb08703f463"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        },
+        {
+            "description": "Silkscreen clearance",
+            "items": [
+                {
+                    "description": "PCB text 'PWR' on F.Silkscreen",
+                    "pos": {
+                        "x": 64.0,
+                        "y": 118.0
+                    },
+                    "uuid": "0a6a9674-6cea-cc2c-1bbf-d1345b95916c"
+                },
+                {
+                    "description": "Reference field of LED1",
+                    "pos": {
+                        "x": 64.0,
+                        "y": 117.875
+                    },
+                    "uuid": "6112f9b2-e471-4993-87e4-82afc37417ac"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        },
+        {
+            "description": "Silkscreen clearance",
+            "items": [
+                {
+                    "description": "Reference field of U4",
+                    "pos": {
+                        "x": 107.1905,
+                        "y": 87.444
+                    },
+                    "uuid": "6509ea64-71d2-4575-a1cc-271549a74480"
+                },
+                {
+                    "description": "Segment of R13 on B.Silkscreen",
+                    "pos": {
+                        "x": 108.337258,
+                        "y": 86.8225
+                    },
+                    "uuid": "eea768a0-27e2-4b41-a1ea-12162d839474"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        },
+        {
+            "description": "Silkscreen clearance",
+            "items": [
+                {
+                    "description": "Reference field of J2",
+                    "pos": {
+                        "x": 128.0,
+                        "y": 82.0
+                    },
+                    "uuid": "5452279b-5736-44ba-a4e0-50a749c444fc"
+                },
+                {
+                    "description": "Footprint text of J2 (pin1)",
+                    "pos": {
+                        "x": 127.0,
+                        "y": 81.4
+                    },
+                    "uuid": "d3f6ad34-31a8-43a2-86c2-58e652d02ae9"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        },
+        {
+            "description": "Silkscreen clearance",
+            "items": [
+                {
+                    "description": "Footprint text of J2 (pin2)",
+                    "pos": {
+                        "x": 129.0,
+                        "y": 81.4
+                    },
+                    "uuid": "359a88bd-b10e-4c40-8f8b-6bb4ad5b3b3e"
+                },
+                {
+                    "description": "Reference field of J2",
+                    "pos": {
+                        "x": 128.0,
+                        "y": 82.0
+                    },
+                    "uuid": "5452279b-5736-44ba-a4e0-50a749c444fc"
+                }
+            ],
+            "severity": "warning",
+            "type": "silk_overlap"
+        }
+    ]
+}
