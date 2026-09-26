@@ -9,7 +9,7 @@
 // module is imported with the same snippet the emulator uses. Output is followed for a few seconds; a module that never returns
 // (a `while True`) is reported as blocking and left running.
 import { spawn } from "node:child_process";
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { FIRMWARE, SKETCHES, listWorkspace, entryFor } from "./workspace.mjs";
 import { runCode } from "./runtime.mjs";
@@ -73,18 +73,28 @@ async function doShip(name, file, src, port, target, boot) {
 
   // Everything the module imports (recursively) that lives in firmware/ or emu/sketches/, plus any
   // "x.bin" it names, goes too. mpremote cp skips files the board already has unchanged.
-  const args = [];
+  const args = [], dropPy = [];
+  // the bootloader's modules go as their pre-compiled .mpy (tools/mpy) unless the .py was edited since;
+  // the .py is then deleted on the board, since a .py there is imported before its .mpy
+  const put = (dep, dir) => {
+    const mpy = join(FIRMWARE, dep.replace(/\.py$/, ".mpy"));
+    if (BOOT_MODULES.includes(dep) && existsSync(mpy) && statSync(mpy).mtimeMs >= statSync(join(FIRMWARE, dep)).mtimeMs) {
+      args.push("cp", mpy, `:${dep.replace(/\.py$/, ".mpy")}`, "+");
+      dropPy.push(dep);
+    } else args.push("cp", join(dir, dep), `:${dep}`, "+");
+  };
   for (const dep of dependencies(name)) {
     const f = listWorkspace().find((x) => x.name === dep);
-    if (f && dep !== file.name) args.push("cp", join(f.src === "firmware" ? FIRMWARE : SKETCHES, dep), `:${dep}`, "+");
+    if (f && dep !== file.name) put(dep, f.src === "firmware" ? FIRMWARE : SKETCHES);
   }
   args.push("cp", src, `:${file.name}`, "+");
   if (bootNote.startsWith("main.py now")) {
     // the boot logo and loading bar come with a boot main.py
-    for (const f of ["splash.py", "lcd.py", "loader.py", "logo.bin", "bar.bin", "boot.py"]) if (!dependencies(name).includes(f)) args.push("cp", join(FIRMWARE, f), `:${f}`, "+");
+    for (const f of [...BOOT_MODULES, "logo.bin", "bar.bin", "boot.py"]) if (!dependencies(name).includes(f)) put(f, FIRMWARE);
     args.push("cp", join(SKETCHES, ".main.py"), ":main.py", "+");
   }
-  args.push("exec", "import os\nif hasattr(os, 'sync'): os.sync()");
+  const drop = dropPy.length ? `\nfor f in ${JSON.stringify(dropPy)}:\n    try: os.remove(f)\n    except OSError: pass` : "";
+  args.push("exec", `import os${drop}\nif hasattr(os, 'sync'): os.sync()`);
   const c = await mp(port, args, 120000);
   if (c.code !== 0) return { ok: false, port, error: "copy failed", lines: lines(c.out) };
   const first = dependencies(name).includes("lcd.py") && name !== "lcd" ? ["lcd"] : [];
@@ -99,6 +109,8 @@ async function doShip(name, file, src, port, target, boot) {
 }
 
 // Files (names with extension) the module needs from the workspace, the module itself last.
+const BOOT_MODULES = ["splash.py", "lcd.py", "loader.py"];
+
 export function dependencies(name) {
   const ws = listWorkspace();
   const text = (n) => { const f = ws.find((x) => x.name === n + ".py"); return f ? readFileSync(join(f.src === "firmware" ? FIRMWARE : SKETCHES, f.name), "utf8") : null; };

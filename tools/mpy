@@ -1,0 +1,12 @@
+#!/bin/sh
+# Pre-compile the bootloader's modules (splash, lcd, loader) to firmware/*.mpy, so the board skips
+# compiling them at every boot (~0.4 s on an RP2040). Run after changing any of them; tools/push and
+# the emulator's send copy the .mpy and delete the .py on the board (a .py there would win).
+# armv6m code (loader's viper helper) also runs on the RP2350's newer ARM core, so one build fits both.
+# Needs mpy-cross matching the board's MicroPython: uv tool install mpy-cross==1.26.1.post2
+cd "$(dirname "$0")/.." || exit 1
+MPY_CROSS=$(command -v mpy-cross || echo "$HOME/.local/bin/mpy-cross")
+for m in splash lcd loader; do
+  "$MPY_CROSS" -march=armv6m -o "firmware/$m.mpy" "firmware/$m.py" || exit 1
+done
+ls -l firmware/splash.mpy firmware/lcd.mpy firmware/loader.mpy | awk '{print $5, $9}'

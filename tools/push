@@ -3,13 +3,18 @@
 # Requires ENABLE_NETWORK_CONSOLE=True and is unsafe while the wallet holds value.
 cd "$(dirname "$0")/.." || exit 1
 for f in firmware/*.py; do
-  case "$f" in *secrets.example.py) continue;; esac
+  case "$f" in *secrets.example.py|*/splash.py|*/lcd.py|*/loader.py) continue;; esac
   ./tools/pico cp "$f" ":$(basename "$f")" || exit 1
 done
-# boot logo and loading bar (splash.py, loader.py)
-for f in firmware/logo.bin firmware/bar.bin; do
+# the bootloader: pre-compiled modules (tools/mpy) plus the logo and bar art; a .py left on the
+# board would be imported instead of its .mpy
+for f in firmware/splash.mpy firmware/lcd.mpy firmware/loader.mpy firmware/logo.bin firmware/bar.bin; do
   ./tools/pico cp "$f" ":$(basename "$f")" || exit 1
 done
+./tools/pico exec 'import os
+for f in ("splash.py", "lcd.py", "loader.py"):
+    try: os.remove(f)
+    except OSError: pass'
 # schedule the reset so mpremote returns before the socket drops
 ./tools/pico exec 'import machine; machine.Timer(period=300, mode=machine.Timer.ONE_SHOT, callback=lambda t: machine.reset())'
 echo "pushed, rebooting"
