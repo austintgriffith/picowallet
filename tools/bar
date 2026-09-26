@@ -1,12 +1,16 @@
 #!/usr/bin/env python3
 # Boot loading bar art: renders the plastic-look bar (white shell, recessed track, dark rounded fill)
-# at 4x and scales it down, then writes firmware/bar.bin for firmware/loader.py:
-#   header: 8 big-endian uint16  X Y W H  F0 F1 CW CR
+# at 4x and scales it down, then writes firmware/bar.bin for firmware/loader.py. The bar's middle is
+# one column repeated, and the fill only changes the track's rows, so little is stored:
+#   header: 12 big-endian uint16  X Y W H  F0 F1 CW CR  L R  T0 TH
 #     X, Y, W, H  where the strip goes on screen and its size
 #     F0, F1      strip columns where the fill starts and where a full fill ends
 #     CW, CR      width of the cap piece, and how many of its columns sit left of the fill's end
-#   then RGB565 pixels, row by row: the strip empty (W*H), the strip full (W*H), the cap (CW*H),
-#   and the strip full in green (W*H), shown once loading is done.
+#     L, R        columns kept at the left and right ends; the ones between repeat column L
+#     T0, TH      the rows the fill changes (T0 .. T0+TH-1)
+#   then RGB565 pieces, each stored as its left block (rows x L), the middle column (rows x 1) and
+#   its right block (rows x R), row by row: the empty strip (H rows), the grey-full strip (TH rows),
+#   the cap (TH rows x CW, stored whole) and the green-full strip (TH rows), shown once loading is done.
 # The chip builds any progress P from these: full strip left of P - CR, the cap, empty strip after.
 # The background is the logo's corner colour, so the strip sits on logo.bin without a seam.
 # Also writes art/bar_screen.png: logo plus the bar at a few progress values, 2x.
@@ -116,9 +120,40 @@ CW = CR + CAP_EXTRA
 mid = (F0 + F1) // 2
 
 empty, full = render(None), render(F1)
-cap = render(mid).crop((mid - CR, 0, mid + CAP_EXTRA, H))
+cap_strip = render(mid)
+cap = cap_strip.crop((mid - CR, 0, mid + CAP_EXTRA, H))
 green = render(F1, GREEN_FILL)
-data = struct.pack(">8H", X, Y, W, H, F0, F1, CW, CR) + rgb565(empty) + rgb565(full) + rgb565(cap) + rgb565(green)
+
+
+def column(im, x):
+    return [im.getpixel((x, y)) for y in range(H)]
+
+
+# the run of columns equal to the middle one, in every strip that is stored in pieces
+L, R = 0, W
+for im in (empty, full, green):
+    c = W // 2
+    a = c
+    while a > 0 and column(im, a - 1) == column(im, c):
+        a -= 1
+    b = c
+    while b < W - 1 and column(im, b + 1) == column(im, c):
+        b += 1
+    L, R = max(L, a), min(R, b)
+R = W - 1 - R
+# the rows any fill changes
+rows = [y for y in range(H) if any(im.getpixel((x, y)) != empty.getpixel((x, y)) for im in (full, green, cap_strip) for x in range(W))]
+T0, TH = rows[0], rows[-1] - rows[0] + 1
+
+
+def piece(im, y0, n):
+    """Left block, middle column, right block of rows y0 .. y0+n-1."""
+    return (rgb565(im.crop((0, y0, L, y0 + n))) + rgb565(im.crop((L, y0, L + 1, y0 + n)))
+            + rgb565(im.crop((W - R, y0, W, y0 + n))))
+
+
+data = (struct.pack(">12H", X, Y, W, H, F0, F1, CW, CR, L, R, T0, TH) + piece(empty, 0, H) + piece(full, T0, TH)
+        + rgb565(cap.crop((0, T0, CW, T0 + TH))) + piece(green, T0, TH))
 lx, ly, lw, lh = struct.unpack(">4H", (root / "firmware/logo.bin").read_bytes()[:8])
 if lx < X + W and X < lx + lw and ly < Y + H and Y < ly + lh:
     # loader.py hides the bar by painting one background row; the logo must not reach under it
@@ -146,4 +181,4 @@ for i, frac in enumerate((0.0, 0.55, 1.0, None)):
 r, g, b = sheet.split()                 # the screen's 5-6-5 bit colour
 sheet = Image.merge("RGB", (r.point(lambda v: v & 0xF8), g.point(lambda v: v & 0xFC), b.point(lambda v: v & 0xF8)))
 sheet.resize((240 * 4 * 2, 480), Image.NEAREST).save(root / "art/bar_screen.png")
-print(f"firmware/bar.bin ({len(data)} bytes), preview art/bar_screen.png")
+print(f"firmware/bar.bin ({len(data)} bytes; ends {L}+{R} columns, fill rows {T0}-{T0 + TH - 1}), preview art/bar_screen.png")

@@ -3,7 +3,7 @@
 # tools/bar) by each file's share of the total size. The app itself is left for main.py to import:
 # many apps draw as soon as they load, and the bar must not paint over them. Apps need no changes.
 # main.py: import lcd, loader.load("app"), then import and start the app as usual.
-import os, sys, time, gc, struct
+import os, sys, time, gc, struct, micropython
 import lcd
 
 
@@ -63,51 +63,98 @@ def _plan(app):
     return order
 
 
+@micropython.viper
+def _fill(buf, n: int, v: int):
+    """buf[0:n] = v, 16-bit pixels, at machine speed (a Python loop costs ms per bar update)."""
+    p = ptr16(buf)
+    i = 0
+    while i < n:
+        p[i] = v
+        i += 1
+
+
 class _Bar:
     """The plastic bar from tools/bar (bar.bin), drawn only while an app's helper files load: it
     appears empty, fills grey, turns green, and is wiped back to the logo's background partway
-    through the wait for the app's first screen. Any fill is copied from pre-rendered pieces; nothing waits."""
+    through the wait for the app's first screen. Any fill is copied from pre-rendered pieces; nothing
+    waits. Pieces are stored as their two ends plus the one middle column that repeats (see tools/bar)."""
     def __init__(self, f):
         self.d = lcd.LCD()               # the panel is already up, so this keeps the logo on screen
-        self.X, self.Y, self.W, self.H, self.F0, self.F1, self.CW, self.CR = struct.unpack(">8H", f.read(16))
-        n = self.W * self.H * 2
-        self.green_at = 16 + 2 * n + self.CW * self.H * 2
+        (self.X, self.Y, self.W, self.H, self.F0, self.F1, self.CW, self.CR,
+         self.L, self.R, self.T0, self.TH) = struct.unpack(">12H", f.read(24))
+        e, t = self._size(self.H), self._size(self.TH)
+        c = self.TH * self.CW * 2
+        self.green_at = 24 + e + t + c
         if (self.X + self.W > self.d.width or self.Y + self.H > self.d.height or self.CR > self.CW
-                or not self.F0 < self.F1 <= self.W or os.stat("bar.bin")[6] != self.green_at + n):
+                or not self.F0 < self.F1 <= self.W or self.L + self.R >= self.W or self.T0 + self.TH > self.H
+                or os.stat("bar.bin")[6] != self.green_at + t):
             raise ValueError("bar.bin does not fit this screen or is damaged")
-        buf = bytearray(2 * n + self.CW * self.H * 2)
+        buf = bytearray(e + t + c)
         f.readinto(buf)
         mv = memoryview(buf)
-        self.empty, self.full, self.cap = mv[:n], mv[n:2 * n], mv[2 * n:]
+        self.empty, self.full, self.cap = mv[:e], mv[e:e + t], mv[e + t:]
+        self.run = bytearray(self.W * 2)                 # one row of the repeated middle colour
+        self.rv = memoryview(self.run)
         self.p = self.F0                 # where the fill ends now, in strip columns
-        self._window(0, self.W)
-        self.d.spi.write(self.empty)
-        self.d.cs(1)
+        self._block(self.empty, self.H, 0, 0, self.W)
 
-    def _window(self, a, b):
-        """Open strip columns a..b (all rows) for writing; the caller streams rows, then cs(1)."""
-        d, x0, x1, y0, y1 = self.d, self.X + a, self.X + b - 1, self.Y, self.Y + self.H - 1
+    def _size(self, rows):
+        return rows * (self.L + 1 + self.R) * 2
+
+    def _window(self, a, b, r0, r1):
+        """Open strip columns a..b, rows r0..r1 for writing; the caller streams pixels, then cs(1)."""
+        d, x0, x1, y0, y1 = self.d, self.X + a, self.X + b - 1, self.Y + r0, self.Y + r1 - 1
         d._cmd(0x2A, [x0 >> 8, x0 & 255, x1 >> 8, x1 & 255])
         d._cmd(0x2B, [y0 >> 8, y0 & 255, y1 >> 8, y1 & 255])
         d._cmd(0x2C)
         d.dc(1); d.cs(0)
+
+    def _block(self, s, rows, y0, a, b):
+        """Draw columns a..b of piece s (rows tall) at strip rows y0..: each end in one write when
+        it is whole, the middle one row at a time from its repeated column."""
+        L, R, W, spi, cs = self.L, self.R, self.W, self.d.spi, self.d.cs
+        right = rows * (L + 1) * 2       # where the right block starts in s
+        if a < L:
+            e = min(b, L)
+            self._window(a, e, y0, y0 + rows)
+            if a == 0 and e == L:
+                spi.write(s[:rows * L * 2])
+            else:
+                for r in range(rows):
+                    spi.write(s[(r * L + a) * 2:(r * L + e) * 2])
+            cs(1)
+        m0, m1 = max(a, L), min(b, W - R)
+        if m1 > m0:
+            self._window(m0, m1, y0, y0 + rows)
+            n = m1 - m0
+            for r in range(rows):
+                i = (rows * L + r) * 2
+                _fill(self.run, n, s[i] | s[i + 1] << 8)
+                spi.write(self.rv[0:n * 2])
+            cs(1)
+        if b > W - R:
+            e0 = max(a, W - R)
+            self._window(e0, b, y0, y0 + rows)
+            if e0 == W - R and b == W:
+                spi.write(s[right:])
+            else:
+                for r in range(rows):
+                    spi.write(s[right + (r * R + e0 - (W - R)) * 2:right + (r * R + b - (W - R)) * 2])
+            cs(1)
 
     def to(self, frac):
         extra = self.CW - self.CR
         p = max(self.F0 + int((self.F1 - self.F0) * frac), self.F0 + 2 * self.CR)
         if p <= self.p:
             return
-        a, W, spi = max(self.F0, self.p - self.CR), self.W, self.d.spi
+        a = max(0, self.p - self.CR)     # from 0 at first: the fill's shadow starts left of F0
         if p >= self.F1 - extra:         # at the end the cap would overlap the track's round end
-            self._window(a, W)
-            for r in range(self.H):
-                spi.write(self.full[(r * W + a) * 2:(r * W + W) * 2])
+            self._block(self.full, self.TH, self.T0, a, self.W)
         else:
-            self._window(a, p + extra)
-            for r in range(self.H):
-                spi.write(self.full[(r * W + a) * 2:(r * W + p - self.CR) * 2])
-                spi.write(self.cap[r * self.CW * 2:(r + 1) * self.CW * 2])
-        self.d.cs(1)
+            self._block(self.full, self.TH, self.T0, a, p - self.CR)
+            self._window(p - self.CR, p + extra, self.T0, self.T0 + self.TH)
+            self.d.spi.write(self.cap)
+            self.d.cs(1)
         self.p = p
 
     def green(self):
@@ -115,14 +162,12 @@ class _Bar:
         ready to be wiped from a hard interrupt (which may not allocate: everything is prebuilt)."""
         with open("bar.bin", "rb") as f:
             f.seek(self.green_at)
-            f.readinto(self.empty)
-        self._window(0, self.W)
-        self.d.spi.write(self.empty)
-        self.d.cs(1)
+            f.readinto(self.full)
+        self._block(self.full, self.TH, self.T0, 0, self.W)
         self.empty = self.full = self.cap = None
         # The logo is plain background under the bar (tools/bar checks), so one row of that colour
         # repaints it. Not the framebuffer itself: the app is drawing into that by now.
-        self.row = bytearray(self.W * 2)
+        self.row = self.rv
         bg = self.d.buffer[(self.Y * self.d.width + self.X) * 2:(self.Y * self.d.width + self.X) * 2 + 2]
         for i in range(0, len(self.row), 2):
             self.row[i:i + 2] = bg
