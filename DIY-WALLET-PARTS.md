@@ -213,7 +213,39 @@ The biggest risk today is someone making the device sign, not someone pulling th
 8. **Pink RP2040 boards have no TRNG and no secure boot.** OK only because the key is made in the
    ATECC.
 
-## 5. What Codex changed
+## 5. Blind check
+
+The research above was given our current parts, so it may have anchored on them. Two fresh runs
+got only the question: "build a hardware wallet from off-the-shelf parts, what do you pick?"
+
+| | This report | Blind Claude | Blind Codex |
+|---|---|---|---|
+| Board | Pico 2 | Pico 2 (no WiFi) | Pi Zero v1.3 (SeedSigner) |
+| Key | P-256 key made in ATECC608/Trust M, smart account | Seed encrypted on Pico; TROPIC01 holds an unlock share behind a PIN | Stateless: seed scanned each use, nothing stored |
+| Signing | In the secure chip | secp256k1 on the Pico | On the Pi |
+| Screen | Waveshare 1.3" | Waveshare 1.3" | Waveshare 1.3" HAT |
+| Link | USB | USB | QR camera |
+| Chain | Ethereum | Any | Bitcoin only ("Ethereum decoding is too big a job for DIY") |
+
+All three agree:
+- no radio
+- same 240×240 Waveshare screen
+- don't trust MCU flash alone
+- cheap secure chips can't sign secp256k1
+- use it as one key in a multisig for real money
+
+Where we differ: neither blind run thought of a P-256 smart account. That is the one idea that
+lets a $5 chip sign everything inside the chip, with no seed at all. The cost is it only works with
+our contract, not MetaMask/Rabby.
+
+Missed by this report, added from the blind runs:
+- **ATECC608 has published laser attacks** (Ledger Donjon, SSTIC 2021, across 508A/608A/608B).
+  Fine as one layer, not as the only one.
+- **Nonce covert channel:** hacked firmware can leak the key through valid-looking signatures, even
+  air-gapped. Fix is anti-klepto (host adds randomness to the nonce). Doesn't apply when the
+  secure chip makes the nonce itself, as on the ATECC.
+
+## 6. What Codex changed
 
 - Ledger is not the only wallet that signs inside the secure chip; Keycard does too.
 - Trezor stores the seed encrypted on the MCU, not inside Trust M.
@@ -225,7 +257,7 @@ The biggest risk today is someone making the device sign, not someone pulling th
 - Added the REPL, fallback-key and recovery-delay gaps.
 - Builds B and C downgraded from "recommended" to "harder than it looks" and "research".
 
-## 6. Not confirmed
+## 7. Not confirmed
 
 - A real CC certificate for the ATECC608 ("JIL High" is Microchip's own claim).
 - Whether SE050F's FIPS mode covers secp256k1 (NXP's table lists Koblitz curves for SE050F2).
@@ -234,7 +266,7 @@ The biggest risk today is someone making the device sign, not someone pulling th
 - Camera + QR decode on an RP2350.
 - Exact prices.
 
-## 7. Sources
+## 8. Sources
 
 Secure chips: [Trust M](https://github.com/Infineon/optiga-trust-m-overview) ·
 [SE050 APDU spec AN12413](https://www.nxp.com/docs/en/application-note/AN12413.pdf) ·
@@ -273,6 +305,11 @@ Added by Codex: [Trust M breakout (Adafruit 4351)](https://www.adafruit.com/prod
 [Firefox WebSerial](https://hacks.mozilla.org/2026/05/web-serial-support-in-firefox/) ·
 [Kraken on Trezor](https://blog.kraken.com/product/security/kraken-identifies-critical-flaw-in-trezor-hardware-wallets) ·
 [Coldcard PIN code](https://raw.githubusercontent.com/Coldcard/firmware/master/stm32/bootloader/pins.c)
+
+From the blind runs: [ATECC608 laser attacks (SSTIC 2021)](https://www.sstic.org/media/SSTIC2021/SSTIC-actes/defeating_a_secure_element_with_multiple_laser_fau/SSTIC2021-Article-defeating_a_secure_element_with_multiple_laser_fault_injections-heriveaux.pdf) ·
+[Coinkite on laser faults](https://blog.coinkite.com/laser-fault-injection/) ·
+[Anti-klepto (BitBox)](https://blog.bitbox.swiss/en/anti-klepto-explained-protection-against-leaking-private-keys/) ·
+[Secure Tropic Click](https://www.mikroe.com/secure-tropic-click)
 
 Screen, link, entropy, case: [Bybit analysis (NCC)](https://www.nccgroup.com/research/in-depth-technical-analysis-of-the-bybit-hack/) ·
 [EIP-7730](https://eips.ethereum.org/EIPS/eip-7730) ·
