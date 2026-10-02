@@ -245,6 +245,28 @@ Missed by this report, added from the blind runs:
   air-gapped. Fix is anti-klepto (host adds randomness to the nonce). Doesn't apply when the
   secure chip makes the nonce itself, as on the ATECC.
 
+### Ethereum-only blind runs
+
+Same test, with "Ethereum" in the question and "consider every account model".
+
+| | Blind Claude (ETH) | Blind Codex (ETH) |
+|---|---|---|
+| Board | Pico 2 (no WiFi) | ST NUCLEO-U575ZI-Q (STM32U5, TrustZone) |
+| Key chip | NXP SE050E (secp256k1 + P-256) | NXP SE050E |
+| Screen | Waveshare Pico-LCD-2.0 | Adafruit 3.5" 480×320, wired by hand |
+| Link | USB WebSerial | USB |
+| Cost | ~$110 | ~$200, needs soldering |
+| Account | Seed in SE050 behind a PIN, plus a non-exportable SE050 key as a Safe owner | Prefers non-exportable device key + smart account recovery; EOA as a fallback |
+
+What they add:
+- **SE050** is the blind pick for Ethereum because it does both secp256k1 and P-256. It costs ~$60–84.
+- **Encrypt the wire to the key chip** (SE050 SCP03; rotate NXP's published default keys).
+  TROPIC01 has an encrypted channel built in.
+- **EIP-7702:** refuse chainId 0 authorizations and only allow known delegate contracts.
+- **Dark Skippy:** replaced firmware can leak a seed in two signatures. Lock firmware updates.
+- **Codex independently prefers our model:** a key that never leaves the chip, with recovery done
+  by the smart account.
+
 ## 6. What Codex changed
 
 - Ledger is not the only wallet that signs inside the secure chip; Keycard does too.
@@ -309,7 +331,11 @@ Added by Codex: [Trust M breakout (Adafruit 4351)](https://www.adafruit.com/prod
 From the blind runs: [ATECC608 laser attacks (SSTIC 2021)](https://www.sstic.org/media/SSTIC2021/SSTIC-actes/defeating_a_secure_element_with_multiple_laser_fau/SSTIC2021-Article-defeating_a_secure_element_with_multiple_laser_fault_injections-heriveaux.pdf) ·
 [Coinkite on laser faults](https://blog.coinkite.com/laser-fault-injection/) ·
 [Anti-klepto (BitBox)](https://blog.bitbox.swiss/en/anti-klepto-explained-protection-against-leaking-private-keys/) ·
-[Secure Tropic Click](https://www.mikroe.com/secure-tropic-click)
+[Secure Tropic Click](https://www.mikroe.com/secure-tropic-click) ·
+[SE050 SCP03 binding AN13013](https://www.nxp.com/docs/en/application-note/AN13013.pdf) ·
+[Dark Skippy](https://darkskippy.com/) ·
+[EIP-7702](https://eips.ethereum.org/EIPS/eip-7702) ·
+[NUCLEO-U575ZI-Q](https://estore.st.com/en/products/evaluation-tools/product-evaluation-tools/mcu-mpu-eval-tools/stm32-mcu-mpu-eval-tools/stm32-nucleo-boards/nucleo-u575zi-q.html)
 
 Screen, link, entropy, case: [Bybit analysis (NCC)](https://www.nccgroup.com/research/in-depth-technical-analysis-of-the-bybit-hack/) ·
 [EIP-7730](https://eips.ethereum.org/EIPS/eip-7730) ·
