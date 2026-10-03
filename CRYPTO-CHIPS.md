@@ -44,7 +44,13 @@ JavaCards.
 
 ## What this means for the workshop
 
-- **Smart account:** $5 Qwiic/STEMMA ATECC608 or Trust M, or the M5Stack unit. Plug in, done.
+- **Smart account:** $5 Qwiic/STEMMA ATECC608 or Trust M, or the M5Stack unit. The plug-in is
+  easy; the firmware isn't ready for all of them yet:
+  - ATECC608: works today (`firmware/signer.py`).
+  - Trust M: driver signs (`firmware/trustm.py`), but the wallet doesn't use it yet. Needs a signer
+    backend, key generation and slot lock.
+  - M5Stack Unit ID: address 0x35, pre-provisioned Trust&GO slots. Our driver assumes 0x60 and our
+    own config. Untested.
 - **Normal Ethereum account, no solder, this week:** YubiKey 5 NFC or a Satochip card, plus a
   $7–16 plug-in NFC reader on the Pico. Or the Portenta C33 in place of the Pico.
 - Every secp256k1 route needs driver work: NFC + smart-card commands for cards and YubiKeys, NXP

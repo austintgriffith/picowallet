@@ -198,8 +198,9 @@ The biggest risk today is someone making the device sign, not someone pulling th
 
 1. **REPL is open over USB.** `firmware/usbwallet.py` keeps Ctrl-C to the REPL. A hostile computer
    can run code and skip the buttons.
-2. **Software-key fallback.** `firmware/signer.py` `load()` uses a software key if the chip doesn't
-   answer. Remove it from the wallet build.
+2. **Software-key code is still in the build.** `firmware/signer.py` `load()` returns a software
+   key if the chip doesn't answer. By default the wallet then stops in "no chip" and won't sign
+   (`wallet.py`, `usbwallet.py`); it only signs with it if `ALLOW_SOFT_KEY` is set. Remove it anyway.
 3. **No PIN on the ATECC signing slot.** A thief can make the chip sign, and the 14-day recovery
    delay doesn't help: chip-signed spends go through right away. The slot config is locked, so
    adding a PIN means a new chip, a new key and moving the vault's signer. A PIN gate also needs a
@@ -239,8 +240,9 @@ lets a $5 chip sign everything inside the chip, with no seed at all. The cost is
 our contract, not MetaMask/Rabby.
 
 Missed by this report, added from the blind runs:
-- **ATECC608 has published laser attacks** (Ledger Donjon, SSTIC 2021, across 508A/608A/608B).
-  Fine as one layer, not as the only one.
+- **ATECC608A has a published laser attack** (Ledger Donjon, SSTIC 2021). It read a stored data
+  slot (Coldcard's PIN hash), building on 2020 work on the 508A. It did not show pulling out a
+  signing-only private key, and it didn't test the 608B. Fine as one layer, not the only one.
 - **Nonce covert channel:** hacked firmware can leak the key through valid-looking signatures, even
   air-gapped. Fix is anti-klepto (host adds randomness to the nonce). Doesn't apply when the
   secure chip makes the nonce itself, as on the ATECC.
